@@ -1,0 +1,71 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Datafy API",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#4ADE80",
+    "dark": "#15803D"
+  },
+  "favicon": "/favicon.svg",
+  "navbar": {
+    "links": [
+      {
+        "label": "Suporte",
+        "href": "https://wa.me/5541991338055"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Acessar painel",
+      "href": "https://app.datafyapi.com.br"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guias",
+        "groups": [
+          {
+            "group": "Começar",
+            "pages": [
+              "index",
+              "primeiros-passos"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Referência da API",
+        "groups": [
+          {
+            "group": "Exemplos",
+            "openapi": "https://app.datafyapi.com.br/openapi.json",
+            "pages": [
+              "api-reference/introducao",
+              "GET /me",
+              "POST /v1/{phone_number_id}/messages"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "links": [
+      {
+        "header": "Datafy API",
+        "items": [
+          {
+            "label": "Site",
+            "href": "https://datafyapi.com.br"
+          },
+          {
+            "label": "Painel",
+            "href": "https://app.datafyapi.com.br"
+          }
+        ]
+      }
+    ]
+  }
+}

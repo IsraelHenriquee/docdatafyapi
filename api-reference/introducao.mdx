@@ -1,0 +1,17 @@
+---
+title: "Visão geral"
+description: "Como a referência da API é gerada a partir do OpenAPI."
+icon: "book-open"
+---
+
+As páginas desta aba são geradas a partir do arquivo `https://app.datafyapi.com.br/openapi.json`.
+
+Para mostrar mais endpoints, adicione linhas como `"GET /v1/{waba_id}/message_templates"` na lista `pages` do grupo **Exemplos**, no `docs.json`.
+
+## Autenticação
+
+Envie o token no header de toda requisição:
+
+```http
+Authorization: Bearer sk_live_xxx
+```
