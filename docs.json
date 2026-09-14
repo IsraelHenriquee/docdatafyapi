@@ -3,11 +3,11 @@
   "theme": "mint",
   "name": "Datafy API",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#4ADE80",
-    "dark": "#15803D"
+    "primary": "#25d366",
+    "light": "#25d366",
+    "dark": "#1fbf5a"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.jpg",
   "navbar": {
     "links": [
       {
@@ -25,18 +25,71 @@
     "tabs": [
       {
         "tab": "Guias",
+        "icon": {
+          "name": "book-open",
+          "style": "regular"
+        },
         "groups": [
           {
             "group": "Começar",
             "pages": [
               "index",
               "primeiros-passos"
+            ],
+            "icon": {
+              "name": "rocket",
+              "style": "regular"
+            }
+          },
+          {
+            "group": "Conversas",
+            "icon": {
+              "name": "comments",
+              "style": "regular"
+            },
+            "pages": [
+              "guias/whatsapp/conceitos/tipos-de-mensagem",
+              "guias/whatsapp/conceitos/janela-de-24-horas",
+              "guias/whatsapp/conceitos/templates-de-mensagem",
+              "guias/whatsapp/conceitos/cobranca"
+            ]
+          },
+          {
+            "group": "Configurar a Meta",
+            "icon": {
+              "name": "gear",
+              "style": "regular"
+            },
+            "pages": [
+              "guias/meta/introducao",
+              {
+                "group": "Portfólio",
+                "pages": [
+                  "guias/meta/portfolio/introducao",
+                  "guias/meta/portfolio/criar",
+                  "guias/meta/portfolio/verificar"
+                ]
+              },
+              {
+                "group": "Conexão",
+                "pages": [
+                  "guias/meta/conexao/introducao",
+                  "guias/meta/conexao/cloud-api",
+                  "guias/meta/conexao/coexistencia"
+                ]
+              },
+              "guias/meta/pagamento",
+              "guias/meta/migracao-de-numero"
             ]
           }
         ]
       },
       {
-        "tab": "Referência da API",
+        "tab": "API WhatsApp",
+        "icon": {
+          "name": "whatsapp",
+          "style": "brands"
+        },
         "groups": [
           {
             "group": "Exemplos",
@@ -45,6 +98,21 @@
               "api-reference/introducao",
               "GET /me",
               "POST /v1/{phone_number_id}/messages"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Instagram",
+        "icon": {
+          "name": "instagram",
+          "style": "brands"
+        },
+        "groups": [
+          {
+            "group": "Referência",
+            "pages": [
+              "api-reference/instagram/introducao"
             ]
           }
         ]
@@ -67,5 +135,18 @@
         ]
       }
     ]
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "fonts": {
+    "family": "Geist"
+  },
+  "background": {
+    "color": {
+      "light": "#fbfbfa",
+      "dark": "#0a0a0a"
+    }
   }
 }

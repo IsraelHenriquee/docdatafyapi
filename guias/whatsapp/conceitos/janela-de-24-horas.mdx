@@ -1,0 +1,97 @@
+---
+title: "Janela de 24 horas"
+description: "Saiba até quando você pode responder no WhatsApp e o que fazer quando esse prazo termina."
+---
+
+## O prazo começa com o cliente
+
+Na API oficial do WhatsApp, uma mensagem do cliente abre um período de **24 horas para sua empresa responder com mensagens de serviço**, sem precisar de um template. Esse período é chamado de **janela de atendimento**.
+
+A conta é simples: veja quando chegou a última mensagem daquela pessoa e acrescente 24 horas. Se ela escrever novamente, o prazo começa de novo a partir dessa nova mensagem.
+
+<Note>
+  **Quem renova a janela é o cliente.** Uma resposta da sua empresa, seja de um atendente ou de uma automação, não aumenta o prazo. Cada cliente tem sua própria janela.
+</Note>
+
+## Um atendimento na prática
+
+Imagine que uma pessoa entre em contato para perguntar sobre um pedido:
+
+| Quando | O que acontece | Até quando você pode responder sem template |
+| --- | --- | --- |
+| Segunda, 9h | O cliente pergunta sobre a entrega. | Terça, 9h. |
+| Segunda, 9h15 | Sua empresa informa o prazo. | Continua até terça, 9h. |
+| Segunda, 16h | O cliente pede para confirmar o endereço. | O prazo muda para terça, 16h. |
+| Terça, 11h | Sua empresa confirma o endereço. | Continua até terça, 16h. |
+| Terça, 16h01 | Nenhuma nova mensagem chegou do cliente. | A janela está fechada; é necessário um template. |
+
+## Enquanto a janela estiver aberta
+
+Você pode conduzir o atendimento com texto e formatos suportados pela API, como imagens, áudios, vídeos e documentos. Também pode usar recursos interativos, como listas e botões, conforme as regras de cada formato.
+
+Essas mensagens não precisam de aprovação individual da Meta. A regra da janela vale tanto para respostas de atendentes quanto para mensagens enviadas por bots e automações.
+
+## Quando o prazo termina
+
+Se passarem 24 horas desde a última mensagem do cliente, sua empresa deixa de poder enviar mensagens de serviço para ele. Se você tentar enviar uma dessas mensagens fora da janela, a requisição pode ser aceita com **HTTP 200 e um ID de mensagem**, mas a falha no envio será informada depois pelo **webhook de status**, com o erro correspondente.
+
+O histórico da conversa continua existindo. O que muda é a forma de retomar o contato: você precisa enviar um **template aprovado pela Meta**, adequado à finalidade da mensagem e às regras do WhatsApp.
+
+Por exemplo, se você precisa atualizar o cliente sobre o pedido depois que a janela fechou, pode usar um template aprovado para essa atualização.
+
+<Warning>
+  **Enviar o template não reabre a janela.** Para voltar a enviar mensagens de serviço, aguarde uma resposta do cliente. Assim que ele responder, começa um novo período de 24 horas.
+</Warning>
+
+## Anúncios Click to WhatsApp
+
+Quando alguém chega por um anúncio e envia uma mensagem, abre a janela normal de atendimento de **24 horas**.
+
+**Se sua empresa responder dentro desse prazo, ganha 72 horas de mensagens sem cobrança da Meta.** As 72 horas começam na resposta da empresa.
+
+Por exemplo: o cliente envia uma mensagem pelo anúncio na segunda às 10h e você responde às 10h05. A gratuidade começa às 10h05 de segunda e termina às 10h05 de quinta.
+
+<Note>
+  **Gratuidade e atendimento têm prazos separados.** No exemplo, se o cliente não enviar outra mensagem, a janela de atendimento termina na terça às 10h. Depois disso, você precisa usar templates, que continuam sem cobrança da Meta até quinta às 10h05.
+</Note>
+
+Essa condição vale para entradas pelo WhatsApp no Android ou iOS. Consulte a [regra oficial da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing#free-entry-point-windows).
+
+## Status de envio e entrega
+
+Quando a requisição de envio é aceita, a API retorna um ID para identificar a mensagem. Esse retorno confirma o recebimento da solicitação, **não que a mensagem chegou ao cliente**.
+
+O resultado do envio deve ser acompanhado pelos webhooks de status:
+
+- **Enviada (`sent`):** a mensagem foi enviada, mas ainda não é uma confirmação de entrega.
+- **Entregue (`delivered`):** a mensagem chegou ao destinatário.
+- **Lida (`read`):** houve confirmação de leitura, quando disponível.
+- **Falha (`failed`):** o envio falhou. O evento traz informações sobre o erro, como uma tentativa de enviar mensagem de serviço fora da janela ou falha no pagamento.
+
+Use o ID da mensagem para relacionar esses eventos ao envio feito pela sua aplicação. Os detalhes dos payloads serão apresentados na referência da **API WhatsApp**.
+
+## Dúvidas comuns
+
+<AccordionGroup>
+  <Accordion title="E se o cliente nunca tiver falado com a empresa?">
+    Ainda não existe uma janela de atendimento aberta. Para iniciar o contato, use um template aprovado, respeitando as regras de consentimento e envio do WhatsApp.
+  </Accordion>
+  <Accordion title="Se o cliente só ler a mensagem, o prazo é renovado?">
+    Não. A confirmação de leitura não é uma nova mensagem do cliente e não renova a janela.
+  </Accordion>
+  <Accordion title="Posso manter a janela aberta enviando mensagens de tempos em tempos?">
+    Não. Apenas uma nova mensagem do cliente renova o prazo. Mensagens da empresa não alteram o horário de encerramento.
+  </Accordion>
+  <Accordion title="A janela muda fora do horário comercial?">
+    Não. São 24 horas corridas, incluindo noites, fins de semana e feriados. Considere isso ao organizar seu atendimento.
+  </Accordion>
+  <Accordion title="Uma janela aberta significa que todo envio é gratuito?">
+    A janela define quais mensagens você pode enviar. As regras de cobrança são outro assunto e dependem do tipo de mensagem e das condições da Meta. Vamos explicar essa parte em [Custos de mensagens](/guias/whatsapp/conceitos/cobranca).
+  </Accordion>
+</AccordionGroup>
+
+## Como organizar sua integração
+
+Guarde o horário da última mensagem recebida de cada cliente e confira esse prazo antes de responder. Isso ajuda sua aplicação a escolher entre uma mensagem de serviço e um template, inclusive quando um envio ficou aguardando em uma fila.
+
+No próximo tópico, vamos explicar [como funcionam os templates de mensagem](/guias/whatsapp/conceitos/templates-de-mensagem).

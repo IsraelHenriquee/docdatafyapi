@@ -1,0 +1,102 @@
+---
+title: "Templates de mensagem"
+description: "Conheça os modelos aprovados pela Meta para iniciar ou retomar um contato pelo WhatsApp."
+---
+
+<Note>
+  **Esta página trata dos templates do WhatsApp.** No Instagram, não existem templates de mensagem com aprovação prévia como os do WhatsApp. A Meta não cobra por mensagem de Direct enviada pela API; continuam valendo as regras de envio e da janela de atendimento.
+</Note>
+
+## O que é um template?
+
+Um **template** é um modelo de mensagem que sua empresa cadastra na Meta e submete à aprovação. Depois de aprovado, ele pode ser usado para falar com um cliente mesmo quando a [janela de atendimento de 24 horas](/guias/whatsapp/conceitos/janela-de-24-horas) está fechada.
+
+Pense no aviso de que um equipamento ficou pronto para retirada: você prepara o modelo uma vez e preenche o nome do cliente e o número da ordem de serviço em cada envio.
+
+Você pode usar templates para comunicar uma atualização de pedido, lembrar um compromisso, divulgar uma campanha ou enviar um código de acesso. A finalidade da mensagem determina sua categoria.
+
+## Conteúdo e personalização
+
+Conforme o formato e a categoria, o modelo pode combinar texto, imagem, vídeo, documento e botões. Ele também pode ter **variáveis**, que sua aplicação preenche no momento do envio.
+
+Por exemplo, um aviso de retirada poderia ter este texto:
+
+```text
+Olá, {{1}}. O equipamento da ordem de serviço {{2}} está pronto para retirada na unidade {{3}}.
+```
+
+Com os dados preenchidos:
+
+> Olá, Rafael. O equipamento da ordem de serviço 7539 está pronto para retirada na unidade Centro.
+
+As variáveis personalizam os dados previstos no modelo. O restante da mensagem segue a estrutura aprovada pela Meta.
+
+## Categorias de templates
+
+A Meta organiza os templates em três categorias. Escolha a categoria de acordo com o conteúdo e o objetivo do envio.
+
+### Marketing
+
+Use para apresentar produtos, divulgar campanhas e incentivar uma compra. A imagem que você envia pode destacar o produto, enquanto o texto apresenta a oferta e os botões direcionam o cliente.
+
+**Exemplo — campanha de uma loja de calçados:**
+
+> Olá, Camila! 👋 Temos uma oferta especial para você. Use o cupom PASSOLEVE e aproveite até sexta-feira.
+
+**Composição:** cabeçalho com a imagem da campanha, corpo com nome, cupom e validade como variáveis, botão **Ver oferta** e botão de resposta **Falar com atendimento**.
+
+<Frame>
+  <img src="/images/templates/marketing.webp" alt="Exemplo de template de Marketing no WhatsApp, com indicações do cabeçalho, corpo da mensagem, variáveis e botões." width="1672" height="941" />
+</Frame>
+
+### Utilidade
+
+Use para informar o andamento de algo que o cliente já solicitou. O conteúdo deve estar ligado ao serviço ou à transação e não incluir uma oferta comercial.
+
+**Exemplo — equipamento pronto na assistência técnica:**
+
+> Olá, Rafael. O reparo da ordem de serviço 7539 foi concluído. Você já pode retirar seu equipamento na unidade Centro. Apresente o número da ordem no balcão.
+
+**Composição:** corpo com nome, número da ordem e unidade como variáveis, botão **Consultar ordem** e botão de resposta **Dúvida sobre a retirada**.
+
+<Frame>
+  <img src="/images/templates/utilidade.webp" alt="Template de Utilidade no WhatsApp com aviso de equipamento pronto, variáveis, botão de acesso e resposta rápida." width="1672" height="941" />
+</Frame>
+
+### Autenticação
+
+Use para entregar um código de uso único solicitado durante uma verificação de identidade, como o acesso a uma conta.
+
+**Exemplo — código para entrar em um aplicativo:**
+
+> 482731 é seu código de verificação. Para sua segurança, não compartilhe esse código.
+
+**Composição:** código como variável e botão **Copiar código**. A redação e os componentes seguem o formato de autenticação disponibilizado pela Meta; o texto acima é ilustrativo.
+
+<Frame>
+  <img src="/images/templates/autenticacao.webp" alt="Template de Autenticação no WhatsApp com código de verificação, aviso de segurança e botão Copiar código." width="1672" height="941" />
+</Frame>
+
+<Note>
+  Uma atualização de pedido que também oferece um desconto mistura informação de serviço com promoção e pode ser classificada como **Marketing**. A Meta avalia o conteúdo completo; os exemplos desta página não garantem aprovação nem categoria.
+</Note>
+
+Consulte os critérios na [documentação de categorias da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-categorization).
+
+## Envio e resposta do cliente
+
+Se a janela de atendimento estiver fechada, o envio de um template permite retomar o contato, mas **não libera automaticamente as mensagens de serviço**.
+
+| Depois do envio | O que acontece com a janela |
+| --- | --- |
+| O template é entregue ou lido, mas o cliente não responde. | Continua fechada. Você ainda precisa usar templates para novos envios. |
+| O cliente responde ao template. | Abre uma janela de 24 horas a partir da resposta. Você pode continuar com mensagens de serviço. |
+| O cliente envia outra mensagem durante o atendimento. | As 24 horas passam a contar a partir dessa nova mensagem. |
+
+Não é preciso criar um modelo novo para cada cliente ou conversa. Você pode reutilizar um template aprovado quando ele for adequado ao contato, preenchendo suas variáveis e respeitando as regras de envio do WhatsApp.
+
+## Próximos passos
+
+A categoria do template também participa das regras de cobrança. Vamos explicar esse assunto em [Custos de mensagens](/guias/whatsapp/conceitos/cobranca).
+
+Os detalhes para criar e enviar templates pela Datafy serão apresentados na referência da **API WhatsApp**.

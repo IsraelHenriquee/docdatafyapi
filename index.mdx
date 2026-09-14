@@ -1,22 +1,45 @@
 ---
-title: "Introdução"
-description: "Página de teste para conferir a integração entre o GitHub e o Mintlify."
-icon: "house"
+title: "O que é a Datafy API?"
+description: "Acesse as APIs oficiais do WhatsApp e do Instagram pela infraestrutura da Datafy."
 ---
 
-Esta é uma documentação de **teste**. Ela existe só para mostrar como o Mintlify lê este repositório e publica o site.
+A **Datafy API** é um **Parceiro de Tecnologia da Meta** que oferece acesso à API oficial do WhatsApp (Meta Cloud API) através da própria infraestrutura. Também oferecemos acesso à API oficial do Instagram.
 
-<Note>
-  Edite este arquivo (`index.mdx`), faça commit na `main` e veja o site atualizar sozinho.
-</Note>
+Com a Datafy, você cria seu canal de WhatsApp ou Instagram no painel e recebe um token de acesso no momento da criação. Depois, conecta seu número ou sua conta ao canal para utilizar os recursos da API.
 
-## O que tem aqui
+## Para que serve?
 
-<CardGroup cols={2}>
-  <Card title="Primeiros passos" icon="rocket" href="/primeiros-passos">
-    Uma página de guia comum, escrita em MDX.
-  </Card>
-  <Card title="Referência da API" icon="code" href="/api-reference/introducao">
-    Dois endpoints gerados direto do `openapi.json` da Datafy.
-  </Card>
-</CardGroup>
+Com a Datafy API, você pode:
+
+- **Enviar e receber mensagens** pelo seu sistema.
+- **Automatizar atendimentos**, conectando bots e fluxos de resposta.
+- **Integrar ferramentas**, como CRMs e plataformas de suporte, aos seus canais de comunicação.
+
+## Como funciona?
+
+Nossa infraestrutura funciona como um **proxy da API oficial da Meta**: você faz as requisições para a Datafy usando seu token, e nós as encaminhamos à Meta.
+
+No WhatsApp, você utiliza os endpoints da Meta Cloud API pela URL da Datafy, com a autenticação fornecida no nosso painel. Os detalhes estão na aba **API WhatsApp**.
+
+O **painel da Datafy** é onde você gerencia seus canais, obtém seus tokens e configura a operação da sua conta.
+
+<Steps>
+  <Step title="Crie sua conta">
+    Acesse o [painel da Datafy](https://app.datafyapi.com.br/) e crie sua conta.
+  </Step>
+  <Step title="Crie seu canal">
+    No painel, crie o canal que deseja utilizar. O **token de acesso é gerado automaticamente na criação do canal**, antes da conexão do número de WhatsApp ou da conta do Instagram.
+  </Step>
+  <Step title="Conecte seu número ou sua conta">
+    Siga o processo de conexão do WhatsApp ou do Instagram dentro do canal criado.
+  </Step>
+  <Step title="Configure os webhooks e integre">
+    No painel, você também pode configurar os **webhooks para receber eventos com assinatura HMAC**. Use a referência da API do canal escolhido para desenvolver sua integração; os detalhes dos endpoints, dos eventos e da validação da assinatura serão apresentados lá.
+  </Step>
+</Steps>
+
+## Por onde começar?
+
+Comece criando sua conta e seu canal no [painel da Datafy](https://app.datafyapi.com.br/). Para o WhatsApp, acompanhe a seção **Configurar a Meta** deste guia.
+
+A aba **Guias** reúne as explicações sobre a plataforma e os conceitos de cada canal. As abas **API WhatsApp** e **API Instagram** são dedicadas à referência técnica, com os detalhes necessários para desenvolver sua integração.
