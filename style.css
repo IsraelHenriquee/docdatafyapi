@@ -96,3 +96,17 @@ body {
   font-weight: 600;
   text-shadow: none;
 }
+
+/* A documentação tem um idioma só (pt-BR): o seletor de idioma não tem o que trocar. */
+[data-component-part="localization-select-trigger"] {
+  display: none !important;
+}
+
+/* Botão do playground: "Testar" no lugar do texto padrão do Mintlify, mantendo o ícone. */
+[data-testid="try-it-button"] > span {
+  display: none;
+}
+
+[data-testid="try-it-button"]::before {
+  content: "Testar";
+}

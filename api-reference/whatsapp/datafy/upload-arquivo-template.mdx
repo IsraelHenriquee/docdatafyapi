@@ -1,0 +1,22 @@
+---
+title: "Upload de arquivo para template"
+openapi: "/api-reference/whatsapp/openapi.json POST /templates/upload-header"
+---
+
+Para criar um template com mídia, como uma imagem no cabeçalho, a Meta exige um **`handle`** do arquivo. Na Meta, ele é gerado por um upload em várias etapas.
+
+Com a Datafy, basta enviar a **URL pública** do arquivo. O endpoint faz o upload e retorna o `handle`:
+
+```json
+{ "handle": "4::aW1hZ2UvanBlZw==:ARb..." }
+```
+
+Use o valor em `example.header_handle` ao [criar o template](/api-reference/whatsapp/templates/criar-template):
+
+```json
+{
+  "type": "HEADER",
+  "format": "IMAGE",
+  "example": { "header_handle": ["4::aW1hZ2UvanBlZw==:ARb..."] }
+}
+```

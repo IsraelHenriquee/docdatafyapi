@@ -1,0 +1,31 @@
+---
+title: "Autenticação"
+description: "Envie o token da Datafy no header de todas as requisições."
+---
+
+Todas as requisições usam o token `sk_live_xxx`, gerado no [painel da Datafy](https://app.datafyapi.com.br) quando você cria o canal. Envie o token **sempre no header** `Authorization`:
+
+```http
+Authorization: Bearer sk_live_xxx
+```
+
+<Warning>
+  A documentação da Meta mostra exemplos com o token na URL (`?access_token=...`). **Na Datafy isso não funciona.** Sem o header, a requisição é recusada.
+</Warning>
+
+<CodeGroup>
+
+```bash Correto
+curl "https://cloud.datafyapi.com.br/v1/{WABA_ID}?fields=analytics" \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+```bash Não funciona
+curl "https://cloud.datafyapi.com.br/v1/{WABA_ID}?fields=analytics&access_token=sk_live_xxx"
+```
+
+</CodeGroup>
+
+Um `access_token` enviado na URL é ignorado. A Datafy usa o token do header e envia a credencial real para a Meta por conta própria, sem expô-la.
+
+Se o token estiver ausente ou inválido, a resposta é **`401`**. Se a assinatura da Datafy estiver inativa, é **`402`**. Veja todos os códigos em [Erros](/api-reference/whatsapp/limitacoes/erros).

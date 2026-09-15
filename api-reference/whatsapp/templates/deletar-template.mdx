@@ -1,0 +1,12 @@
+---
+title: "Deletar template"
+openapi: "/api-reference/whatsapp/openapi.json DELETE /v1/{waba_id}/message_templates"
+---
+
+Remove um template pelo `name`. Sem `hsm_id`, **todos os idiomas** do template com esse nome são removidos. Para remover só um idioma, informe também o `hsm_id`.
+
+<Warning>
+  Depois de deletado, o nome do template não pode ser reutilizado por 30 dias.
+</Warning>
+
+Veja as regras na [referência de templates da Meta](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates).

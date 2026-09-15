@@ -1,0 +1,870 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — WhatsApp",
+    "version": "1.0.0",
+    "description": "Espelho da Meta Cloud API e endpoints próprios da Datafy."
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Templates"
+    },
+    {
+      "name": "Mídia"
+    },
+    {
+      "name": "Datafy"
+    }
+  ],
+  "paths": {
+    "/v1/{phone_number_id}/media": {
+      "post": {
+        "tags": [
+          "Mídia"
+        ],
+        "summary": "Upload de mídia",
+        "operationId": "uploadMidia",
+        "description": "Espelho de `POST /{phone_number_id}/media` da Meta Cloud API. Retorna um `id` para usar no envio de mensagens de mídia.",
+        "externalDocs": {
+          "description": "Referência de mídia da Meta",
+          "url": "https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PhoneNumberId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "messaging_product",
+                  "file",
+                  "type"
+                ],
+                "properties": {
+                  "messaging_product": {
+                    "type": "string",
+                    "enum": [
+                      "whatsapp"
+                    ]
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Arquivo a ser enviado."
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Tipo MIME do arquivo, como `image/jpeg` ou `application/pdf`.",
+                    "example": "image/jpeg"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mídia enviada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID da mídia."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "1234567890123456"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/MetaError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/{waba_id}/message_templates": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Listar templates",
+        "operationId": "listarTemplates",
+        "description": "Espelho de `GET /{waba_id}/message_templates` da Meta Cloud API.",
+        "externalDocs": {
+          "description": "Referência de templates da Meta",
+          "url": "https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WabaId"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtra pelo nome do template."
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "APPROVED",
+                "PENDING",
+                "REJECTED",
+                "PAUSED",
+                "DISABLED"
+              ]
+            },
+            "description": "Filtra pelo status de aprovação."
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Campos retornados, separados por vírgula.",
+            "example": "name,status,category,language,components"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Quantidade de templates por página."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de templates.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "id": "1234567890123456",
+                      "name": "pedido_pronto",
+                      "language": "pt_BR",
+                      "status": "APPROVED",
+                      "category": "UTILITY"
+                    }
+                  ],
+                  "paging": {
+                    "cursors": {
+                      "before": "QVFIU...",
+                      "after": "QVFIU..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/MetaError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Criar template",
+        "operationId": "criarTemplate",
+        "description": "Espelho de `POST /{waba_id}/message_templates` da Meta Cloud API. O template é enviado para análise da Meta.",
+        "externalDocs": {
+          "description": "Referência de templates da Meta",
+          "url": "https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WabaId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateCreate"
+              },
+              "examples": {
+                "utilidade": {
+                  "summary": "Utilidade com variáveis",
+                  "value": {
+                    "name": "pedido_pronto",
+                    "language": "pt_BR",
+                    "category": "UTILITY",
+                    "components": [
+                      {
+                        "type": "BODY",
+                        "text": "Olá, {{1}}. O equipamento da ordem de serviço {{2}} está pronto para retirada.",
+                        "example": {
+                          "body_text": [
+                            [
+                              "Rafael",
+                              "7539"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "marketing_imagem": {
+                  "summary": "Marketing com imagem e botão",
+                  "value": {
+                    "name": "oferta_semana",
+                    "language": "pt_BR",
+                    "category": "MARKETING",
+                    "components": [
+                      {
+                        "type": "HEADER",
+                        "format": "IMAGE",
+                        "example": {
+                          "header_handle": [
+                            "4::aW1hZ2UvanBlZw==:ARb..."
+                          ]
+                        }
+                      },
+                      {
+                        "type": "BODY",
+                        "text": "Olá, {{1}}! Use o cupom {{2}} e aproveite até sexta-feira.",
+                        "example": {
+                          "body_text": [
+                            [
+                              "Camila",
+                              "PASSOLEVE"
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "type": "BUTTONS",
+                        "buttons": [
+                          {
+                            "type": "URL",
+                            "text": "Ver oferta",
+                            "url": "https://exemplo.com/oferta"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template criado e enviado para análise.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "1234567890123456",
+                  "status": "PENDING",
+                  "category": "UTILITY"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/MetaError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Deletar template",
+        "operationId": "deletarTemplate",
+        "description": "Espelho de `DELETE /{waba_id}/message_templates` da Meta Cloud API. Sem `hsm_id`, remove todos os idiomas do template com esse nome.",
+        "externalDocs": {
+          "description": "Referência de templates da Meta",
+          "url": "https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WabaId"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Nome do template."
+          },
+          {
+            "name": "hsm_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do template, para remover apenas um idioma específico."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template removido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/MetaError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/{template_id}": {
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Editar template",
+        "operationId": "editarTemplate",
+        "description": "Espelho de `POST /{template_id}` da Meta Cloud API. Envia a nova versão do template para análise.",
+        "externalDocs": {
+          "description": "Referência de templates da Meta",
+          "url": "https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates"
+        },
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do template. Aparece no retorno de Criar template e de Listar templates."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "MARKETING",
+                      "UTILITY",
+                      "AUTHENTICATION"
+                    ]
+                  },
+                  "components": {
+                    "type": "array",
+                    "description": "Nova lista completa de componentes do template.",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "components": [
+                  {
+                    "type": "BODY",
+                    "text": "Olá, {{1}}. O equipamento da ordem de serviço {{2}} já pode ser retirado na unidade Centro.",
+                    "example": {
+                      "body_text": [
+                        [
+                          "Rafael",
+                          "7539"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Edição enviada para análise.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/MetaError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": [
+          "Datafy"
+        ],
+        "summary": "Dados da conta",
+        "operationId": "me",
+        "description": "Retorna os IDs associados ao token. Use-os para montar as URLs do espelho da Meta.",
+        "responses": {
+          "200": {
+            "description": "IDs da conta.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cliente_id": {
+                      "type": "string",
+                      "description": "ID do cliente na Datafy."
+                    },
+                    "phone_number_id": {
+                      "type": "string",
+                      "description": "ID do número na Meta."
+                    },
+                    "waba_id": {
+                      "type": "string",
+                      "description": "ID da conta do WhatsApp Business."
+                    },
+                    "business_id": {
+                      "type": "string",
+                      "description": "ID do portfólio empresarial."
+                    }
+                  }
+                },
+                "example": {
+                  "cliente_id": "cli_123",
+                  "phone_number_id": "123456789012345",
+                  "waba_id": "234567890123456",
+                  "business_id": "345678901234567"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/media/{id}": {
+      "get": {
+        "tags": [
+          "Datafy"
+        ],
+        "summary": "Baixar mídia recebida",
+        "operationId": "baixarMidia",
+        "description": "Baixa a mídia recebida pelo webhook e retorna uma URL de download válida por 30 dias.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID da mídia recebido no webhook, como `image.id` ou `document.id`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "URL da mídia.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "URL de download da mídia."
+                    },
+                    "mime_type": {
+                      "type": "string",
+                      "description": "Tipo MIME do arquivo."
+                    },
+                    "size": {
+                      "type": "integer",
+                      "description": "Tamanho do arquivo em bytes."
+                    }
+                  }
+                },
+                "example": {
+                  "url": "https://midia.datafyapi.com.br/cli_123/2026/09/1757862000000-a1b2c3d4.jpg",
+                  "mime_type": "image/jpeg",
+                  "size": 184233
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Falha ao baixar a mídia da Meta.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatafyError"
+                },
+                "example": {
+                  "statusCode": 400,
+                  "message": "Falha ao baixar a mídia da Meta (403)"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "404": {
+            "description": "Mídia não encontrada ou expirada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatafyError"
+                },
+                "example": {
+                  "statusCode": 404,
+                  "message": "Mídia não encontrada ou expirada (ID inválido ou mais de 30 dias)"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/templates/upload-header": {
+      "post": {
+        "tags": [
+          "Datafy"
+        ],
+        "summary": "Upload de arquivo para template",
+        "operationId": "uploadArquivoTemplate",
+        "description": "Recebe a URL pública de um arquivo, faz o upload na Meta e retorna o `handle` usado na criação de templates com mídia.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "url"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "URL pública do arquivo."
+                  }
+                }
+              },
+              "example": {
+                "url": "https://exemplo.com/oferta.jpg"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload concluído.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "handle": {
+                      "type": "string",
+                      "description": "Identificador do arquivo na Meta."
+                    }
+                  }
+                },
+                "example": {
+                  "handle": "4::aW1hZ2UvanBlZw==:ARb..."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "URL ausente ou arquivo inacessível.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatafyError"
+                },
+                "example": {
+                  "statusCode": 400,
+                  "message": "Campo \"url\" obrigatório"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token gerado no painel da Datafy ao criar o canal. Formato: `sk_live_xxx`."
+      }
+    },
+    "parameters": {
+      "PhoneNumberId": {
+        "name": "phone_number_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "ID do número na Meta. Descubra com `GET /me`."
+      },
+      "WabaId": {
+        "name": "waba_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "ID da conta do WhatsApp Business. Descubra com `GET /me`."
+      }
+    },
+    "schemas": {
+      "TemplateCreate": {
+        "type": "object",
+        "required": [
+          "name",
+          "language",
+          "category",
+          "components"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do template, em letras minúsculas e com `_` no lugar de espaços."
+          },
+          "language": {
+            "type": "string",
+            "description": "Código do idioma, como `pt_BR`."
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "MARKETING",
+              "UTILITY",
+              "AUTHENTICATION"
+            ]
+          },
+          "components": {
+            "type": "array",
+            "description": "Cabeçalho, corpo, rodapé e botões do template.",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "DatafyError": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "MetaError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "code": {
+                "type": "integer"
+              },
+              "error_subcode": {
+                "type": "integer"
+              },
+              "fbtrace_id": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "MetaError": {
+        "description": "Erro retornado pela Meta, repassado sem alteração.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/MetaError"
+            },
+            "example": {
+              "error": {
+                "message": "(#131030) Recipient phone number not in allowed list",
+                "type": "OAuthException",
+                "code": 131030,
+                "fbtrace_id": "AbCdEfGhIjK"
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Token ausente ou inválido.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/DatafyError"
+            },
+            "example": {
+              "statusCode": 401,
+              "message": "Token inválido ou não encontrado."
+            }
+          }
+        }
+      },
+      "PaymentRequired": {
+        "description": "Assinatura da Datafy inativa.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/DatafyError"
+            },
+            "example": {
+              "statusCode": 402,
+              "message": "Assinatura inativa. Ative sua assinatura no painel para voltar a usar a API."
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Limite de requisições excedido.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/DatafyError"
+            },
+            "example": {
+              "statusCode": 429,
+              "message": "Rate limit excedido (60 req/min). Tente novamente em 12s."
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+---
+title: "Listar templates"
+openapi: "/api-reference/whatsapp/openapi.json GET /v1/{waba_id}/message_templates"
+---
+
+Lista os templates da conta do WhatsApp Business, com status, categoria e idioma. Use `fields` para escolher os campos retornados e `status` para filtrar, por exemplo, só os aprovados.
+
+Se a conta tiver muitos templates, a resposta vem paginada. Para buscar a próxima página, use o cursor `after` na URL da Datafy, como explicado em [Paginação](/api-reference/whatsapp/visao-geral/paginacao).
+
+Veja todos os filtros na [referência de templates da Meta](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates).

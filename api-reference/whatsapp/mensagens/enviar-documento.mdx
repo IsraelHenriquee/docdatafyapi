@@ -1,0 +1,46 @@
+---
+title: "Enviar documento"
+description: "Envie um PDF ou outro documento, com o nome do arquivo."
+openapi: "/api-reference/whatsapp/specs/documento.json POST /v1/{phone_number_id}/messages"
+---
+
+Envia um documento, como PDF, planilha ou apresentação, para um cliente com a [janela de 24 horas](/api-reference/whatsapp/mensagens/introducao#janela-de-24-horas) aberta.
+
+<Note>
+  O destinatário pode ser informado pelo **número de telefone** (`to`) ou pelo **ID do usuário** (`recipient`). Se os dois forem enviados, vale o `to`; para enviar pelo ID do usuário, deixe o `to` em branco. Veja a diferença em [Destinatário](/api-reference/whatsapp/mensagens/introducao#destinatário).
+</Note>
+
+## Link ou ID da mídia
+
+Informe o documento de uma das duas formas:
+
+| Campo | Quando usar | Como conseguir |
+| --- | --- | --- |
+| `document.link` | O documento está em uma URL pública. | Envie o arquivo na aba **Mídias** do número, no [painel da Datafy](https://app.datafyapi.com.br). O link gerado vale por **30 dias**. |
+| `document.id` | Você já enviou o arquivo para a Meta. | Use o `id` retornado pelo endpoint [Upload de mídia](/api-reference/whatsapp/proxy/upload-de-midia). |
+
+<Warning>
+  **Envie apenas um dos dois.** Com `link` e `id` na mesma requisição, a Meta recusa o envio.
+</Warning>
+
+No **Testar**, o `link` já vem preenchido com um PDF de exemplo. Para testar com um `id`, apague o `link` antes de enviar.
+
+## Nome do arquivo
+
+Use `document.filename` para definir o nome que o cliente vê, **com a extensão**, como `boleto-pedido-7539.pdf`. O WhatsApp usa a extensão para mostrar o ícone do tipo de arquivo.
+
+## Formatos aceitos
+
+| Tipo | Extensão | Tipo MIME | Tamanho máximo |
+| --- | --- | --- | --- |
+| PDF | `.pdf` | `application/pdf` | 100 MB |
+| Texto | `.txt` | `text/plain` | 100 MB |
+| Word | `.doc` / `.docx` | `application/msword` / `application/vnd.openxmlformats-officedocument.wordprocessingml.document` | 100 MB |
+| Excel | `.xls` / `.xlsx` | `application/vnd.ms-excel` / `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | 100 MB |
+| PowerPoint | `.ppt` / `.pptx` | `application/vnd.ms-powerpoint` / `application/vnd.openxmlformats-officedocument.presentationml.presentation` | 100 MB |
+
+Só esses tipos são aceitos oficialmente pela Meta. Outros formatos podem não abrir corretamente no WhatsApp do cliente.
+
+A legenda aceita até **1.024 caracteres** e a mesma [formatação do texto](/api-reference/whatsapp/mensagens/enviar-texto#formatação).
+
+Veja mais detalhes na [documentação de mensagens de documento da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/document-messages).

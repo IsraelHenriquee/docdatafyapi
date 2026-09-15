@@ -1,0 +1,72 @@
+---
+title: "Visão geral"
+sidebarTitle: "Introdução"
+description: "Use a API oficial do WhatsApp pela Datafy trocando apenas a URL base e o token."
+---
+
+A Datafy funciona como um **espelho da Meta Cloud API**. Você chama os mesmos endpoints da documentação oficial da Meta, só que pela URL da Datafy e com o token gerado no nosso painel. Nós repassamos cada requisição para a Meta e devolvemos a resposta.
+
+## Como usar
+
+Nas suas chamadas, troque apenas a **URL base** e o **token**:
+
+| Item | Meta Cloud API | Datafy |
+| --- | --- | --- |
+| URL base | `https://graph.facebook.com/v21.0/` | `https://cloud.datafyapi.com.br/v1/` |
+| Token | `Bearer <META_TOKEN>` | `Bearer sk_live_xxx` |
+
+```bash
+# Antes: chamando a Meta diretamente
+https://graph.facebook.com/v21.0/{PHONE_NUMBER_ID}/messages
+
+# Depois: via Datafy
+https://cloud.datafyapi.com.br/v1/{PHONE_NUMBER_ID}/messages
+```
+
+O token `sk_live_xxx` é gerado no [painel da Datafy](https://app.datafyapi.com.br) quando você cria o canal. Ele **substitui completamente o token da Meta**, e sua credencial real nunca é exposta.
+
+Para endpoints que não aparecem nesta referência, consulte a [documentação oficial da Meta](https://developers.facebook.com/docs/whatsapp/cloud-api) e aplique a mesma troca.
+
+<Note>
+  Antes de integrar, veja como enviar o token em [Autenticação](/api-reference/whatsapp/visao-geral/autenticacao) e como buscar listas com várias páginas em [Paginação](/api-reference/whatsapp/visao-geral/paginacao).
+</Note>
+
+## Descubra seus IDs
+
+Os endpoints da Meta usam IDs como `phone_number_id`, `waba_id` e `business_id`. Se você só tem o token da Datafy, chame o endpoint [Dados da conta](/api-reference/whatsapp/datafy/me) (`GET /me`) para descobrir esses valores:
+
+```bash
+curl https://cloud.datafyapi.com.br/me \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+## Exemplo: enviar uma mensagem de texto
+
+```bash
+curl -X POST https://cloud.datafyapi.com.br/v1/{PHONE_NUMBER_ID}/messages \
+  -H 'Authorization: Bearer sk_live_xxx' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "messaging_product": "whatsapp",
+    "to": "5511999999999",
+    "type": "text",
+    "text": { "body": "Olá!" }
+  }'
+```
+
+## Como esta referência está organizada
+
+<CardGroup cols={2}>
+  <Card title="Cloud API Meta" icon="arrow-right-arrow-left" href="/api-reference/whatsapp/mensagens/introducao">
+    Os endpoints mais usados da Meta Cloud API, como mensagens, templates e mídia.
+  </Card>
+  <Card title="Endpoints Datafy" icon="bolt" href="/api-reference/whatsapp/datafy/me">
+    Recursos exclusivos da Datafy, como baixar mídia recebida e gerar handle para templates.
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/api-reference/whatsapp/webhooks/receber-eventos">
+    Como receber os eventos do seu número e validar a assinatura.
+  </Card>
+  <Card title="Limitações" icon="triangle-exclamation" href="/api-reference/whatsapp/limitacoes/erros">
+    Códigos de erro, limites de requisição e rotas bloqueadas.
+  </Card>
+</CardGroup>

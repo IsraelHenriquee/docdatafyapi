@@ -1,0 +1,16 @@
+---
+title: "Marcar como lida"
+api: "POST /v1/{phone_number_id}/messages"
+---
+
+Marca uma mensagem recebida como lida, exibindo os dois tiques azuis para o cliente. Use o mesmo endpoint de envio, com `status: "read"` e o `message_id` recebido no webhook:
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "status": "read",
+  "message_id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA="
+}
+```
+
+A resposta é `{ "success": true }`. Veja os detalhes na [documentação da Meta](https://developers.facebook.com/docs/whatsapp/cloud-api/guides/mark-message-as-read).

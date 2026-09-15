@@ -1,0 +1,30 @@
+---
+title: "Receber eventos"
+description: "Como a Datafy entrega os webhooks da Meta para a sua aplicação."
+---
+
+Os eventos do seu número, como mensagens recebidas, status de envio e atualizações de templates, são entregues por **`POST`** nas URLs cadastradas no [painel da Datafy](https://app.datafyapi.com.br), na aba **Webhooks** do número.
+
+O **payload é idêntico ao que a Meta envia**, sem nenhuma alteração. Vale integralmente a [documentação de webhooks da Meta](https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks).
+
+## Headers da entrega
+
+| Header | Descrição |
+| --- | --- |
+| `x-datafy-delivery-id` | Identificador único da entrega (UUID). Use como chave de idempotência. |
+| `x-datafy-timestamp` | Unix timestamp, em segundos, de quando a entrega foi assinada. |
+| `x-datafy-signature-256` | Assinatura HMAC-SHA256, no formato `sha256=<hex>`. |
+
+Os headers `x-datafy-timestamp` e `x-datafy-signature-256` só são enviados quando a assinatura está ativada para o número. Veja como usar em [Validar assinatura](/api-reference/whatsapp/webhooks/validar-assinatura).
+
+## Resposta e tempo limite
+
+Sua URL deve responder **`200` em até 20 segundos**. Depois disso, a entrega é contabilizada como falha.
+
+<Tip>
+  Responda `200` imediatamente e processe o evento em segundo plano. Processamento síncrono longo é a causa mais comum de estouro do tempo limite.
+</Tip>
+
+## Mídias recebidas
+
+Mensagens de imagem, áudio, vídeo e documento chegam apenas com o **ID da mídia**. Para obter o arquivo, use [Baixar mídia recebida](/api-reference/whatsapp/datafy/baixar-midia).

@@ -1,0 +1,26 @@
+---
+title: "Outros endpoints da Meta"
+description: "Qualquer endpoint da Meta Cloud API funciona pela Datafy com a mesma troca de URL e token."
+---
+
+Esta referência mostra os endpoints mais usados. **Qualquer outro endpoint da Meta Cloud API também funciona** pela Datafy: pegue o caminho na documentação oficial e troque a URL base e o token, como explicado na [Visão geral](/api-reference/whatsapp/introducao).
+
+```bash
+# Documentação da Meta
+GET https://graph.facebook.com/v21.0/{WABA_ID}/phone_numbers
+
+# Pela Datafy
+GET https://cloud.datafyapi.com.br/v1/{WABA_ID}/phone_numbers
+```
+
+## Endpoints comuns
+
+| Recurso | Caminho | Documentação da Meta |
+| --- | --- | --- |
+| Números da conta | `GET /v1/{waba_id}/phone_numbers` | [Phone numbers](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/phone-numbers) |
+| Perfil comercial | `/v1/{phone_number_id}/whatsapp_business_profile` | [Business profiles](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/business-profiles) |
+| Bloqueio de usuários | `/v1/{phone_number_id}/block_users` | [Block users](https://developers.facebook.com/docs/whatsapp/cloud-api/block-users) |
+| QR codes | `/v1/{phone_number_id}/message_qrdls` | [QR codes](https://developers.facebook.com/docs/whatsapp/business-management-api/qr-codes) |
+| Métricas | `GET /v1/{waba_id}?fields=analytics...` | [Analytics](https://developers.facebook.com/docs/whatsapp/business-management-api/analytics) |
+
+Algumas rotas são bloqueadas por segurança. Veja a lista em [Rotas bloqueadas](/api-reference/whatsapp/limitacoes/rotas-bloqueadas).

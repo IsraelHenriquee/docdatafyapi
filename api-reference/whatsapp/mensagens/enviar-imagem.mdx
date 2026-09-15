@@ -1,0 +1,37 @@
+---
+title: "Enviar imagem"
+description: "Envie uma imagem por link público ou pelo ID de uma mídia enviada."
+openapi: "/api-reference/whatsapp/specs/imagem.json POST /v1/{phone_number_id}/messages"
+---
+
+Envia uma imagem, com legenda opcional, para um cliente com a [janela de 24 horas](/api-reference/whatsapp/mensagens/introducao#janela-de-24-horas) aberta.
+
+<Note>
+  O destinatário pode ser informado pelo **número de telefone** (`to`) ou pelo **ID do usuário** (`recipient`). Se os dois forem enviados, vale o `to`; para enviar pelo ID do usuário, deixe o `to` em branco. Veja a diferença em [Destinatário](/api-reference/whatsapp/mensagens/introducao#destinatário).
+</Note>
+
+## Link ou ID da mídia
+
+Informe a imagem de uma das duas formas:
+
+| Campo | Quando usar | Como conseguir |
+| --- | --- | --- |
+| `image.link` | A imagem está em uma URL pública. | Envie o arquivo na aba **Mídias** do número, no [painel da Datafy](https://app.datafyapi.com.br). O link gerado vale por **30 dias**. |
+| `image.id` | Você já enviou o arquivo para a Meta. | Use o `id` retornado pelo endpoint [Upload de mídia](/api-reference/whatsapp/proxy/upload-de-midia). |
+
+<Warning>
+  **Envie apenas um dos dois.** Com `link` e `id` na mesma requisição, a Meta recusa o envio com o erro `132018` ("Only one of media ID or link must be present").
+</Warning>
+
+No **Testar**, o `link` já vem preenchido com uma imagem de exemplo. Para testar com um `id`, apague o `link` antes de enviar.
+
+## Formatos aceitos
+
+| Formato | Tipo MIME | Tamanho máximo |
+| --- | --- | --- |
+| JPEG | `image/jpeg` | 5 MB |
+| PNG | `image/png` | 5 MB |
+
+A imagem precisa ter cores de 8 bits (RGB ou RGBA). A legenda aceita até **1.024 caracteres** e a mesma [formatação do texto](/api-reference/whatsapp/mensagens/enviar-texto#formatação).
+
+Veja mais detalhes na [documentação de mensagens de imagem da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/image-messages).

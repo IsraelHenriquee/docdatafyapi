@@ -1,0 +1,10 @@
+---
+title: "Dados da conta"
+openapi: "/api-reference/whatsapp/openapi.json GET /me"
+---
+
+Retorna os IDs ligados ao seu token: `phone_number_id`, `waba_id` e `business_id`. Use esses valores para montar as URLs do espelho da Meta, como `/v1/{phone_number_id}/messages`.
+
+<Note>
+  Este endpoint é da Datafy e não existe na Meta. Ele fica fora do prefixo `/v1`.
+</Note>

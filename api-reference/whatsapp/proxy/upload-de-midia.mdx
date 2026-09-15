@@ -1,0 +1,17 @@
+---
+title: "Upload de mídia"
+openapi: "/api-reference/whatsapp/openapi.json POST /v1/{phone_number_id}/media"
+---
+
+Envia um arquivo para a Meta e retorna um `id`. Use esse `id` no envio de mensagens de mídia, no lugar de `link`:
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "5511999999999",
+  "type": "image",
+  "image": { "id": "1234567890123456" }
+}
+```
+
+Se o arquivo já está em uma URL pública, você pode enviar a mensagem direto com `link`, sem fazer upload. Tipos e tamanhos aceitos estão na [referência de mídia da Meta](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media).

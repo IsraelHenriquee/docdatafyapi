@@ -1,0 +1,17 @@
+---
+title: "Baixar mídia recebida"
+openapi: "/api-reference/whatsapp/openapi.json GET /media/{id}"
+---
+
+Quando o cliente envia uma imagem, áudio, vídeo ou documento, o webhook traz apenas o **ID da mídia**, como em `image.id`. Na Meta, transformar esse ID em arquivo exige duas chamadas autenticadas, e o link gerado expira em poucos minutos.
+
+Este endpoint faz esse trabalho por você: baixa o arquivo da Meta e retorna uma **URL de download válida por 30 dias**, junto com o tipo e o tamanho do arquivo.
+
+```bash
+curl https://cloud.datafyapi.com.br/media/1234567890123456 \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+<Note>
+  A Meta mantém as mídias recebidas por até 30 dias. Depois disso, ou com um ID inválido, a resposta é **404**.
+</Note>

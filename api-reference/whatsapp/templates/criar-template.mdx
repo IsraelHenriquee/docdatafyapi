@@ -1,0 +1,14 @@
+---
+title: "Criar template"
+openapi: "/api-reference/whatsapp/openapi.json POST /v1/{waba_id}/message_templates"
+---
+
+Cria um template e envia para **análise da Meta**. Ele nasce com status `PENDING` e só pode ser usado depois de `APPROVED`. A mudança de status chega pelo webhook `message_template_status_update`.
+
+Escolha a `category` conforme a finalidade: `MARKETING`, `UTILITY` ou `AUTHENTICATION`. Veja a diferença em [Templates de mensagem](/guias/whatsapp/conceitos/templates-de-mensagem).
+
+<Tip>
+  Para template com **imagem, vídeo ou documento no cabeçalho**, a Meta exige um `header_handle`. Gere esse valor com o endpoint [Upload de arquivo para template](/api-reference/whatsapp/datafy/upload-arquivo-template).
+</Tip>
+
+Todos os componentes e regras estão na [referência de templates da Meta](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates).

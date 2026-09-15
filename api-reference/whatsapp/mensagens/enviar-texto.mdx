@@ -1,0 +1,40 @@
+---
+title: "Enviar texto"
+description: "Envie uma mensagem de texto, com ou sem pré-visualização de link."
+openapi: "/api-reference/whatsapp/specs/texto.json POST /v1/{phone_number_id}/messages"
+---
+
+Envia uma mensagem de texto simples para um cliente com a [janela de 24 horas](/api-reference/whatsapp/mensagens/introducao#janela-de-24-horas) aberta. URLs no texto viram links clicáveis automaticamente.
+
+<Note>
+  O destinatário pode ser informado pelo **número de telefone** (`to`) ou pelo **ID do usuário** (`recipient`). Se os dois forem enviados, vale o `to`; para enviar pelo ID do usuário, deixe o `to` em branco. Veja a diferença em [Destinatário](/api-reference/whatsapp/mensagens/introducao#destinatário).
+</Note>
+
+## Formatação
+
+O texto aceita a formatação do WhatsApp:
+
+| Formato | Como escrever | Resultado |
+| --- | --- | --- |
+| Negrito | `*texto*` | **texto** |
+| Itálico | `_texto_` | *texto* |
+| Tachado | `~texto~` | ~~texto~~ |
+| Monoespaçado | ` ```texto``` ` | `texto` |
+
+Para quebrar linha, use `\n` dentro do texto.
+
+## Responder citando uma mensagem
+
+Informe o `wamid` da mensagem recebida em `context.message_id`. A resposta aparece vinculada à mensagem original na conversa:
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "5511999999999",
+  "type": "text",
+  "context": { "message_id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA=" },
+  "text": { "body": "Seu pedido já saiu para entrega." }
+}
+```
+
+Veja mais detalhes na [documentação de mensagens de texto da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/text-messages).

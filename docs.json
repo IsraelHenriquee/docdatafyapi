@@ -22,102 +22,207 @@
     }
   },
   "navigation": {
-    "tabs": [
+    "languages": [
       {
-        "tab": "Guias",
-        "icon": {
-          "name": "book-open",
-          "style": "regular"
-        },
-        "groups": [
+        "language": "pt-BR",
+        "tabs": [
           {
-            "group": "Começar",
-            "pages": [
-              "index",
-              "primeiros-passos"
-            ],
+            "tab": "Guias",
             "icon": {
-              "name": "rocket",
-              "style": "regular"
-            }
-          },
-          {
-            "group": "Conversas",
-            "icon": {
-              "name": "comments",
+              "name": "book-open",
               "style": "regular"
             },
-            "pages": [
-              "guias/whatsapp/conceitos/tipos-de-mensagem",
-              "guias/whatsapp/conceitos/janela-de-24-horas",
-              "guias/whatsapp/conceitos/templates-de-mensagem",
-              "guias/whatsapp/conceitos/cobranca"
-            ]
-          },
-          {
-            "group": "Configurar a Meta",
-            "icon": {
-              "name": "gear",
-              "style": "regular"
-            },
-            "pages": [
-              "guias/meta/introducao",
+            "groups": [
               {
-                "group": "Portfólio",
+                "group": "Começar",
                 "pages": [
-                  "guias/meta/portfolio/introducao",
-                  "guias/meta/portfolio/criar",
-                  "guias/meta/portfolio/verificar"
+                  "index",
+                  "como-funciona"
+                ],
+                "icon": {
+                  "name": "rocket",
+                  "style": "regular"
+                }
+              },
+              {
+                "group": "Conversas",
+                "icon": {
+                  "name": "comments",
+                  "style": "regular"
+                },
+                "pages": [
+                  "guias/whatsapp/conceitos/tipos-de-mensagem",
+                  "guias/whatsapp/conceitos/janela-de-24-horas",
+                  "guias/whatsapp/conceitos/templates-de-mensagem",
+                  "guias/whatsapp/conceitos/cobranca"
                 ]
               },
               {
-                "group": "Conexão",
+                "group": "Configurar a Meta",
+                "icon": {
+                  "name": "gear",
+                  "style": "regular"
+                },
                 "pages": [
-                  "guias/meta/conexao/introducao",
-                  "guias/meta/conexao/cloud-api",
-                  "guias/meta/conexao/coexistencia"
+                  "guias/meta/introducao",
+                  {
+                    "group": "Portfólio",
+                    "pages": [
+                      "guias/meta/portfolio/introducao",
+                      "guias/meta/portfolio/criar",
+                      "guias/meta/portfolio/verificar"
+                    ]
+                  },
+                  {
+                    "group": "Conexão",
+                    "pages": [
+                      "guias/meta/conexao/introducao",
+                      "guias/meta/conexao/cloud-api",
+                      "guias/meta/conexao/coexistencia"
+                    ]
+                  },
+                  "guias/meta/pagamento",
+                  "guias/meta/migracao-de-numero"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "API WhatsApp",
+            "icon": {
+              "name": "whatsapp",
+              "style": "brands"
+            },
+            "groups": [
+              {
+                "group": "Começar",
+                "icon": {
+                  "name": "rocket",
+                  "style": "regular"
+                },
+                "pages": [
+                  {
+                    "group": "Visão geral",
+                    "pages": [
+                      "api-reference/whatsapp/introducao",
+                      "api-reference/whatsapp/visao-geral/autenticacao",
+                      "api-reference/whatsapp/visao-geral/paginacao"
+                    ]
+                  },
+                  {
+                    "group": "Limitações",
+                    "pages": [
+                      "api-reference/whatsapp/limitacoes/erros",
+                      "api-reference/whatsapp/limitacoes/limites-de-requisicao",
+                      "api-reference/whatsapp/limitacoes/rotas-bloqueadas"
+                    ]
+                  }
                 ]
               },
-              "guias/meta/pagamento",
-              "guias/meta/migracao-de-numero"
+              {
+                "group": "Cloud API Meta",
+                "icon": {
+                  "name": "cloud",
+                  "style": "regular"
+                },
+                "pages": [
+                  {
+                    "group": "Mensagens de Serviço",
+                    "pages": [
+                      "api-reference/whatsapp/mensagens/introducao",
+                      "api-reference/whatsapp/mensagens/enviar-texto",
+                      "api-reference/whatsapp/mensagens/enviar-imagem",
+                      "api-reference/whatsapp/mensagens/enviar-audio",
+                      "api-reference/whatsapp/mensagens/enviar-video",
+                      "api-reference/whatsapp/mensagens/enviar-documento",
+                      "api-reference/whatsapp/mensagens/enviar-sticker",
+                      "api-reference/whatsapp/mensagens/enviar-localizacao",
+                      "api-reference/whatsapp/mensagens/enviar-contato",
+                      "api-reference/whatsapp/mensagens/enviar-reacao",
+                      "api-reference/whatsapp/mensagens/enviar-botoes",
+                      "api-reference/whatsapp/mensagens/enviar-lista",
+                      "api-reference/whatsapp/mensagens/enviar-botao-link",
+                      "api-reference/whatsapp/mensagens/marcar-como-lida"
+                    ]
+                  },
+                  {
+                    "group": "Templates",
+                    "pages": [
+                      "api-reference/whatsapp/templates/criar-template",
+                      "api-reference/whatsapp/templates/editar-template",
+                      "api-reference/whatsapp/templates/listar-templates",
+                      "api-reference/whatsapp/templates/deletar-template",
+                      "api-reference/whatsapp/templates/enviar-template"
+                    ]
+                  },
+                  {
+                    "group": "Mídia",
+                    "pages": [
+                      "api-reference/whatsapp/proxy/upload-de-midia"
+                    ]
+                  },
+                  "api-reference/whatsapp/proxy/outros-endpoints"
+                ]
+              },
+              {
+                "group": "Endpoints Datafy",
+                "icon": {
+                  "name": "bolt",
+                  "style": "regular"
+                },
+                "pages": [
+                  "api-reference/whatsapp/datafy/me",
+                  "api-reference/whatsapp/datafy/baixar-midia",
+                  "api-reference/whatsapp/datafy/upload-arquivo-template"
+                ]
+              },
+              {
+                "group": "Webhooks",
+                "icon": {
+                  "name": "webhook",
+                  "style": "regular"
+                },
+                "pages": [
+                  "api-reference/whatsapp/webhooks/receber-eventos",
+                  "api-reference/whatsapp/webhooks/validar-assinatura"
+                ]
+              }
             ]
-          }
-        ]
-      },
-      {
-        "tab": "API WhatsApp",
-        "icon": {
-          "name": "whatsapp",
-          "style": "brands"
-        },
-        "groups": [
+          },
           {
-            "group": "Exemplos",
-            "openapi": "https://app.datafyapi.com.br/openapi.json",
-            "pages": [
-              "api-reference/introducao",
-              "GET /me",
-              "POST /v1/{phone_number_id}/messages"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Instagram",
-        "icon": {
-          "name": "instagram",
-          "style": "brands"
-        },
-        "groups": [
-          {
-            "group": "Referência",
-            "pages": [
-              "api-reference/instagram/introducao"
+            "tab": "API Instagram",
+            "icon": {
+              "name": "instagram",
+              "style": "brands"
+            },
+            "groups": [
+              {
+                "group": "Referência",
+                "pages": [
+                  "api-reference/instagram/introducao"
+                ]
+              }
             ]
           }
         ]
       }
     ]
+  },
+  "api": {
+    "examples": {
+      "languages": [
+        "curl",
+        "javascript",
+        "python"
+      ],
+      "prefill": true
+    },
+    "mdx": {
+      "server": "https://cloud.datafyapi.com.br",
+      "auth": {
+        "method": "bearer"
+      }
+    }
   },
   "footer": {
     "links": [

@@ -1,0 +1,47 @@
+---
+title: "Introdução"
+description: "Envie mensagens de serviço para clientes com a janela de atendimento aberta."
+---
+
+Mensagens de serviço são as mensagens livres: texto, mídia, localização, botões e os demais formatos do WhatsApp. **Todos os tipos usam o mesmo endpoint**, e só o corpo da requisição muda:
+
+```bash
+POST https://cloud.datafyapi.com.br/v1/{phone_number_id}/messages
+```
+
+Cada página deste grupo mostra o corpo de um tipo de mensagem. Todos os tipos e campos estão explicados na [documentação de envio de mensagens da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/send-messages).
+
+## Destinatário
+
+Em todos os tipos de mensagem, o destinatário pode ser informado de duas formas:
+
+| Campo | Quando usar | Exemplo |
+| --- | --- | --- |
+| `to` | Você tem o número de telefone do cliente. | `5511999999999` |
+| `recipient` | Você tem o ID do usuário (BSUID) recebido nos webhooks. | `BR.13491208655302741918` |
+
+O **ID do usuário** identifica o cliente sem expor o número de telefone. Ele chega nos webhooks de mensagens recebidas em `from_user_id` e em `contacts[].user_id`. Use o valor completo, com o código do país e o ponto.
+
+- Se você enviar `to` e `recipient` juntos, o `to` tem prioridade. Para enviar pelo ID do usuário, deixe o `to` fora da requisição ou vazio.
+- Quando o envio usa `recipient`, a resposta traz `contacts[].user_id` no lugar de `contacts[].wa_id`.
+- Templates de autenticação com botão de um toque, sem toque ou de copiar código exigem o número de telefone.
+
+Veja mais detalhes na [documentação de IDs de usuário da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/business-scoped-user-ids/).
+
+## Janela de 24 horas
+
+Mensagens de serviço só podem ser enviadas com a **janela de atendimento aberta**. Ela começa quando o cliente envia uma mensagem e dura 24 horas a partir da última mensagem dele.
+
+Fora da janela, o contato precisa ser feito com um [template aprovado](/api-reference/whatsapp/templates/enviar-template). Veja os detalhes e exemplos no guia [Janela de 24 horas](/guias/whatsapp/conceitos/janela-de-24-horas).
+
+## Resposta
+
+A resposta **200** confirma que a Meta aceitou o envio, não que a mensagem foi entregue. Guarde o `id` retornado (`wamid`) e acompanhe a entrega pelos webhooks de status.
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "contacts": [{ "input": "5511999999999", "wa_id": "5511999999999" }],
+  "messages": [{ "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA=" }]
+}
+```

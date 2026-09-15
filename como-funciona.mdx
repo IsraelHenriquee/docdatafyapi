@@ -1,0 +1,25 @@
+---
+title: "Como funciona?"
+description: "Entenda como a Datafy conecta sua aplicação às APIs oficiais da Meta."
+---
+
+Nossa infraestrutura funciona como um **proxy da API oficial da Meta**: você faz as requisições para a Datafy usando seu token, e nós as encaminhamos à Meta.
+
+No WhatsApp, você utiliza os endpoints da Meta Cloud API pela URL da Datafy, com a autenticação fornecida no nosso painel. Os detalhes estão na aba **API WhatsApp**.
+
+O **painel da Datafy** é onde você gerencia seus canais, obtém seus tokens e configura a operação da sua conta.
+
+<Steps>
+  <Step title="Crie sua conta">
+    Acesse o [painel da Datafy](https://app.datafyapi.com.br/) e crie sua conta.
+  </Step>
+  <Step title="Crie seu canal">
+    No painel, crie o canal que deseja utilizar. O **token de acesso é gerado automaticamente na criação do canal**, antes da conexão do número de WhatsApp ou da conta do Instagram.
+  </Step>
+  <Step title="Conecte seu número ou sua conta">
+    Siga o processo de conexão do WhatsApp ou do Instagram dentro do canal criado.
+  </Step>
+  <Step title="Configure os webhooks e integre">
+    No painel, você também pode configurar os **webhooks para receber eventos com assinatura HMAC**. Use a referência da API do canal escolhido para desenvolver sua integração; os detalhes dos endpoints, dos eventos e da validação da assinatura serão apresentados lá.
+  </Step>
+</Steps>

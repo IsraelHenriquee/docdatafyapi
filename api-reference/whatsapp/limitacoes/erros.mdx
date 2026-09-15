@@ -1,0 +1,43 @@
+---
+title: "Erros"
+description: "Erros retornados pela Datafy e erros repassados da Meta."
+---
+
+## Erros da Datafy
+
+Antes de repassar a requisição para a Meta, a Datafy valida o token, a assinatura, as rotas bloqueadas e o limite de uso. Nesses casos, a resposta tem os campos `statusCode` e `message`:
+
+```json
+{
+  "statusCode": 401,
+  "message": "Token inválido ou não encontrado."
+}
+```
+
+| Código | Quando acontece |
+| --- | --- |
+| `401 Unauthorized` | O header `Authorization` não foi enviado, ou o token é inválido. |
+| `402 Payment Required` | O token existe, mas a assinatura da Datafy está inativa. Ative a assinatura no painel. |
+| `403 Forbidden` | A operação é [bloqueada por segurança](/api-reference/whatsapp/limitacoes/rotas-bloqueadas), o ID do caminho não pertence ao token, ou um token de Instagram foi usado numa rota de WhatsApp. |
+| `429 Too Many Requests` | O [limite de requisições](/api-reference/whatsapp/limitacoes/limites-de-requisicao) foi excedido. A mensagem informa quantos segundos aguardar. |
+
+## Erros da Meta
+
+Quando a requisição chega à Meta e ela recusa, a Datafy **repassa a resposta da Meta sem alteração**, com o mesmo status HTTP:
+
+```json
+{
+  "error": {
+    "message": "(#131030) Recipient phone number not in allowed list",
+    "type": "OAuthException",
+    "code": 131030,
+    "fbtrace_id": "AbCdEfGhIjK"
+  }
+}
+```
+
+Consulte o significado de cada `code` nos [códigos de erro da Meta](https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes).
+
+<Note>
+  Um envio aceito com **HTTP 200** ainda pode falhar depois, por exemplo, fora da janela de 24 horas. Nesse caso, a falha chega pelo webhook de status.
+</Note>

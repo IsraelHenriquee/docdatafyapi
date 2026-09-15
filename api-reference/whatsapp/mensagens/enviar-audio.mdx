@@ -1,0 +1,77 @@
+---
+title: "Enviar áudio"
+description: "Envie um arquivo de áudio ou uma mensagem de voz."
+openapi: "/api-reference/whatsapp/specs/audio.json POST /v1/{phone_number_id}/messages"
+---
+
+Envia um áudio para um cliente com a [janela de 24 horas](/api-reference/whatsapp/mensagens/introducao#janela-de-24-horas) aberta. O áudio pode chegar como **arquivo de áudio** ou como **mensagem de voz**.
+
+<Note>
+  O destinatário pode ser informado pelo **número de telefone** (`to`) ou pelo **ID do usuário** (`recipient`). Se os dois forem enviados, vale o `to`; para enviar pelo ID do usuário, deixe o `to` em branco. Veja a diferença em [Destinatário](/api-reference/whatsapp/mensagens/introducao#destinatário).
+</Note>
+
+## Link ou ID da mídia
+
+Informe o áudio de uma das duas formas:
+
+| Campo | Quando usar | Como conseguir |
+| --- | --- | --- |
+| `audio.link` | O áudio está em uma URL pública. | Envie o arquivo na aba **Mídias** do número, no [painel da Datafy](https://app.datafyapi.com.br). O link gerado vale por **30 dias**. |
+| `audio.id` | Você já enviou o arquivo para a Meta. | Use o `id` retornado pelo endpoint [Upload de mídia](/api-reference/whatsapp/proxy/upload-de-midia). |
+
+<Warning>
+  **Envie apenas um dos dois.** Com `link` e `id` na mesma requisição, a Meta recusa o envio.
+</Warning>
+
+No **Testar**, o `link` já vem preenchido com um áudio de exemplo. Para testar com um `id`, apague o `link` antes de enviar.
+
+## Mensagem de voz
+
+Com `audio.voice` igual a `true`, o áudio chega como **mensagem de voz**: aparece com o ícone de microfone e pode ser transcrito pelo WhatsApp do cliente.
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "5511999999999",
+  "type": "audio",
+  "audio": {
+    "link": "https://files.datafychats.com.br/Audio%20ludovico.ogg",
+    "voice": true
+  }
+}
+```
+
+A mensagem de voz exige um arquivo **`.ogg` com codec OPUS e canal mono**. Fora desse formato, a transcrição falha.
+
+### Como conseguir um áudio no formato certo
+
+O jeito mais simples é gravar o áudio no próprio WhatsApp. O arquivo baixado pelo WhatsApp Web já sai no formato de mensagem de voz:
+
+1. Grave o áudio no WhatsApp do celular, em qualquer conversa.
+2. Abra essa conversa no WhatsApp Web, abra o menu da mensagem de áudio e clique em **Baixar**.
+3. Envie o arquivo baixado na aba **Mídias** do painel da Datafy, para usar em `link`, ou pelo endpoint [Upload de mídia](/api-reference/whatsapp/proxy/upload-de-midia), para usar em `id`.
+4. Envie a mensagem com `audio.voice` igual a `true`.
+
+<Frame>
+  <img src="/images/api/audio-whatsapp-web.webp" alt="WhatsApp Web com o menu de uma mensagem de áudio aberto e a opção Baixar destacada." width="1400" height="788" />
+</Frame>
+
+<Tip>
+  O botão de reproduzir só aparece direto na conversa para arquivos de até **512 KB**. Acima disso, o cliente vê um ícone de download antes de ouvir.
+</Tip>
+
+Sem `voice`, ou com `voice` igual a `false`, o áudio chega como arquivo de áudio comum.
+
+## Formatos aceitos
+
+| Formato | Extensão | Tipo MIME | Tamanho máximo |
+| --- | --- | --- | --- |
+| AAC | `.aac` | `audio/aac` | 16 MB |
+| AMR | `.amr` | `audio/amr` | 16 MB |
+| MP3 | `.mp3` | `audio/mpeg` | 16 MB |
+| MP4 Audio | `.m4a` | `audio/mp4` | 16 MB |
+| OGG | `.ogg` | `audio/ogg` (somente OPUS) | 16 MB |
+
+O tipo MIME do arquivo precisa corresponder à extensão. Mensagens de áudio não têm legenda.
+
+Veja mais detalhes na [documentação de mensagens de áudio da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/audio-messages).

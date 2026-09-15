@@ -1,0 +1,12 @@
+---
+title: "Editar template"
+openapi: "/api-reference/whatsapp/openapi.json POST /v1/{template_id}"
+---
+
+Altera os componentes de um template existente. A nova versão passa por **análise da Meta** antes de valer, e a mudança de status chega pelo webhook `message_template_status_update`.
+
+Envie a **lista completa de componentes**, não apenas o trecho alterado. O `template_id` aparece no retorno de [Criar template](/api-reference/whatsapp/templates/criar-template) e de [Listar templates](/api-reference/whatsapp/templates/listar-templates).
+
+<Note>
+  A Meta limita a quantidade de edições de templates aprovados em um período. Confira as regras atuais na [referência de templates da Meta](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates).
+</Note>

@@ -1,0 +1,92 @@
+---
+title: "Validar assinatura"
+description: "Confirme que o webhook foi enviado pela Datafy e não foi alterado."
+---
+
+Com a assinatura ativada, cada entrega leva um HMAC-SHA256 que comprova a origem e a integridade do evento.
+
+## Ative a assinatura
+
+No [painel da Datafy](https://app.datafyapi.com.br), abra a aba **Webhooks** do número, ative a assinatura e guarde o **secret** (`whsec_...`) no seu servidor. O mesmo secret vale para todas as URLs daquele número.
+
+## Como a assinatura é calculada
+
+A assinatura é o **HMAC-SHA256 de `{timestamp}.{corpo}`**, usando o secret como chave:
+
+- `timestamp`: valor do header `x-datafy-timestamp`.
+- `corpo`: o corpo da requisição exatamente como chegou.
+
+O resultado é enviado em `x-datafy-signature-256`, no formato `sha256=<hex>`.
+
+<Warning>
+  **Use o corpo cru da requisição, antes de qualquer `JSON.parse`.** Se você converter e reserializar o JSON, os bytes mudam e a assinatura não confere. Esse é o erro mais comum na verificação.
+</Warning>
+
+## Exemplos
+
+Os exemplos validam a assinatura e recusam entregas com mais de 5 minutos, o que protege contra o reenvio de uma requisição capturada.
+
+<CodeGroup>
+
+```javascript Node.js (Express)
+import express from 'express'
+import crypto from 'node:crypto'
+
+const app = express()
+
+// express.raw preserva o corpo original; express.json() quebraria a verificação
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const assinatura = req.get('x-datafy-signature-256') ?? ''
+  const timestamp = req.get('x-datafy-timestamp') ?? ''
+  const corpo = req.body.toString('utf8')
+
+  const esperada = 'sha256=' + crypto
+    .createHmac('sha256', process.env.DATAFY_WEBHOOK_SECRET)
+    .update(`${timestamp}.${corpo}`)
+    .digest('hex')
+
+  const a = Buffer.from(assinatura)
+  const b = Buffer.from(esperada)
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+    return res.sendStatus(401)
+  }
+
+  if (Math.abs(Math.floor(Date.now() / 1000) - Number(timestamp)) > 300) {
+    return res.sendStatus(401)
+  }
+
+  res.sendStatus(200) // responda primeiro
+  processarEmSegundoPlano(JSON.parse(corpo))
+})
+```
+
+```php PHP
+<?php
+$corpo      = file_get_contents('php://input'); // corpo cru
+$assinatura = $_SERVER['HTTP_X_DATAFY_SIGNATURE_256'] ?? '';
+$timestamp  = $_SERVER['HTTP_X_DATAFY_TIMESTAMP'] ?? '';
+
+$esperada = 'sha256=' . hash_hmac('sha256', $timestamp . '.' . $corpo, getenv('DATAFY_WEBHOOK_SECRET'));
+
+if (!hash_equals($esperada, $assinatura)) {
+    http_response_code(401);
+    exit;
+}
+
+if (abs(time() - (int) $timestamp) > 300) {
+    http_response_code(401);
+    exit;
+}
+
+http_response_code(200);
+```
+
+</CodeGroup>
+
+## Trocar o secret
+
+Gerar um novo secret no painel **invalida o anterior imediatamente**: a próxima entrega já sai assinada com o novo valor. Atualize o secret no seu servidor junto com a troca, ou as entregas passarão a ser recusadas.
+
+## Desativar a assinatura
+
+Com a assinatura desativada, as entregas saem sem `x-datafy-timestamp` e `x-datafy-signature-256`. Os webhooks continuam funcionando normalmente, apenas sem a verificação de origem.
