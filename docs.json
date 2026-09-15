@@ -81,8 +81,7 @@
                       "guias/meta/conexao/coexistencia"
                     ]
                   },
-                  "guias/meta/pagamento",
-                  "guias/meta/migracao-de-numero"
+                  "guias/meta/pagamento"
                 ]
               }
             ]

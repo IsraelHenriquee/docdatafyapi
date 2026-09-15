@@ -44,7 +44,7 @@
                 "to": "5511999999999",
                 "type": "audio",
                 "audio": {
-                  "link": "https://files.datafychats.com.br/Audio%20ludovico.ogg",
+                  "link": "https://files2.datafychats.com.br/Audio%20ludovico.ogg",
                   "voice": true
                 }
               }
@@ -163,7 +163,7 @@
             "properties": {
               "link": {
                 "type": "string",
-                "example": "https://files.datafychats.com.br/Audio%20ludovico.ogg",
+                "example": "https://files2.datafychats.com.br/Audio%20ludovico.ogg",
                 "description": "URL pública do áudio. Você pode gerar um link na aba **Mídias** do número, no painel da Datafy. Não envie junto com `id`."
               },
               "id": {

@@ -43,7 +43,9 @@
                 "recipient_type": "individual",
                 "to": "5511999999999",
                 "type": "sticker",
-                "sticker": {}
+                "sticker": {
+                  "link": "https://files2.datafychats.com.br/sticker.webp"
+                }
               }
             }
           }
@@ -164,7 +166,8 @@
             "properties": {
               "link": {
                 "type": "string",
-                "description": "URL pública da figurinha `.webp`. Você pode gerar um link na aba **Mídias** do número, no painel da Datafy. Não envie junto com `id`."
+                "description": "URL pública da figurinha `.webp`. Você pode gerar um link na aba **Mídias** do número, no painel da Datafy. Não envie junto com `id`.",
+                "example": "https://files2.datafychats.com.br/sticker.webp"
               },
               "id": {
                 "type": "string",
