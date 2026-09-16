@@ -1,0 +1,37 @@
+---
+title: "Marcar como lida"
+description: "Exiba os dois tiques azuis para o cliente na mensagem que ele enviou."
+openapi: "/api-reference/whatsapp/specs/marcar-como-lida.json POST /v1/{phone_number_id}/messages"
+---
+
+Marca uma mensagem recebida como lida, exibindo os **dois tiques azuis** para o cliente. Use quando o seu sistema ou o seu atendente realmente abriu a mensagem, para o cliente saber que ela foi vista.
+
+A chamada usa o mesmo endpoint de envio, mas o corpo não tem `to` nem `type`: ele leva o `status` e o `message_id`.
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "status": "read",
+  "message_id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjJBQjE="
+}
+```
+
+A resposta é `{ "success": true }`.
+
+## De onde vem o `message_id`
+
+O `message_id` é o `wamid` da mensagem do cliente, que chega no [webhook](/api-reference/whatsapp/webhooks/eventos/mensagens) em `messages[].id`.
+
+<Note>
+  Ao marcar uma mensagem como lida, **as mensagens anteriores da mesma conversa também ficam como lidas**. Não é preciso marcar uma por uma.
+</Note>
+
+<Warning>
+  A mensagem precisa ter sido recebida nos **últimos 30 dias**. Com um `wamid` inválido ou fora do prazo, a Meta responde com o erro `131009` ("Parameter value is not valid").
+</Warning>
+
+## Junto com o "digitando"
+
+Para mostrar o aviso de digitação na mesma ação, acrescente o objeto `typing_indicator` a esta chamada. Veja em [Indicador de digitação](/api-reference/whatsapp/recursos/indicador-de-digitacao).
+
+Veja mais detalhes na [documentação da Meta sobre marcar como lida](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/mark-message-as-read).

@@ -1,11 +1,49 @@
 ---
-title: "Receber eventos"
+title: "Introdução"
 description: "Como a Datafy entrega os webhooks da Meta para a sua aplicação."
 ---
 
-Os eventos do seu número, como mensagens recebidas, status de envio e atualizações de templates, são entregues por **`POST`** nas URLs cadastradas no [painel da Datafy](https://app.datafyapi.com.br), na aba **Webhooks** do número.
+Webhook é a forma de a sua aplicação ser avisada do que acontece no número: uma mensagem recebida, a confirmação de leitura, a aprovação de um template ou uma mudança na qualidade da conta. Em vez de consultar a API de tempos em tempos, a Datafy envia um `POST` para a sua URL assim que o evento chega da Meta.
 
-O **payload é idêntico ao que a Meta envia**, sem nenhuma alteração. Vale integralmente a [documentação de webhooks da Meta](https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks).
+O **payload é idêntico ao que a Meta envia**, sem nenhuma alteração.
+
+## Cadastrar uma URL
+
+No [painel da Datafy](https://app.datafyapi.com.br), abra a aba **Webhooks** do número e cadastre a URL de entrega. A URL precisa usar **HTTPS**.
+
+Ao cadastrar, marque quais eventos aquela URL deve receber. Cada URL recebe apenas os eventos marcados, e é possível cadastrar mais de uma URL para o mesmo número, cada uma com a sua seleção — por exemplo, uma URL para mensagens e outra para eventos administrativos.
+
+## Estrutura do payload
+
+Todos os eventos chegam no mesmo envelope. O que muda é o `field`, que identifica o evento, e o `value`, que carrega o conteúdo:
+
+```json
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1234567890123456",
+      "changes": [
+        {
+          "value": { },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `object` | Sempre `whatsapp_business_account` |
+| `entry[].id` | ID da conta do WhatsApp Business (`waba_id`) |
+| `changes[].field` | Nome do evento, como `messages` ou `message_template_status_update` |
+| `changes[].value` | Conteúdo do evento, com formato próprio para cada `field` |
+
+<Note>
+  Um mesmo `POST` pode trazer mais de um item em `entry` e em `changes`. Percorra as duas listas em vez de ler apenas o primeiro item.
+</Note>
 
 ## Headers da entrega
 
@@ -15,7 +53,7 @@ O **payload é idêntico ao que a Meta envia**, sem nenhuma alteração. Vale in
 | `x-datafy-timestamp` | Unix timestamp, em segundos, de quando a entrega foi assinada. |
 | `x-datafy-signature-256` | Assinatura HMAC-SHA256, no formato `sha256=<hex>`. |
 
-Os headers `x-datafy-timestamp` e `x-datafy-signature-256` só são enviados quando a assinatura está ativada para o número. Veja como usar em [Validar assinatura](/api-reference/whatsapp/webhooks/validar-assinatura).
+Os três headers acompanham todas as entregas. A verificação está em [Assinatura](/api-reference/whatsapp/webhooks/validar-assinatura).
 
 ## Resposta e tempo limite
 
@@ -25,6 +63,4 @@ Sua URL deve responder **`200` em até 20 segundos**. Depois disso, a entrega é
   Responda `200` imediatamente e processe o evento em segundo plano. Processamento síncrono longo é a causa mais comum de estouro do tempo limite.
 </Tip>
 
-## Mídias recebidas
-
-Mensagens de imagem, áudio, vídeo e documento chegam apenas com o **ID da mídia**. Para obter o arquivo, use [Baixar mídia recebida](/api-reference/whatsapp/datafy/baixar-midia).
+Os eventos estão detalhados nas páginas desta seção, começando por [Mensagens recebidas](/api-reference/whatsapp/webhooks/eventos/mensagens). A lista completa de eventos da plataforma está na [documentação de webhooks da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks).

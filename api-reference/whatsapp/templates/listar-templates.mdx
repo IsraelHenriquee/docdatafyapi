@@ -3,8 +3,55 @@ title: "Listar templates"
 openapi: "/api-reference/whatsapp/openapi.json GET /v1/{waba_id}/message_templates"
 ---
 
-Lista os templates da conta do WhatsApp Business, com status, categoria e idioma. Use `fields` para escolher os campos retornados e `status` para filtrar, por exemplo, só os aprovados.
+Lista os templates da conta com nome, status, categoria e idioma. A resposta informa o `id` de cada template e o status atual da análise.
 
-Se a conta tiver muitos templates, a resposta vem paginada. Para buscar a próxima página, use o cursor `after` na URL da Datafy, como explicado em [Paginação](/api-reference/whatsapp/visao-geral/paginacao).
+```json
+{
+  "data": [
+    {
+      "id": "5400801403478858",
+      "name": "retirada_equipamento",
+      "language": "pt_BR",
+      "status": "APPROVED",
+      "category": "UTILITY"
+    }
+  ],
+  "paging": { "cursors": { "before": "QVFIU...", "after": "QVFIU..." } }
+}
+```
 
-Veja todos os filtros na [referência de templates da Meta](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates).
+## Campos retornados
+
+Por padrão a Meta retorna o template completo, incluindo todos os componentes. O parâmetro `fields` limita a resposta aos campos informados:
+
+```bash
+curl 'https://cloud.datafyapi.com.br/v1/{waba_id}/message_templates?fields=name,status,category,language' \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+Além dos campos básicos, `components` retorna o conteúdo do template e `rejected_reason` informa o motivo da recusa, como `INVALID_FORMAT` quando falta o `example` das variáveis.
+
+## Filtros
+
+| Filtro | Exemplo | Resultado |
+| --- | --- | --- |
+| `name` | `?name=retirada_equipamento` | Retorna o template informado, em todos os idiomas |
+| `status` | `?status=APPROVED` | Retorna apenas os templates no status indicado |
+| `limit` | `?limit=20` | Define a quantidade de templates por página |
+
+O filtro `name` permite consultar o status de um template específico enquanto o webhook `message_template_status_update` não estiver implementado.
+
+## Paginação
+
+Quando a conta possui muitos templates, a resposta é paginada e os cursores são retornados em `paging.cursors`. Para obter a página seguinte, repita a chamada com o cursor `after`:
+
+```bash
+curl 'https://cloud.datafyapi.com.br/v1/{waba_id}/message_templates?limit=20&after=QVFIU...' \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+<Warning>
+  A resposta pode conter um `paging.next` apontando para `graph.facebook.com`. Esse endereço é da Meta e exige o token dela, que a Datafy não expõe. Utilize apenas o valor do cursor, na URL da Datafy, como no exemplo acima.
+</Warning>
+
+Mais detalhes em [Paginação](/api-reference/whatsapp/visao-geral/paginacao) e na [visão geral de templates da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/overview).

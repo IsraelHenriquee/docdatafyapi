@@ -1,0 +1,67 @@
+---
+title: "Mensagens do celular"
+description: "Evento smb_message_echoes: o que é enviado pelo aplicativo, fora da API."
+---
+
+O evento **`smb_message_echoes`** avisa quando alguém responde ao cliente **pelo aplicativo do WhatsApp Business no celular**, em vez de pela API. É o evento que mantém o seu sistema em dia quando o número está em [coexistência](/guias/meta/conexao/coexistencia), com atendimento pelo aparelho e pela API ao mesmo tempo.
+
+Sem ele, o seu sistema veria apenas as mensagens que ele próprio enviou e as respostas do cliente, e a conversa ficaria com buracos.
+
+```json
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1234567890123456",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "5511988887777",
+              "phone_number_id": "1234567890123456"
+            },
+            "contacts": [
+              {
+                "wa_id": "5511999999999",
+                "user_id": "BR.1234567890123456"
+              }
+            ],
+            "message_echoes": [
+              {
+                "from": "5511988887777",
+                "to": "5511999999999",
+                "to_user_id": "BR.1234567890123456",
+                "id": "wamid.HBgSQlIuODkwMTM4MDk0MDk4MjYxFRQAERgUMkE3QzU0N0E5ODk2NUZCODZEMEMA",
+                "timestamp": "1789529759",
+                "type": "text",
+                "text": { "body": "Já estou verificando o seu pedido." }
+              }
+            ]
+          },
+          "field": "smb_message_echoes"
+        }
+      ]
+    }
+  ]
+}
+```
+
+A diferença para uma mensagem recebida está na direção e no nome da lista:
+
+| | `messages` | `smb_message_echoes` |
+| --- | --- | --- |
+| Lista no `value` | `messages` | `message_echoes` |
+| `from` | O cliente | O seu número |
+| `to` | Não aparece | O cliente |
+| Origem | Mensagem enviada pelo cliente | Mensagem enviada pelo aplicativo no celular |
+
+<Note>
+  O eco é apenas uma cópia informativa. Não responda a ele automaticamente, ou o seu sistema vai reagir a mensagens que o próprio atendente acabou de enviar.
+</Note>
+
+Mensagens enviadas pela API não geram eco: o retorno do envio já traz o `wamid`, e o acompanhamento delas vem em [Status de mensagem](/api-reference/whatsapp/webhooks/eventos/status-de-mensagem).
+
+Este evento cobre apenas o que é enviado a partir da conexão do número. As conversas que já existiam no celular vêm da sincronização inicial, descrita em [Histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico).
+
+A referência está na [documentação de webhooks da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks).

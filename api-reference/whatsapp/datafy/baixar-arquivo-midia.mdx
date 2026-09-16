@@ -1,0 +1,35 @@
+---
+title: "Baixar o arquivo da mídia"
+openapi: "/api-reference/whatsapp/openapi.json GET /media/{id}/download"
+---
+
+Este endpoint entrega o **arquivo em si**, em bytes, em vez de uma URL. Use quando o seu sistema vai guardar a mídia no seu próprio storage, anexar a um atendimento ou processar o conteúdo — sem precisar de um segundo download.
+
+É a alternativa a [Baixar mídia recebida](/api-reference/whatsapp/datafy/baixar-midia), que devolve um link. As duas partem do mesmo `id` que chega no [webhook](/api-reference/whatsapp/webhooks/eventos/mensagens).
+
+```bash
+curl https://cloud.datafyapi.com.br/media/1234567890123456/download \
+  -H 'Authorization: Bearer sk_live_xxx' \
+  -o arquivo.jpg
+```
+
+A resposta traz o `Content-Type` do arquivo e um `Content-Disposition` com o nome sugerido, como `1234567890123456.jpg`.
+
+## Qual dos dois usar
+
+| Endpoint | O que devolve | Quando usar |
+| --- | --- | --- |
+| `GET /media/{id}` | URL válida por 30 dias | Exibir a mídia numa tela, enviar o link para outro sistema |
+| `GET /media/{id}/download` | O arquivo, em bytes | Guardar no seu storage ou processar o conteúdo |
+
+<Note>
+  A [URL retornada pela Meta](/api-reference/whatsapp/recursos/midia/obter-url-da-midia) não pode ser acessada diretamente: exige o token da Meta no cabeçalho e expira em 5 minutos. O download é feito pela Datafy, com o token da sua conta.
+</Note>
+
+## Chamadas repetidas
+
+A primeira chamada busca o arquivo na Meta e o guarda. As seguintes entregam a cópia guardada, sem consumir o limite de requisições da Meta. O cabeçalho `x-datafy-cache` mostra o que aconteceu: `MISS` na primeira, `HIT` nas repetições.
+
+<Note>
+  A Meta mantém as mídias recebidas por até 30 dias. Depois disso, ou com um ID inválido, a resposta é **404**.
+</Note>

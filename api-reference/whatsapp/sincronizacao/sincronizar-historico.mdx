@@ -1,0 +1,45 @@
+---
+title: "Sincronizar histórico"
+openapi: "/api-reference/whatsapp/specs/sincronizar-historico.json POST /v1/{phone_number_id}/smb_app_data"
+---
+
+Quando um número é conectado por [coexistência](/guias/meta/conexao/coexistencia), as conversas anteriores continuam apenas no aplicativo do WhatsApp Business, no celular. Esta chamada pede à Meta que envie esse histórico para a sua aplicação.
+
+A resposta apenas confirma o aceite do pedido. **Os dados não vêm nela**: chegam depois, pelo webhook [Histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico), divididos em várias entregas.
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "request_id": "7a3b2c1d-e5f6-4a8b-9c0d-1e2f3a4b5c6d",
+  "success": true
+}
+```
+
+<Warning>
+  A chamada precisa ser feita em até **24 horas** após a conexão do número. Passado esse prazo, o pedido não tem efeito, e a única forma de recuperar o histórico é desconectar o número e refazer a conexão.
+</Warning>
+
+## Antes de chamar
+
+O evento `history` precisa estar marcado para a sua URL **antes** do disparo, senão os dados são enviados e não há para onde entregar. No [painel da Datafy](https://app.datafyapi.com.br), na aba **Webhooks** do número, marque `history` na URL que vai receber.
+
+```bash
+curl -X POST 'https://cloud.datafyapi.com.br/v1/{phone_number_id}/smb_app_data' \
+  -H 'Authorization: Bearer sk_live_xxx' \
+  -H 'Content-Type: application/json' \
+  -d '{ "messaging_product": "whatsapp", "sync_type": "history" }'
+```
+
+O histórico pode ser solicitado **uma única vez**. Repetir a chamada não gera um novo envio.
+
+## O que chega
+
+As conversas são entregues em blocos, com até 180 dias de mensagens, e o progresso é acompanhado pelos campos `phase`, `chunk_order` e `progress`. Mensagens que continham mídia chegam apenas como marcador: o arquivo não é sincronizado. O formato está detalhado em [Histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico).
+
+<Note>
+  Guarde o `request_id` da resposta. Ele é o identificador do pedido junto à Meta, necessário caso seja preciso abrir um chamado por dados que não chegaram.
+</Note>
+
+Os contatos da agenda são solicitados separadamente, em [Sincronizar contatos](/api-reference/whatsapp/sincronizacao/sincronizar-contatos).
+
+O procedimento completo está na [documentação de onboarding da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/onboarding-business-app-users).

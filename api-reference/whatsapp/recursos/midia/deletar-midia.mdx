@@ -1,0 +1,17 @@
+---
+title: "Deletar mídia"
+description: "Remova da Meta uma mídia enviada pelo upload."
+openapi: "/api-reference/whatsapp/specs/deletar-midia.json DELETE /v1/{media_id}"
+---
+
+Remove da Meta uma mídia que você enviou com o [Upload de mídia](/api-reference/whatsapp/recursos/midia/upload-de-midia). A resposta é `{ "success": true }`.
+
+Sem essa chamada, a mídia é apagada sozinha **30 dias** depois do upload.
+
+<Note>
+  Apagar a mídia impede novos envios com aquele `id`. As mensagens que já foram enviadas com ela não são afetadas.
+</Note>
+
+O parâmetro opcional `phone_number_id` faz a Meta processar a remoção só quando a mídia pertence àquele número.
+
+Veja mais detalhes na [documentação de mídia da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/business-phone-numbers/media).

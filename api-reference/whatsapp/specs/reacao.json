@@ -1,0 +1,147 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Enviar reação",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://cloud.datafyapi.com.br", "description": "Produção" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/v1/{phone_number_id}/messages": {
+      "post": {
+        "summary": "Enviar reação",
+        "operationId": "enviarReacao",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID do número que envia a reação. Descubra com `GET /me`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MensagemReacao" },
+              "example": {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": "5511999999999",
+                "type": "reaction",
+                "reaction": {
+                  "message_id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjJBQjE=",
+                  "emoji": "👍"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reação aceita pela Meta. Não confirma que foi aplicada.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "messaging_product": "whatsapp",
+                  "contacts": [{ "input": "5511999999999", "wa_id": "5511999999999" }],
+                  "messages": [{ "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA=" }]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "(#100) Invalid parameter",
+                    "type": "OAuthException",
+                    "code": 100,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": { "statusCode": 401, "message": "Token inválido ou não encontrado." }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token gerado no painel da Datafy ao criar o canal. Formato: `sk_live_xxx`."
+      }
+    },
+    "schemas": {
+      "MensagemReacao": {
+        "type": "object",
+        "required": ["messaging_product", "to", "type", "reaction"],
+        "properties": {
+          "messaging_product": {
+            "type": "string",
+            "enum": ["whatsapp"],
+            "default": "whatsapp",
+            "example": "whatsapp",
+            "description": "Sempre `whatsapp`."
+          },
+          "recipient_type": {
+            "type": "string",
+            "enum": ["individual"],
+            "default": "individual",
+            "example": "individual",
+            "description": "Sempre `individual`."
+          },
+          "to": {
+            "type": "string",
+            "example": "5511999999999",
+            "description": "Número do destinatário com código do país e DDD, como `5511999999999`. Tem prioridade sobre `recipient`: para enviar pelo ID do usuário, deixe em branco."
+          },
+          "recipient": {
+            "type": "string",
+            "description": "ID do usuário no WhatsApp (BSUID), recebido nos webhooks em `from_user_id` e `contacts[].user_id`, como `BR.13491208655302741918`. Usado quando `to` não é informado."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["reaction"],
+            "default": "reaction",
+            "example": "reaction",
+            "description": "Sempre `reaction`."
+          },
+          "reaction": {
+            "type": "object",
+            "required": ["message_id", "emoji"],
+            "description": "Reação aplicada a uma mensagem da conversa.",
+            "properties": {
+              "message_id": {
+                "type": "string",
+                "example": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjJBQjE=",
+                "description": "ID (`wamid`) da mensagem que recebe a reação. A mensagem precisa ter no máximo 30 dias."
+              },
+              "emoji": {
+                "type": "string",
+                "example": "👍",
+                "description": "Emoji da reação, como caractere (`👍`) ou sequência Unicode (`\\uD83D\\uDC4D`)."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -3,7 +3,13 @@ title: "Enviar template"
 api: "POST /v1/{phone_number_id}/messages"
 ---
 
-Use `type: "template"` para iniciar ou retomar uma conversa quando a [janela de 24 horas](/guias/whatsapp/conceitos/janela-de-24-horas) está fechada. O template precisa estar **aprovado pela Meta**.
+Use `type: "template"` para iniciar ou retomar uma conversa quando a [janela de 24 horas](/guias/whatsapp/conceitos/janela-de-24-horas) está fechada. O template precisa estar aprovado pela Meta.
+
+Os valores das variáveis são informados em `components`, e o formato depende do `parameter_format` definido em [Criar template](/api-reference/whatsapp/templates/criar-template).
+
+## Variáveis posicionais
+
+No formato `POSITIONAL`, os valores são preenchidos na ordem das variáveis `{{1}}`, `{{2}}`:
 
 ```json
 {
@@ -26,4 +32,39 @@ Use `type: "template"` para iniciar ou retomar uma conversa quando a [janela de 
 }
 ```
 
-Os `parameters` preenchem as variáveis do template (`{{1}}`, `{{2}}`...) na ordem. Para cabeçalho com mídia e botões dinâmicos, consulte a [referência de mensagens de template da Meta](https://developers.facebook.com/docs/whatsapp/cloud-api/guides/send-message-templates).
+## Variáveis nomeadas
+
+No formato `NAMED`, cada parâmetro indica a qual variável pertence, pelo campo `parameter_name`:
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "5511999999999",
+  "type": "template",
+  "template": {
+    "name": "retirada_equipamento",
+    "language": { "code": "pt_BR" },
+    "components": [
+      {
+        "type": "body",
+        "parameters": [
+          { "type": "text", "parameter_name": "nome", "text": "Rafael" },
+          { "type": "text", "parameter_name": "numero_os", "text": "7539" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Como a associação é feita pelo nome, os parâmetros podem ser enviados em qualquer ordem.
+
+<Note>
+  O formato usado no envio precisa corresponder ao formato definido na criação do template. Um template criado como `NAMED` não aceita parâmetros posicionais, e o inverso também se aplica.
+</Note>
+
+## Idioma
+
+O `language.code` precisa ser o mesmo idioma aprovado para aquele nome, como `pt_BR`. Um template existe de forma independente em cada idioma.
+
+Para cabeçalho com mídia e botões dinâmicos, consulte a [visão geral de templates da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/overview).

@@ -1,0 +1,30 @@
+---
+title: "Gerar handle de arquivo"
+openapi: "/api-reference/whatsapp/openapi.json POST /uploads"
+---
+
+Alguns recursos da Meta não aceitam a URL de um arquivo: eles exigem um **`handle`**, que é o identificador do arquivo depois de enviado para os servidores dela. Gerar esse handle na Meta é um upload em várias etapas — abrir uma sessão, enviar os bytes e ler o identificador de volta.
+
+Com a Datafy, basta enviar a **URL pública** do arquivo:
+
+```json
+{ "handle": "4::aW1hZ2UvanBlZw==:ARb..." }
+```
+
+## Onde o handle é usado
+
+O caso mais comum é o **cabeçalho de mídia de um template**. Ao [criar o template](/api-reference/whatsapp/templates/criar-template), o handle vai em `example.header_handle`:
+
+```json
+{
+  "type": "HEADER",
+  "format": "IMAGE",
+  "example": { "header_handle": ["4::aW1hZ2UvanBlZw==:ARb..."] }
+}
+```
+
+O handle não se restringe a templates. Outros recursos da Meta utilizam o mesmo identificador: a **foto de perfil** do WhatsApp Business, por exemplo, é atualizada pelo campo `profile_picture_handle`. Este endpoint gera o valor em qualquer um desses casos.
+
+<Note>
+  O arquivo precisa estar em uma **URL pública**, acessível sem login. O tipo é lido do próprio arquivo, então respeite os formatos e tamanhos aceitos pela Meta em cada recurso.
+</Note>

@@ -1,0 +1,65 @@
+---
+title: "Qualidade do número"
+description: "Mudanças na qualidade e no limite de envio do seu número."
+---
+
+O evento **`phone_number_quality_update`** avisa quando a Meta altera a qualidade do número ou o limite de mensagens. É o aviso que antecede um bloqueio de envio, e vale tratar com prioridade.
+
+```json
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1234567890123456",
+      "changes": [
+        {
+          "field": "phone_number_quality_update",
+          "value": {
+            "display_phone_number": "5511988887777",
+            "event": "UPGRADE",
+            "current_limit": "TIER_10K",
+            "old_limit": "TIER_2K",
+            "max_daily_conversations_per_business": "TIER_10K"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `event` | O que aconteceu: `UPGRADE`, `DOWNGRADE`, `ONBOARDING` ou `FLAGGED` |
+| `current_limit` | Limite que passou a valer |
+| `old_limit` | Limite anterior |
+
+| Valor de `event` | Significado |
+| --- | --- |
+| `ONBOARDING` | O número recebeu o limite inicial |
+| `UPGRADE` | O limite aumentou |
+| `DOWNGRADE` | O limite diminuiu, normalmente após queda de qualidade |
+| `FLAGGED` | A qualidade caiu para o nível crítico e o número está sob observação |
+
+<Warning>
+  Um número em `FLAGGED` que não recupera a qualidade dentro do período de observação tem o limite reduzido. Ao receber esse evento, reduza os disparos de marketing e revise as listas de envio.
+</Warning>
+
+## Capacidade da conta
+
+O evento **`business_capability_update`** trata dos limites da conta como um todo, e não de um número:
+
+```json
+{
+  "field": "business_capability_update",
+  "value": {
+    "max_daily_conversation_per_phone": 250,
+    "max_phone_numbers_per_waba": 25,
+    "max_daily_conversations_per_business": "TIER_250"
+  }
+}
+```
+
+O limite em vigor também pode ser consultado a qualquer momento em [Status do número](/api-reference/whatsapp/numero/status-e-limites), pelo campo `whatsapp_business_manager_messaging_limit`.
+
+As regras de qualidade e os critérios de aumento estão em [limites de mensagens da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messaging-limits).

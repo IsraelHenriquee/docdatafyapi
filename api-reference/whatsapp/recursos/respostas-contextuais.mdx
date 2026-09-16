@@ -1,0 +1,26 @@
+---
+title: "Respostas contextuais"
+description: "Responda citando uma mensagem anterior da conversa."
+---
+
+Uma resposta contextual é a mensagem que aparece **citando outra**, como quando alguém responde a uma mensagem específica no WhatsApp. Serve para deixar claro a que pedido, cobrança ou pergunta você está respondendo, principalmente em conversas com muitas mensagens.
+
+Para isso, inclua o objeto `context` com o `wamid` da mensagem citada:
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "5511999999999",
+  "type": "text",
+  "context": { "message_id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA=" },
+  "text": { "body": "Seu pedido já saiu para entrega." }
+}
+```
+
+O `context` funciona em **qualquer tipo de mensagem**: texto, mídia, localização, botões e os demais. O `wamid` da mensagem do cliente chega no [webhook](/api-reference/whatsapp/webhooks/eventos/mensagens) em `messages[].id`.
+
+Veja o exemplo completo em [Enviar texto](/api-reference/whatsapp/mensagens/enviar-texto#responder-citando-uma-mensagem).
+
+<Note>
+  O caminho inverso também existe: quando o cliente responde citando uma mensagem sua, o webhook traz um `context` com o `id` da mensagem citada. É assim que você identifica, por exemplo, a qual cobrança o "pago" dele se refere.
+</Note>

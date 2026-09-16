@@ -299,6 +299,33 @@
                       }
                     ]
                   }
+                },
+                "nomeado": {
+                  "summary": "Variáveis nomeadas",
+                  "value": {
+                    "name": "retirada_equipamento",
+                    "language": "pt_BR",
+                    "category": "UTILITY",
+                    "parameter_format": "NAMED",
+                    "components": [
+                      {
+                        "type": "BODY",
+                        "text": "Olá, {{nome}}. O equipamento da ordem de serviço {{numero_os}} está pronto para retirada.",
+                        "example": {
+                          "body_text_named_params": [
+                            {
+                              "param_name": "nome",
+                              "example": "Rafael"
+                            },
+                            {
+                              "param_name": "numero_os",
+                              "example": "7539"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -310,7 +337,7 @@
             "content": {
               "application/json": {
                 "example": {
-                  "id": "1234567890123456",
+                  "id": "5400801403478858",
                   "status": "PENDING",
                   "category": "UTILITY"
                 }
@@ -372,6 +399,168 @@
               "application/json": {
                 "example": {
                   "success": true
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/MetaError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/{waba_id}/migrate_message_templates": {
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Migrar templates",
+        "operationId": "migrarTemplates",
+        "description": "Espelho de `POST /{waba_id}/migrate_message_templates` da Meta Cloud API. Copia templates aprovados de outra conta do WhatsApp Business para a conta informada no caminho.",
+        "externalDocs": {
+          "description": "Migração de templates da Meta",
+          "url": "https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-migration"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WabaId"
+          },
+          {
+            "name": "source_waba_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID da conta de origem, de onde os templates são copiados."
+          },
+          {
+            "name": "page_number",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            },
+            "description": "Índice do lote, para contas com mais de 500 templates."
+          },
+          {
+            "name": "count",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500
+            },
+            "description": "Quantidade de templates por lote. Máximo de 500."
+          },
+          {
+            "name": "template_ids",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "IDs específicos a migrar. Máximo de 500."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado da migração.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "migrated_templates": [
+                    "1473688840035974",
+                    "6162904357082268"
+                  ],
+                  "failed_templates": {
+                    "1019496902803242": "Incorrect category"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/MetaError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/{waba_id}/phone_numbers": {
+      "get": {
+        "tags": [
+          "Número"
+        ],
+        "summary": "Status e limites do número",
+        "operationId": "listarNumeros",
+        "description": "Espelho de `GET /{waba_id}/phone_numbers` da Meta Cloud API. Retorna os números da conta com status de conexão, qualidade e limite de mensagens.",
+        "externalDocs": {
+          "description": "Limites de mensagens da Meta",
+          "url": "https://developers.facebook.com/documentation/business-messaging/whatsapp/messaging-limits"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WabaId"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "id,display_phone_number,verified_name,quality_rating,status,whatsapp_business_manager_messaging_limit,throughput,platform_type",
+            "description": "Campos retornados, separados por vírgula."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Números da conta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "id": "1234567890123456",
+                      "display_phone_number": "+55 11 99999-9999",
+                      "verified_name": "Minha Empresa",
+                      "quality_rating": "GREEN",
+                      "status": "CONNECTED",
+                      "whatsapp_business_manager_messaging_limit": "TIER_2K",
+                      "throughput": {
+                        "level": "STANDARD"
+                      },
+                      "platform_type": "CLOUD_API"
+                    }
+                  ],
+                  "paging": {
+                    "cursors": {
+                      "before": "QVFIU...",
+                      "after": "QVFIU..."
+                    }
+                  }
                 }
               }
             }
@@ -463,7 +652,10 @@
             "content": {
               "application/json": {
                 "example": {
-                  "success": true
+                  "success": true,
+                  "id": "5400801403478858",
+                  "name": "retirada_equipamento",
+                  "category": "UTILITY"
                 }
               }
             }
@@ -627,14 +819,99 @@
         }
       }
     },
-    "/templates/upload-header": {
+    "/media/{id}/download": {
+      "get": {
+        "tags": [
+          "Datafy"
+        ],
+        "summary": "Baixar o arquivo da mídia",
+        "operationId": "baixarArquivoMidia",
+        "description": "Retorna o arquivo da mídia recebida pelo webhook, em bytes, em vez de uma URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID da mídia recebido no webhook, como `image.id` ou `document.id`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "O arquivo da mídia.",
+            "headers": {
+              "Content-Type": {
+                "description": "Tipo MIME do arquivo, como `image/jpeg`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Content-Disposition": {
+                "description": "Nome sugerido para o arquivo, como `attachment; filename=\"1234567890123456.jpg\"`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Falha ao baixar a mídia da Meta.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatafyError"
+                },
+                "example": {
+                  "statusCode": 400,
+                  "message": "Falha ao baixar a mídia da Meta (403)"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "404": {
+            "description": "Mídia não encontrada ou expirada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatafyError"
+                },
+                "example": {
+                  "statusCode": 404,
+                  "message": "Mídia não encontrada ou expirada (ID inválido ou mais de 30 dias)"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/uploads": {
       "post": {
         "tags": [
           "Datafy"
         ],
-        "summary": "Upload de arquivo para template",
-        "operationId": "uploadArquivoTemplate",
-        "description": "Recebe a URL pública de um arquivo, faz o upload na Meta e retorna o `handle` usado na criação de templates com mídia.",
+        "summary": "Gerar handle de arquivo",
+        "operationId": "gerarHandleDeArquivo",
+        "description": "Recebe a URL pública de um arquivo, faz o upload na Meta e retorna o `handle` dele, exigido em recursos como o cabeçalho de mídia de um template.",
         "requestBody": {
           "required": true,
           "content": {
@@ -659,7 +936,7 @@
         },
         "responses": {
           "200": {
-            "description": "Upload concluído.",
+            "description": "Handle gerado.",
             "content": {
               "application/json": {
                 "schema": {
@@ -757,6 +1034,16 @@
               "UTILITY",
               "AUTHENTICATION"
             ]
+          },
+          "parameter_format": {
+            "type": "string",
+            "enum": [
+              "POSITIONAL",
+              "NAMED"
+            ],
+            "default": "POSITIONAL",
+            "example": "POSITIONAL",
+            "description": "Formato das variáveis: `POSITIONAL` usa `{{1}}`, `{{2}}`; `NAMED` usa `{{nome}}` e exige `body_text_named_params` no exemplo."
           },
           "components": {
             "type": "array",

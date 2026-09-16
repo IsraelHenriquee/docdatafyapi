@@ -3,10 +3,53 @@ title: "Deletar template"
 openapi: "/api-reference/whatsapp/openapi.json DELETE /v1/{waba_id}/message_templates"
 ---
 
-Remove um template pelo `name`. Sem `hsm_id`, **todos os idiomas** do template com esse nome são removidos. Para remover só um idioma, informe também o `hsm_id`.
+Remove um template da conta. A identificação é feita pelo **nome**, não pelo ID, e a resposta confirma a remoção:
+
+```json
+{ "success": true }
+```
+
+Templates em qualquer status podem ser removidos, incluindo aprovados, rejeitados e os que estão em análise.
+
+## Todos os idiomas ou um idioma específico
+
+Um mesmo nome pode ter versões em vários idiomas, e isso determina o formato da chamada:
+
+<CodeGroup>
+```bash Todos os idiomas
+curl -X DELETE 'https://cloud.datafyapi.com.br/v1/{waba_id}/message_templates?name=retirada_equipamento' \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+```bash Somente um idioma
+curl -X DELETE 'https://cloud.datafyapi.com.br/v1/{waba_id}/message_templates?name=retirada_equipamento&hsm_id=5400801403478858' \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+</CodeGroup>
+
+Sem `hsm_id`, todas as versões do nome informado são removidas. Com `hsm_id` — o `id` do template retornado em [Listar templates](/api-reference/whatsapp/templates/listar-templates) — apenas aquela versão é removida, e o `name` continua obrigatório.
 
 <Warning>
-  Depois de deletado, o nome do template não pode ser reutilizado por 30 dias.
+  Após a remoção, o nome fica bloqueado por 30 dias e não pode ser reutilizado em um template novo. Para alterar o conteúdo de um template, utilize [Editar template](/api-reference/whatsapp/templates/editar-template) em vez de remover e recriar.
 </Warning>
 
-Veja as regras na [referência de templates da Meta](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates).
+## Nome inexistente
+
+Quando o nome não é encontrado na conta, a resposta é `HTTP 400`:
+
+```json
+{
+  "error": {
+    "message": "Invalid parameter",
+    "code": 100,
+    "error_subcode": 2593002,
+    "error_user_title": "Modelo de mensagem não encontrado",
+    "error_user_msg": "O modelo de mensagem template_que_nao_existe_123 não foi encontrado para esta conta.",
+    "fbtrace_id": "A0NbSmMdINIT24WoNYs2TSK"
+  }
+}
+```
+
+O nome diferencia sublinhado de hífen e não aceita letras maiúsculas.
+
+As regras completas estão em [gerenciamento de templates da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-management).

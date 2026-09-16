@@ -3,12 +3,157 @@ title: "Criar template"
 openapi: "/api-reference/whatsapp/openapi.json POST /v1/{waba_id}/message_templates"
 ---
 
-Cria um template e envia para **análise da Meta**. Ele nasce com status `PENDING` e só pode ser usado depois de `APPROVED`. A mudança de status chega pelo webhook `message_template_status_update`.
+Cria um template e o envia para análise da Meta. O template é criado com status `PENDING` e só pode ser utilizado em envios após ser aprovado. A resposta retorna o `id` do template:
 
-Escolha a `category` conforme a finalidade: `MARKETING`, `UTILITY` ou `AUTHENTICATION`. Veja a diferença em [Templates de mensagem](/guias/whatsapp/conceitos/templates-de-mensagem).
+```json
+{ "id": "5400801403478858", "status": "PENDING", "category": "UTILITY" }
+```
+
+A alteração de status é informada pelo webhook [`message_template_status_update`](/api-reference/whatsapp/webhooks/eventos/templates), o que dispensa a consulta periódica à listagem.
+
+## Nome
+
+O nome identifica o template no envio e aceita apenas letras minúsculas, números e sublinhado, sem espaços e sem acentos:
+
+<CodeGroup>
+```text Aceito
+pedido_pronto
+retirada_equipamento_2
+```
+
+```text Recusado
+Pedido Pronto
+retirada-equipamento
+```
+</CodeGroup>
+
+O mesmo nome pode existir em vários idiomas, e cada idioma é analisado separadamente. A combinação de nome e idioma não pode ser repetida.
+
+## Categoria
+
+| Categoria | Finalidade |
+| --- | --- |
+| `UTILITY` | Mensagens referentes a uma transação existente: confirmação de pedido, aviso de entrega, cobrança |
+| `MARKETING` | Ofertas, novidades, convites e demais conteúdos promocionais |
+| `AUTHENTICATION` | Códigos de verificação |
+
+A categoria determina o preço e as regras de envio. As definições estão na [visão geral de templates da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/overview), e as regras específicas de marketing em [templates de marketing personalizados](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/marketing-templates/custom-marketing-templates).
+
+<Warning>
+  A Meta reclassifica o template quando o conteúdo não corresponde à categoria informada. Um conteúdo promocional enviado como `UTILITY` é convertido para `MARKETING`. Se já existir uma versão daquele template em outra categoria, a criação falha com "A categoria MARKETING não corresponde à categoria já associada a este modelo, UTILITY".
+</Warning>
+
+## Componentes
+
+O corpo (`BODY`) é obrigatório. Cabeçalho (`HEADER`), rodapé (`FOOTER`) e botões (`BUTTONS`) são opcionais.
+
+```json
+{
+  "name": "retirada_equipamento",
+  "language": "pt_BR",
+  "category": "UTILITY",
+  "components": [
+    {
+      "type": "BODY",
+      "text": "Olá, {{1}}. O equipamento da ordem de serviço {{2}} está pronto para retirada.",
+      "example": { "body_text": [["Rafael", "7539"]] }
+    },
+    { "type": "FOOTER", "text": "Assistência Técnica Datafy" }
+  ]
+}
+```
 
 <Tip>
-  Para template com **imagem, vídeo ou documento no cabeçalho**, a Meta exige um `header_handle`. Gere esse valor com o endpoint [Upload de arquivo para template](/api-reference/whatsapp/datafy/upload-arquivo-template).
+  Para cabeçalho com imagem, vídeo ou documento, a Meta exige um `header_handle` no lugar da URL. Gere esse valor com [Gerar handle de arquivo](/api-reference/whatsapp/datafy/gerar-handle-de-arquivo).
 </Tip>
 
-Todos os componentes e regras estão na [referência de templates da Meta](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates).
+## Variáveis posicionais ou nomeadas
+
+As variáveis do template podem ser numeradas ou identificadas por nome. O formato é definido pelo campo `parameter_format`, que assume `POSITIONAL` quando não é informado.
+
+<CodeGroup>
+```json Posicional
+{
+  "parameter_format": "POSITIONAL",
+  "components": [
+    {
+      "type": "BODY",
+      "text": "Olá, {{1}}. O equipamento da ordem de serviço {{2}} está pronto para retirada.",
+      "example": { "body_text": [["Rafael", "7539"]] }
+    }
+  ]
+}
+```
+
+```json Nomeado
+{
+  "parameter_format": "NAMED",
+  "components": [
+    {
+      "type": "BODY",
+      "text": "Olá, {{nome}}. O equipamento da ordem de serviço {{numero_os}} está pronto para retirada.",
+      "example": {
+        "body_text_named_params": [
+          { "param_name": "nome", "example": "Rafael" },
+          { "param_name": "numero_os", "example": "7539" }
+        ]
+      }
+    }
+  ]
+}
+```
+</CodeGroup>
+
+As diferenças entre os dois formatos:
+
+| | Posicional | Nomeado |
+| --- | --- | --- |
+| `parameter_format` | `POSITIONAL` (padrão) | `NAMED` |
+| Marcação no texto | `{{1}}`, `{{2}}` | `{{nome}}`, `{{numero_os}}` |
+| Campo do exemplo | `body_text` | `body_text_named_params` |
+| Ordem no envio | Os valores seguem a numeração | Cada valor indica o `parameter_name` correspondente |
+
+Os nomes de parâmetro aceitam apenas letras minúsculas, números e sublinhado. Os dois formatos não podem ser combinados no mesmo template: um texto com `{{nome}}` e `{{1}}` é aceito na criação e reprovado na análise.
+
+<Note>
+  O formato escolhido na criação determina como as variáveis são preenchidas no envio, descrito em [Enviar template](/api-reference/whatsapp/templates/enviar-template).
+</Note>
+
+## Exemplo das variáveis
+
+Toda variável precisa de um valor de exemplo, utilizado na análise do template. O comportamento difere conforme o formato:
+
+- No formato nomeado, a ausência de `body_text_named_params` retorna `HTTP 400` com a mensagem "o componente do tipo BODY não contém o(s) campo(s) esperado(s) (example)".
+- No formato posicional, a ausência de `body_text` não gera erro na requisição: a resposta é `HTTP 200`, o template é criado e passa para `REJECTED`, com `rejected_reason` igual a `INVALID_FORMAT`.
+
+<CodeGroup>
+```json Com exemplo
+{
+  "type": "BODY",
+  "text": "Olá, {{1}}. Seu pedido {{2}} foi enviado.",
+  "example": { "body_text": [["Rafael", "7539"]] }
+}
+```
+
+```json Reprovado na análise
+{
+  "type": "BODY",
+  "text": "Olá, {{1}}. Seu pedido {{2}} foi enviado."
+}
+```
+</CodeGroup>
+
+Um template reprovado pode ser corrigido em [Editar template](/api-reference/whatsapp/templates/editar-template), sem necessidade de outro nome.
+
+## Erros comuns
+
+A Meta retorna a descrição em `error_user_msg`, em português:
+
+| Situação | Mensagem da Meta |
+| --- | --- |
+| Nome com maiúscula, espaço ou hífen | "O nome do modelo de mensagem só pode ter letras minúsculas e sublinhados." |
+| Nome e idioma já utilizados | "Já existe conteúdo em Portuguese (BR) para esse modelo. Você pode criar um novo modelo e tentar novamente." |
+| Categoria diferente da já registrada | "A categoria MARKETING não corresponde à categoria já associada a este modelo, UTILITY." |
+| Exemplo ausente ou incompatível com o formato das variáveis | "o componente do tipo BODY não contém o(s) campo(s) esperado(s) (example)" |
+
+As regras de formato e os limites de cada componente estão em [gerenciamento de templates da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-management).

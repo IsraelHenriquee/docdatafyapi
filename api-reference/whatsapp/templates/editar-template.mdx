@@ -3,10 +3,66 @@ title: "Editar template"
 openapi: "/api-reference/whatsapp/openapi.json POST /v1/{template_id}"
 ---
 
-Altera os componentes de um template existente. A nova versão passa por **análise da Meta** antes de valer, e a mudança de status chega pelo webhook `message_template_status_update`.
+Altera um template existente, sem criar outro com nome diferente. É usado para corrigir templates rejeitados e para alterar o conteúdo de templates aprovados.
 
-Envie a **lista completa de componentes**, não apenas o trecho alterado. O `template_id` aparece no retorno de [Criar template](/api-reference/whatsapp/templates/criar-template) e de [Listar templates](/api-reference/whatsapp/templates/listar-templates).
+O caminho usa o `template_id`, sem o `waba_id`. Esse ID é retornado por [Criar template](/api-reference/whatsapp/templates/criar-template) e por [Listar templates](/api-reference/whatsapp/templates/listar-templates).
+
+## Status que permitem edição
+
+| Status | Edição |
+| --- | --- |
+| `REJECTED` | Permitida |
+| `APPROVED` | Permitida, dentro do limite de edições por período definido pela Meta |
+| `PENDING` | Não permitida enquanto a análise estiver em andamento |
+
+A edição de um template em análise retorna `HTTP 400`:
+
+```json
+{
+  "error": {
+    "message": "Invalid parameter",
+    "code": 100,
+    "error_subcode": 2388003,
+    "error_user_title": "O modelo de mensagem não pode ser editado",
+    "error_user_msg": "Os modelos de mensagem só podem ser editados se tiverem sido rejeitados.",
+    "fbtrace_id": "AQSfa8D0NJFaoG_WsFANxMz"
+  }
+}
+```
+
+## Componentes
+
+O corpo da requisição substitui a lista de componentes do template. Envie todos os componentes que o template deve conter ao final da edição, inclusive os que não foram alterados: componentes omitidos são removidos.
+
+```json
+{
+  "components": [
+    {
+      "type": "BODY",
+      "text": "Olá, {{1}}. Seu pedido {{2}} foi enviado.",
+      "example": { "body_text": [["Rafael", "7539"]] }
+    }
+  ]
+}
+```
+
+A resposta identifica o template alterado:
+
+```json
+{
+  "success": true,
+  "id": "5400801403478858",
+  "name": "retirada_equipamento",
+  "category": "UTILITY"
+}
+```
 
 <Note>
-  A Meta limita a quantidade de edições de templates aprovados em um período. Confira as regras atuais na [referência de templates da Meta](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates).
+  O nome e o idioma não podem ser alterados, pois identificam o template. Para alterar qualquer um dos dois, crie um template novo.
 </Note>
+
+## Após a edição
+
+O template retorna ao status `PENDING` e passa por nova análise, inclusive quando já estava aprovado. Durante a análise, a versão anterior continua válida para envio, e o resultado é informado pelo webhook [`message_template_status_update`](/api-reference/whatsapp/webhooks/eventos/templates).
+
+Os limites de edição por período estão em [gerenciamento de templates da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-management).

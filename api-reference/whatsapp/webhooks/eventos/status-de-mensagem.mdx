@@ -1,0 +1,125 @@
+---
+title: "Status de mensagem"
+description: "O que acontece com cada mensagem que você envia."
+---
+
+Toda mensagem enviada gera eventos de acompanhamento. Eles chegam no mesmo `field` das mensagens recebidas, **`messages`**, mas com a lista `statuses` no lugar de `messages`.
+
+A forma de saber qual é qual é verificar qual lista veio no `value`:
+
+```javascript
+const valor = body.entry[0].changes[0].value
+
+if (valor.messages) {
+  // mensagem recebida do cliente
+} else if (valor.statuses) {
+  // atualização de uma mensagem que você enviou
+}
+```
+
+## A sequência normal
+
+Para cada mensagem enviada com sucesso chegam **três eventos**, em momentos diferentes:
+
+| Status | Significado |
+| --- | --- |
+| `sent` | A mensagem saiu e foi aceita pelos servidores do WhatsApp |
+| `delivered` | A mensagem chegou ao aparelho do cliente |
+| `read` | O cliente abriu a conversa e leu a mensagem |
+
+Todos usam o mesmo `id`, que é o `wamid` devolvido no envio. É por ele que você liga o status à mensagem no seu banco de dados:
+
+```json
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1234567890123456",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "5511988887777",
+              "phone_number_id": "1234567890123456"
+            },
+            "statuses": [
+              {
+                "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABEYFjNFQjA=",
+                "status": "sent",
+                "timestamp": "1789529602",
+                "recipient_id": "5511999999999",
+                "conversation": {
+                  "id": "CONVERSATION_ID",
+                  "expiration_timestamp": "1789616002",
+                  "origin": { "type": "marketing" }
+                },
+                "pricing": {
+                  "billable": true,
+                  "pricing_model": "PMP",
+                  "type": "regular",
+                  "category": "marketing"
+                }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+```
+
+O objeto `conversation` aparece no `sent` e no `delivered`, e informa a categoria da conversa e quando a [janela de 24 horas](/guias/whatsapp/conceitos/janela-de-24-horas) expira. O `pricing` indica se a conversa é cobrada e em qual categoria.
+
+<Note>
+  O `read` só chega se o cliente tiver a confirmação de leitura ativada no aparelho. A ausência dele não significa que a mensagem não foi lida.
+</Note>
+
+## Quando a mensagem falha
+
+No lugar da sequência normal, chega um único evento com `status: "failed"` e o array `errors`, que explica o motivo:
+
+```json
+{
+  "statuses": [
+    {
+      "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABEYFjNFQjE=",
+      "status": "failed",
+      "timestamp": "1789529652",
+      "recipient_id": "5511999999999",
+      "errors": [
+        {
+          "code": 131047,
+          "title": "Re-engagement message",
+          "message": "Re-engagement message",
+          "error_data": {
+            "details": "Message failed to send because more than 24 hours have passed since the customer last replied to this number."
+          },
+          "href": "https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes/"
+        }
+      ]
+    }
+  ]
+}
+```
+
+O campo `error_data.details` é o que explica a causa em texto; o `title` é genérico. Registre o `code` junto da mensagem para conseguir agrupar as falhas depois.
+
+### Falhas mais comuns
+
+| Código | Causa | O que fazer |
+| --- | --- | --- |
+| `131047` | Passaram mais de 24 horas desde a última resposta do cliente | Enviar um [template aprovado](/api-reference/whatsapp/templates/enviar-template) para reabrir a conversa |
+| `131026` | Mensagem não entregável: número sem WhatsApp, aparelho incompatível ou bloqueio | Conferir o número e não repetir o envio automaticamente |
+| `131042` | Problema de cobrança ou configuração da conta comercial | Resolver a pendência no portfólio comercial da Meta |
+| `131049` | Entrega contida pela Meta para preservar a experiência do usuário | Reduzir o volume de marketing para aquele destinatário |
+
+A lista completa está na [referência de códigos de erro da Meta](https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes/).
+
+## Mensagens de template
+
+Templates seguem exatamente o mesmo caminho: `sent`, `delivered` e `read`, ou `failed` com o motivo. A diferença aparece em `conversation.origin.type`, que indica a categoria cobrada — `marketing`, `utility` ou `authentication`.
+
+Os eventos que tratam do **template em si**, como aprovação e qualidade, são outros e estão em [Templates](/api-reference/whatsapp/webhooks/eventos/templates).

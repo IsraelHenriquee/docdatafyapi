@@ -1,0 +1,125 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Sincronizar contatos",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v1/{phone_number_id}/smb_app_data": {
+      "post": {
+        "summary": "Sincronizar contatos",
+        "operationId": "sincronizarContatos",
+        "description": "Solicita o envio da lista de contatos do aplicativo do WhatsApp Business. Os dados chegam pelo webhook `smb_app_state_sync`.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do número conectado por coexistência. Descubra com `GET /me`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "messaging_product",
+                  "sync_type"
+                ],
+                "properties": {
+                  "messaging_product": {
+                    "type": "string",
+                    "enum": [
+                      "whatsapp"
+                    ],
+                    "default": "whatsapp",
+                    "example": "whatsapp",
+                    "description": "Sempre `whatsapp`."
+                  },
+                  "sync_type": {
+                    "type": "string",
+                    "enum": [
+                      "smb_app_state_sync"
+                    ],
+                    "default": "smb_app_state_sync",
+                    "example": "smb_app_state_sync",
+                    "description": "Sempre `smb_app_state_sync`."
+                  }
+                }
+              },
+              "example": {
+                "messaging_product": "whatsapp",
+                "sync_type": "smb_app_state_sync"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sincronização aceita. Os dados chegam pelos webhooks.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "messaging_product": "whatsapp",
+                  "request_id": "7a3b2c1d-e5f6-4a8b-9c0d-1e2f3a4b5c6d",
+                  "success": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Prazo de 24 horas expirado ou número sem coexistência.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "Invalid parameter",
+                    "type": "OAuthException",
+                    "code": 100,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 401,
+                  "message": "Token inválido ou não encontrado."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token gerado no painel da Datafy ao criar o canal. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}

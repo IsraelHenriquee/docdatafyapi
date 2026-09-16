@@ -136,12 +136,29 @@
                       "api-reference/whatsapp/mensagens/enviar-documento",
                       "api-reference/whatsapp/mensagens/enviar-sticker",
                       "api-reference/whatsapp/mensagens/enviar-localizacao",
+                      "api-reference/whatsapp/mensagens/solicitar-localizacao",
                       "api-reference/whatsapp/mensagens/enviar-contato",
                       "api-reference/whatsapp/mensagens/enviar-reacao",
                       "api-reference/whatsapp/mensagens/enviar-botoes",
                       "api-reference/whatsapp/mensagens/enviar-lista",
                       "api-reference/whatsapp/mensagens/enviar-botao-link",
-                      "api-reference/whatsapp/mensagens/marcar-como-lida"
+                      "api-reference/whatsapp/mensagens/enviar-carrossel"
+                    ]
+                  },
+                  {
+                    "group": "Recursos de mensagens",
+                    "pages": [
+                      {
+                        "group": "Mídia",
+                        "pages": [
+                          "api-reference/whatsapp/recursos/midia/upload-de-midia",
+                          "api-reference/whatsapp/recursos/midia/obter-url-da-midia",
+                          "api-reference/whatsapp/recursos/midia/deletar-midia"
+                        ]
+                      },
+                      "api-reference/whatsapp/recursos/marcar-como-lida",
+                      "api-reference/whatsapp/recursos/indicador-de-digitacao",
+                      "api-reference/whatsapp/recursos/respostas-contextuais"
                     ]
                   },
                   {
@@ -151,15 +168,13 @@
                       "api-reference/whatsapp/templates/editar-template",
                       "api-reference/whatsapp/templates/listar-templates",
                       "api-reference/whatsapp/templates/deletar-template",
-                      "api-reference/whatsapp/templates/enviar-template"
+                      "api-reference/whatsapp/templates/enviar-template",
+                      "api-reference/whatsapp/templates/migrar-templates"
                     ]
                   },
-                  {
-                    "group": "Mídia",
-                    "pages": [
-                      "api-reference/whatsapp/proxy/upload-de-midia"
-                    ]
-                  },
+                  "api-reference/whatsapp/numero/status-e-limites",
+                  "api-reference/whatsapp/sincronizacao/sincronizar-historico",
+                  "api-reference/whatsapp/sincronizacao/sincronizar-contatos",
                   "api-reference/whatsapp/proxy/outros-endpoints"
                 ]
               },
@@ -172,7 +187,8 @@
                 "pages": [
                   "api-reference/whatsapp/datafy/me",
                   "api-reference/whatsapp/datafy/baixar-midia",
-                  "api-reference/whatsapp/datafy/upload-arquivo-template"
+                  "api-reference/whatsapp/datafy/baixar-arquivo-midia",
+                  "api-reference/whatsapp/datafy/gerar-handle-de-arquivo"
                 ]
               },
               {
@@ -183,7 +199,20 @@
                 },
                 "pages": [
                   "api-reference/whatsapp/webhooks/receber-eventos",
-                  "api-reference/whatsapp/webhooks/validar-assinatura"
+                  "api-reference/whatsapp/webhooks/validar-assinatura",
+                  {
+                    "group": "Eventos",
+                    "pages": [
+                      "api-reference/whatsapp/webhooks/eventos/mensagens",
+                      "api-reference/whatsapp/webhooks/eventos/status-de-mensagem",
+                      "api-reference/whatsapp/webhooks/eventos/mensagens-do-celular",
+                      "api-reference/whatsapp/webhooks/eventos/historico",
+                      "api-reference/whatsapp/webhooks/eventos/contatos-sincronizados",
+                      "api-reference/whatsapp/webhooks/eventos/templates",
+                      "api-reference/whatsapp/webhooks/eventos/qualidade-do-numero",
+                      "api-reference/whatsapp/webhooks/eventos/conta"
+                    ]
+                  }
                 ]
               }
             ]
@@ -201,7 +230,8 @@
                   "api-reference/instagram/introducao"
                 ]
               }
-            ]
+            ],
+            "hidden": true
           }
         ]
       }

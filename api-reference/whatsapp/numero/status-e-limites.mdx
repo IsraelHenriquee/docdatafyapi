@@ -1,0 +1,104 @@
+---
+title: "Status do número"
+openapi: "/api-reference/whatsapp/openapi.json GET /v1/{waba_id}/phone_numbers"
+---
+
+Retorna os números da conta com o status de conexão, a classificação de qualidade e o limite de mensagens em vigor. É a consulta usada para verificar se o número está apto a enviar mensagens e quantos destinatários ele alcança por dia.
+
+```json
+{
+  "data": [
+    {
+      "id": "1234567890123456",
+      "display_phone_number": "+55 11 99999-9999",
+      "verified_name": "Minha Empresa",
+      "quality_rating": "GREEN",
+      "status": "CONNECTED",
+      "whatsapp_business_manager_messaging_limit": "TIER_2K",
+      "throughput": { "level": "STANDARD" },
+      "platform_type": "CLOUD_API"
+    }
+  ]
+}
+```
+
+## Campos
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | O `phone_number_id`, usado nas URLs de envio |
+| `display_phone_number` | Número no formato internacional |
+| `verified_name` | Nome de exibição aprovado pela Meta |
+| `quality_rating` | Qualidade do número: `GREEN`, `YELLOW` ou `RED` |
+| `status` | Situação do número, como `CONNECTED` |
+| `whatsapp_business_manager_messaging_limit` | Limite de mensagens em vigor |
+| `throughput` | Capacidade de envio por segundo, em `level` |
+| `platform_type` | `CLOUD_API` ou `ON_PREMISE` |
+| `name_status` | Situação do nome de exibição, como `APPROVED` ou `NON_EXISTS` |
+| `code_verification_status` | Situação da verificação do número |
+| `is_official_business_account` | Indica se a conta possui o selo oficial |
+
+Os campos são selecionados pelo parâmetro `fields`. Sem ele, a Meta retorna um conjunto reduzido, que não inclui `status` nem o limite de mensagens.
+
+<Note>
+  O campo `messaging_limit_tier` foi descontinuado pela Meta e substituído por `whatsapp_business_manager_messaging_limit`. Requisições que utilizam o nome antigo retornam apenas o `id`, sem o limite.
+</Note>
+
+## Limite de mensagens
+
+O limite define quantos destinatários distintos o número pode alcançar em um período móvel de 24 horas, considerando apenas conversas iniciadas pela empresa.
+
+| Valor | Destinatários por dia |
+| --- | --- |
+| `TIER_250` | 250 |
+| `TIER_2K` | 2.000 |
+| `TIER_10K` | 10.000 |
+| `TIER_100K` | 100.000 |
+| `TIER_UNLIMITED` | Sem limite |
+
+O aumento de nível depende da verificação da empresa e do volume de mensagens entregues com qualidade alta. As regras estão em [limites de mensagens da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messaging-limits).
+
+## Consultar um número específico
+
+Para consultar apenas um número, use o `phone_number_id` diretamente:
+
+```bash
+curl 'https://cloud.datafyapi.com.br/v1/{phone_number_id}?fields=display_phone_number,quality_rating,whatsapp_business_manager_messaging_limit,throughput' \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+## Saúde do número
+
+O campo `health_status` informa se o número está apto a enviar mensagens e, quando não está, qual entidade impede o envio:
+
+```bash
+curl 'https://cloud.datafyapi.com.br/v1/{phone_number_id}?fields=health_status' \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+```json
+{
+  "health_status": {
+    "can_send_message": "LIMITED",
+    "entities": [
+      {
+        "entity_type": "PHONE_NUMBER",
+        "id": "1234567890123456",
+        "can_send_message": "LIMITED",
+        "additional_info": [
+          "Your display name has not been approved yet. Your message limit will increase after the display name is approved."
+        ]
+      },
+      { "entity_type": "WABA", "id": "1804533510429086", "can_send_message": "AVAILABLE" },
+      { "entity_type": "BUSINESS", "id": "7284633064948531", "can_send_message": "AVAILABLE" },
+      { "entity_type": "APP", "id": "941602968688733", "can_send_message": "AVAILABLE" }
+    ]
+  }
+}
+```
+
+O campo `can_send_message` assume `AVAILABLE`, `LIMITED` ou `BLOCKED`, e é informado tanto no resultado geral quanto em cada entidade: o número, a conta do WhatsApp Business, o portfólio comercial e o aplicativo. Quando há restrição, `errors` e `additional_info` descrevem a causa e a solução.
+
+<Note>
+  A entidade `APP` refere-se ao aplicativo da Datafy, responsável pela conexão com a Meta.
+</Note>

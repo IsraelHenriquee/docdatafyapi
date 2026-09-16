@@ -1,0 +1,40 @@
+---
+title: "Obter URL da mídia"
+description: "Consulte os dados de uma mídia pelo ID, como tipo, tamanho e URL de download."
+openapi: "/api-reference/whatsapp/specs/obter-url-midia.json GET /v1/{media_id}"
+---
+
+Consulta uma mídia pelo **ID**, seja ela enviada por você com o [Upload de mídia](/api-reference/whatsapp/recursos/midia/upload-de-midia), seja recebida de um cliente pelo [webhook](/api-reference/whatsapp/webhooks/eventos/mensagens). A resposta traz o tipo, o tamanho, o hash e uma URL de download.
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "url": "https://lookaside.fbsbx.com/whatsapp_business/attachments/?mid=1234567890123456&ext=1757960000&hash=ATtAbCdEfGh",
+  "mime_type": "image/jpeg",
+  "sha256": "c160fa1bc488af7f48984bd627bc5cbc5a20b98eaaf11af92e99a206b376252d",
+  "file_size": 36287,
+  "id": "1234567890123456"
+}
+```
+
+## A URL não abre sozinha
+
+<Warning>
+  A `url` da resposta aponta para o domínio da Meta, **expira em 5 minutos** e só funciona com o **token da Meta**. Ela não abre no navegador nem com o seu token `sk_live_xxx`: nos dois casos a resposta é `401`.
+</Warning>
+
+Como o token da Meta fica guardado na Datafy e nunca é exposto, **baixar o arquivo por essa URL não é possível pela API**. Para obter o arquivo, use o endpoint da Datafy [Baixar mídia recebida](/api-reference/whatsapp/datafy/baixar-midia): ele busca a mídia na Meta, guarda o arquivo e devolve uma URL pronta, válida por 30 dias.
+
+| O que você quer | Endpoint |
+| --- | --- |
+| Saber o tipo, o tamanho ou o hash da mídia | **Obter URL da mídia** (esta página) |
+| Baixar o arquivo | [Baixar mídia recebida](/api-reference/whatsapp/datafy/baixar-midia) |
+
+## Prazos
+
+- Mídia enviada por você com o upload fica disponível por **30 dias**, se não for apagada antes.
+- Mídia recebida de um cliente pelo webhook fica disponível para download por **7 dias**.
+
+O parâmetro opcional `phone_number_id` faz a Meta processar a consulta só quando a mídia pertence àquele número.
+
+Veja mais detalhes na [documentação de mídia da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/business-phone-numbers/media).

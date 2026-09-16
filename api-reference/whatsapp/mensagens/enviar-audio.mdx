@@ -17,7 +17,7 @@ Informe o áudio de uma das duas formas:
 | Campo | Quando usar | Como conseguir |
 | --- | --- | --- |
 | `audio.link` | O áudio está em uma URL pública. | Envie o arquivo na aba **Mídias** do número, no [painel da Datafy](https://app.datafyapi.com.br). O link gerado vale por **30 dias**. |
-| `audio.id` | Você já enviou o arquivo para a Meta. | Use o `id` retornado pelo endpoint [Upload de mídia](/api-reference/whatsapp/proxy/upload-de-midia). |
+| `audio.id` | Você já enviou o arquivo para a Meta. | Use o `id` retornado pelo endpoint [Upload de mídia](/api-reference/whatsapp/recursos/midia/upload-de-midia). |
 
 <Warning>
   **Envie apenas um dos dois.** Com `link` e `id` na mesma requisição, a Meta recusa o envio.
@@ -49,7 +49,7 @@ O jeito mais simples é gravar o áudio no próprio WhatsApp. O arquivo baixado 
 
 1. Grave o áudio no WhatsApp do celular, em qualquer conversa.
 2. Abra essa conversa no WhatsApp Web, abra o menu da mensagem de áudio e clique em **Baixar**.
-3. Envie o arquivo baixado na aba **Mídias** do painel da Datafy, para usar em `link`, ou pelo endpoint [Upload de mídia](/api-reference/whatsapp/proxy/upload-de-midia), para usar em `id`.
+3. Envie o arquivo baixado na aba **Mídias** do painel da Datafy, para usar em `link`, ou pelo endpoint [Upload de mídia](/api-reference/whatsapp/recursos/midia/upload-de-midia), para usar em `id`.
 4. Envie a mensagem com `audio.voice` igual a `true`.
 
 <Frame>

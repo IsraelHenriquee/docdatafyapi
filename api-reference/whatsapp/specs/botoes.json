@@ -1,0 +1,276 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Enviar botões",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://cloud.datafyapi.com.br", "description": "Produção" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/v1/{phone_number_id}/messages": {
+      "post": {
+        "summary": "Enviar botões",
+        "operationId": "enviarBotoes",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID do número que envia a mensagem. Descubra com `GET /me`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MensagemBotoes" },
+              "example": {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": "5511999999999",
+                "type": "interactive",
+                "interactive": {
+                  "type": "button",
+                  "header": {
+                    "type": "text",
+                    "text": "Confirmação de agendamento"
+                  },
+                  "body": {
+                    "text": "Olá, Camila! Seu atendimento está marcado para segunda-feira, às 9h. Deseja confirmar?"
+                  },
+                  "footer": {
+                    "text": "Clínica Exemplo"
+                  },
+                  "action": {
+                    "buttons": [
+                      { "type": "reply", "reply": { "id": "confirmar", "title": "Confirmar" } },
+                      { "type": "reply", "reply": { "id": "remarcar", "title": "Remarcar" } },
+                      { "type": "reply", "reply": { "id": "cancelar", "title": "Cancelar" } }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Envio aceito pela Meta. Não confirma a entrega.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "messaging_product": "whatsapp",
+                  "contacts": [{ "input": "5511999999999", "wa_id": "5511999999999" }],
+                  "messages": [{ "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA=" }]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "(#100) Invalid parameter",
+                    "type": "OAuthException",
+                    "code": 100,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": { "statusCode": 401, "message": "Token inválido ou não encontrado." }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token gerado no painel da Datafy ao criar o canal. Formato: `sk_live_xxx`."
+      }
+    },
+    "schemas": {
+      "MensagemBotoes": {
+        "type": "object",
+        "required": ["messaging_product", "to", "type", "interactive"],
+        "properties": {
+          "messaging_product": {
+            "type": "string",
+            "enum": ["whatsapp"],
+            "default": "whatsapp",
+            "example": "whatsapp",
+            "description": "Sempre `whatsapp`."
+          },
+          "recipient_type": {
+            "type": "string",
+            "enum": ["individual"],
+            "default": "individual",
+            "example": "individual",
+            "description": "Sempre `individual`."
+          },
+          "to": {
+            "type": "string",
+            "example": "5511999999999",
+            "description": "Número do destinatário com código do país e DDD, como `5511999999999`. Tem prioridade sobre `recipient`: para enviar pelo ID do usuário, deixe em branco."
+          },
+          "recipient": {
+            "type": "string",
+            "description": "ID do usuário no WhatsApp (BSUID), recebido nos webhooks em `from_user_id` e `contacts[].user_id`, como `BR.13491208655302741918`. Usado quando `to` não é informado."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["interactive"],
+            "default": "interactive",
+            "example": "interactive",
+            "description": "Sempre `interactive`."
+          },
+          "interactive": {
+            "type": "object",
+            "required": ["type", "body", "action"],
+            "description": "Mensagem com até três botões de resposta rápida.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["button"],
+                "default": "button",
+                "example": "button",
+                "description": "Sempre `button`."
+              },
+              "header": { "$ref": "#/components/schemas/Cabecalho" },
+              "body": {
+                "type": "object",
+                "required": ["text"],
+                "description": "Texto principal da mensagem.",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "maxLength": 1024,
+                    "example": "Olá, Camila! Seu atendimento está marcado para segunda-feira, às 9h. Deseja confirmar?",
+                    "description": "Texto da mensagem, com até 1.024 caracteres. URLs viram links clicáveis."
+                  }
+                }
+              },
+              "footer": {
+                "type": "object",
+                "description": "Rodapé opcional, exibido abaixo do texto em cinza.",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "maxLength": 60,
+                    "example": "Clínica Exemplo",
+                    "description": "Texto do rodapé, com até 60 caracteres."
+                  }
+                }
+              },
+              "action": {
+                "type": "object",
+                "required": ["buttons"],
+                "properties": {
+                  "buttons": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "description": "De 1 a 3 botões de resposta.",
+                    "items": { "$ref": "#/components/schemas/BotaoResposta" }
+                  }
+                }
+              }
+            }
+          },
+          "context": {
+            "type": "object",
+            "description": "Responde citando uma mensagem anterior da conversa.",
+            "properties": {
+              "message_id": {
+                "type": "string",
+                "description": "ID (`wamid`) da mensagem que será citada."
+              }
+            }
+          }
+        }
+      },
+      "BotaoResposta": {
+        "type": "object",
+        "required": ["type", "reply"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["reply"],
+            "default": "reply",
+            "example": "reply",
+            "description": "Sempre `reply`."
+          },
+          "reply": {
+            "type": "object",
+            "required": ["id", "title"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "maxLength": 256,
+                "example": "confirmar",
+                "description": "Identificador do botão, com até 256 caracteres. Volta no webhook quando o cliente toca no botão."
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 20,
+                "example": "Confirmar",
+                "description": "Texto do botão, com até 20 caracteres. Não pode se repetir entre os botões."
+              }
+            }
+          }
+        }
+      },
+      "Cabecalho": {
+        "type": "object",
+        "required": ["type"],
+        "description": "Cabeçalho opcional. Use um texto ou uma mídia: imagem, vídeo ou documento.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["text", "image", "video", "document"],
+            "example": "text",
+            "description": "Tipo do cabeçalho."
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 60,
+            "example": "Confirmação de agendamento",
+            "description": "Texto do cabeçalho, com até 60 caracteres. Usado quando `type` é `text`."
+          },
+          "image": { "$ref": "#/components/schemas/MidiaCabecalho" },
+          "video": { "$ref": "#/components/schemas/MidiaCabecalho" },
+          "document": { "$ref": "#/components/schemas/MidiaCabecalho" }
+        }
+      },
+      "MidiaCabecalho": {
+        "type": "object",
+        "description": "Mídia do cabeçalho, usada quando `type` é `image`, `video` ou `document`. Informe `link` ou `id`, nunca os dois.",
+        "properties": {
+          "link": {
+            "type": "string",
+            "description": "URL pública da mídia. Você pode gerar um link na aba **Mídias** do número, no painel da Datafy."
+          },
+          "id": {
+            "type": "string",
+            "description": "ID da mídia retornado pelo endpoint **Upload de mídia**."
+          }
+        }
+      }
+    }
+  }
+}

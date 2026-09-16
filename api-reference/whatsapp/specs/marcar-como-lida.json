@@ -1,0 +1,111 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Marcar como lida",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://cloud.datafyapi.com.br", "description": "Produção" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/v1/{phone_number_id}/messages": {
+      "post": {
+        "summary": "Marcar como lida",
+        "operationId": "marcarComoLida",
+        "description": "Marca uma mensagem recebida como lida, exibindo os dois tiques azuis para o cliente.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID do número que recebeu a mensagem. Descubra com `GET /me`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MarcarComoLida" },
+              "example": {
+                "messaging_product": "whatsapp",
+                "status": "read",
+                "message_id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjJBQjE="
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mensagem marcada como lida.",
+            "content": {
+              "application/json": {
+                "example": { "success": true }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de mensagem inválido ou fora do prazo de 30 dias.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "(#131009) Parameter value is not valid",
+                    "type": "OAuthException",
+                    "code": 131009,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": { "statusCode": 401, "message": "Token inválido ou não encontrado." }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token gerado no painel da Datafy ao criar o canal. Formato: `sk_live_xxx`."
+      }
+    },
+    "schemas": {
+      "MarcarComoLida": {
+        "type": "object",
+        "required": ["messaging_product", "status", "message_id"],
+        "properties": {
+          "messaging_product": {
+            "type": "string",
+            "enum": ["whatsapp"],
+            "default": "whatsapp",
+            "example": "whatsapp",
+            "description": "Sempre `whatsapp`."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["read"],
+            "default": "read",
+            "example": "read",
+            "description": "Sempre `read`."
+          },
+          "message_id": {
+            "type": "string",
+            "example": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjJBQjE=",
+            "description": "ID (`wamid`) da mensagem recebida, encontrado no webhook em `messages[].id`."
+          }
+        }
+      }
+    }
+  }
+}

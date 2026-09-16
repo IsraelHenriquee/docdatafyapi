@@ -1,0 +1,36 @@
+---
+title: "Indicador de digitação"
+description: "Mostre o aviso de digitando enquanto a resposta é preparada."
+openapi: "/api-reference/whatsapp/specs/indicador-de-digitacao.json POST /v1/{phone_number_id}/messages"
+---
+
+Exibe o aviso de **"digitando…"** na conversa, avisando o cliente de que a resposta está sendo preparada. É útil quando o atendimento passa por um bot, uma consulta demorada ou a fila de um atendente.
+
+O indicador é enviado **junto com a marcação de leitura**, na mesma requisição: é o corpo de [Marcar como lida](/api-reference/whatsapp/recursos/marcar-como-lida) com o objeto `typing_indicator`.
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "status": "read",
+  "message_id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjJBQjE=",
+  "typing_indicator": { "type": "text" }
+}
+```
+
+A resposta é `{ "success": true }`. O `message_id` é o `wamid` da mensagem do cliente, que chega no [webhook](/api-reference/whatsapp/webhooks/eventos/mensagens) em `messages[].id`.
+
+## Quanto tempo o aviso fica
+
+O aviso some **quando você envia a resposta** ou **depois de 25 segundos**, o que acontecer primeiro.
+
+<Tip>
+  Envie o indicador só quando a resposta vier logo em seguida. Mostrar "digitando…" sem responder deixa o cliente esperando à toa, e a Meta desaconselha esse uso.
+</Tip>
+
+Para respostas que demoram mais de 25 segundos, envie o indicador de novo antes de o prazo acabar, sempre com o `message_id` da mensagem do cliente.
+
+<Warning>
+  Vale o mesmo prazo de Marcar como lida: a mensagem precisa ter sido recebida nos **últimos 30 dias**. Fora disso, a Meta responde com o erro `131009`.
+</Warning>
+
+Veja mais detalhes na [documentação de indicadores de digitação da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/typing-indicators).

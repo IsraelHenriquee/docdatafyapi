@@ -1,0 +1,74 @@
+---
+title: "Contatos sincronizados"
+description: "Evento smb_app_state_sync: a agenda de contatos do celular."
+---
+
+O evento **`smb_app_state_sync`** entrega os contatos da agenda do aplicativo do WhatsApp Business. Ele é usado em dois momentos:
+
+- Na carga inicial, após a sincronização ser solicitada em [Sincronizar contatos](/api-reference/whatsapp/sincronizacao/sincronizar-contatos).
+- No dia a dia, sempre que um contato é adicionado, editado ou removido no celular.
+
+```json
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1234567890123456",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "5511988887777",
+              "phone_number_id": "1234567890123456"
+            },
+            "state_sync": [
+              {
+                "type": "contact",
+                "contact": {
+                  "full_name": "Maria Souza",
+                  "first_name": "Maria",
+                  "phone_number": "5511999999999"
+                },
+                "action": "add",
+                "metadata": { "timestamp": "1739321024" }
+              }
+            ]
+          },
+          "field": "smb_app_state_sync"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Campos
+
+| Campo | Descrição |
+| --- | --- |
+| `state_sync[]` | Lista de alterações. Uma entrega pode conter vários contatos |
+| `type` | Sempre `contact` |
+| `action` | `add` para contato adicionado ou editado; `remove` para contato excluído |
+| `contact.full_name` | Nome completo como está salvo na agenda |
+| `contact.first_name` | Primeiro nome |
+| `contact.phone_number` | Número do contato |
+| `metadata.timestamp` | Unix timestamp da alteração |
+
+<Note>
+  A edição de um contato chega como `add`, com os dados já atualizados. Trate o `add` como inclusão ou atualização, usando o `phone_number` como identificador.
+</Note>
+
+<Warning>
+  Na ação `remove`, o objeto `contact` traz apenas o `phone_number`: os campos `full_name` e `first_name` não são enviados. Identifique o contato pelo número.
+</Warning>
+
+## Carga inicial
+
+Na sincronização inicial, todos os contatos chegam como `add`, distribuídos em várias entregas. Não existe um campo de progresso como no [histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico): as entregas simplesmente cessam quando a agenda termina.
+
+<Note>
+  Contato na agenda não significa conversa iniciada. Enviar mensagem para esses números continua sujeito à [janela de 24 horas](/guias/whatsapp/conceitos/janela-de-24-horas), o que exige um [template aprovado](/api-reference/whatsapp/templates/enviar-template) quando não há conversa aberta.
+</Note>
+
+A referência completa está na [documentação do webhook smb_app_state_sync da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/reference/smb_app_state_sync).

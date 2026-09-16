@@ -1,0 +1,48 @@
+---
+title: "Migrar templates"
+openapi: "/api-reference/whatsapp/openapi.json POST /v1/{waba_id}/migrate_message_templates"
+---
+
+Copia templates aprovados de outra conta do WhatsApp Business para a conta atual, sem passar por nova análise. É utilizado na troca de conta ou de provedor, quando os templates já existem em uma WABA de origem.
+
+O `waba_id` do caminho é a conta de **destino**, que recebe os templates. A conta de **origem** é informada no parâmetro `source_waba_id`:
+
+```bash
+curl -X POST 'https://cloud.datafyapi.com.br/v1/{waba_id_destino}/migrate_message_templates?source_waba_id={waba_id_origem}' \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+## Resposta
+
+A resposta separa os templates copiados dos que não puderam ser migrados, com o motivo de cada falha:
+
+```json
+{
+  "migrated_templates": ["1473688840035974", "6162904357082268"],
+  "failed_templates": { "1019496902803242": "Incorrect category" }
+}
+```
+
+## Requisitos
+
+- As duas contas precisam pertencer ao **mesmo portfólio comercial** da Meta.
+- Apenas templates com status `APPROVED` e qualidade `GREEN` ou `UNKNOWN` são migrados.
+- Templates cujo nome e idioma já existam no destino não são copiados.
+- O limite é de 500 templates por requisição, e a requisição expira em 30 segundos.
+
+## Contas com mais de 500 templates
+
+Use `page_number` para percorrer os lotes, começando em `0` e repetindo a chamada até que `migrated_templates` retorne vazio. O tamanho do lote é definido por `count`, com máximo de 500.
+
+```bash
+curl -X POST 'https://cloud.datafyapi.com.br/v1/{waba_id_destino}/migrate_message_templates?source_waba_id={waba_id_origem}&page_number=1' \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+Para migrar templates específicos, informe os IDs em `template_ids`, também limitado a 500 por requisição.
+
+<Note>
+  Os templates migrados mantêm nome, idioma, categoria e conteúdo, e ficam disponíveis para envio no destino sem nova análise. O template permanece na conta de origem.
+</Note>
+
+Os detalhes completos estão em [migração de templates da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-migration).

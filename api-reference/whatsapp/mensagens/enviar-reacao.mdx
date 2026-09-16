@@ -1,5 +1,87 @@
 ---
 title: "Enviar reação"
-description: "Reaja a uma mensagem recebida com um emoji."
-api: "POST /v1/{phone_number_id}/messages"
+description: "Reaja a uma mensagem da conversa com um emoji."
+openapi: "/api-reference/whatsapp/specs/reacao.json POST /v1/{phone_number_id}/messages"
 ---
+
+Aplica um emoji como reação a uma mensagem da conversa, do mesmo jeito que o cliente faz ao tocar e segurar uma mensagem no WhatsApp.
+
+<Note>
+  O destinatário pode ser informado pelo **número de telefone** (`to`) ou pelo **ID do usuário** (`recipient`). Se os dois forem enviados, vale o `to`; para enviar pelo ID do usuário, deixe o `to` em branco. Veja a diferença em [Destinatário](/api-reference/whatsapp/mensagens/introducao#destinatário).
+</Note>
+
+## Qual mensagem recebe a reação
+
+Informe em `reaction.message_id` o ID (`wamid`) da mensagem. Para uma mensagem enviada pelo cliente, ele chega no [webhook](/api-reference/whatsapp/webhooks/eventos/mensagens) em `messages[].id`.
+
+A reação não é aplicada quando a mensagem:
+
+- tem mais de **30 dias**;
+- não faz parte da conversa com esse cliente;
+- foi apagada;
+- é ela mesma uma reação.
+
+No **Testar**, o `message_id` vem com um ID de exemplo. Troque pelo `wamid` de uma mensagem real da conversa.
+
+## Emoji
+
+Envie o emoji em `reaction.emoji` como caractere, como `👍`, ou como sequência Unicode, como `👍`.
+
+## Status e erros
+
+A resposta **200** não garante que a reação foi aplicada. Se a mensagem não puder receber reação, a falha chega depois pelo webhook, com o erro `131009`.
+
+Uma reação gera apenas o webhook de status `sent`. Não há status `delivered` nem `read` para reações.
+
+## Quando o cliente reage
+
+Quando o cliente reage a uma mensagem da sua empresa, chega um webhook do tipo `reaction`. O campo `reaction.message_id` aponta para a mensagem que recebeu a reação:
+
+```json
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "234567890123456",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "5541999999999",
+              "phone_number_id": "123456789012345"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Camila Souza"
+                },
+                "wa_id": "5511999999999",
+                "user_id": "BR.13491208655302741918"
+              }
+            ],
+            "messages": [
+              {
+                "from": "5511999999999",
+                "from_user_id": "BR.13491208655302741918",
+                "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjRDRDE=",
+                "timestamp": "1757955900",
+                "reaction": {
+                  "message_id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA=",
+                  "emoji": "❤️"
+                },
+                "type": "reaction"
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Se o cliente **remover** a reação, chega um novo webhook igual, mas **sem o campo `emoji`** dentro de `reaction`.
+
+Veja mais detalhes na [documentação de mensagens de reação da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/reaction-messages).

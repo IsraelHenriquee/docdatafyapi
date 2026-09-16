@@ -1,0 +1,74 @@
+---
+title: "Conta"
+description: "Alertas e mudanças de status da conta do WhatsApp Business."
+---
+
+Dois eventos avisam o que muda na conta: **`account_alerts`**, com avisos da Meta sobre a sua situação, e **`account_update`**, com mudanças de status e de verificação.
+
+## Alertas
+
+O evento `account_alerts` traz avisos sobre elegibilidade, aprovações e restrições:
+
+```json
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1234567890123456",
+      "time": 1788969314,
+      "changes": [
+        {
+          "field": "account_alerts",
+          "value": {
+            "entity_type": "BUSINESS",
+            "entity_id": "1234567890123456",
+            "alert_severity": "WARNING",
+            "alert_status": "ACTIVE",
+            "alert_type": "INCREASED_CAPABILITIES_ELIGIBILITY_DEFERRED",
+            "alert_description": "Limits cannot be increased for your business Minha Empresa. Use WhatsApp Business platform actively for several days and follow our messaging policies."
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `entity_type` | O que o alerta afeta: `BUSINESS`, `WABA` ou `PHONE_NUMBER` |
+| `alert_severity` | `INFORMATIONAL`, `WARNING` ou `CRITICAL` |
+| `alert_status` | `ACTIVE` enquanto a situação persiste, `NONE` quando é apenas informativo |
+| `alert_description` | Descrição do aviso, em inglês, com a ação necessária |
+
+Alertas com severidade `CRITICAL` costumam preceder restrição de envio. O `alert_description` é o campo que explica o que precisa ser feito.
+
+## Mudanças de status
+
+O evento `account_update` informa alterações no cadastro e na verificação:
+
+```json
+{
+  "field": "account_update",
+  "value": {
+    "event": "BUSINESS_VERIFICATION_STATUS_UPDATE",
+    "business_verification_status": "BUSINESS_REJECTED"
+  }
+}
+```
+
+| Valor de `event` | Significado |
+| --- | --- |
+| `VERIFIED_ACCOUNT` | A conta recebeu o selo de conta comercial oficial |
+| `BUSINESS_VERIFICATION_STATUS_UPDATE` | A verificação do portfólio comercial mudou, com o resultado em `business_verification_status` |
+| `ACCOUNT_VIOLATION` | A conta violou as políticas da Meta |
+| `ACCOUNT_RESTRICTION` | A conta sofreu restrição de envio |
+| `PARTNER_ADDED` | Um parceiro passou a ter acesso à conta |
+
+<Note>
+  Alguns eventos trazem o número afetado em `phone_number`, como o `VERIFIED_ACCOUNT`.
+</Note>
+
+A verificação do portfólio comercial é o requisito para aumentar o limite de envio. O processo está em [Verificar o portfólio](/guias/meta/portfolio/verificar), e o limite atual em [Status do número](/api-reference/whatsapp/numero/status-e-limites).
+
+A relação completa dos avisos está na [documentação de webhooks da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks).

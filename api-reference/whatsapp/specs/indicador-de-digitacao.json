@@ -1,0 +1,126 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Indicador de digitação",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://cloud.datafyapi.com.br", "description": "Produção" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/v1/{phone_number_id}/messages": {
+      "post": {
+        "summary": "Indicador de digitação",
+        "operationId": "indicadorDeDigitacao",
+        "description": "Exibe o aviso de \"digitando…\" para o cliente. É enviado junto com a marcação de leitura, na mesma requisição.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID do número que recebeu a mensagem. Descubra com `GET /me`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/IndicadorDigitacao" },
+              "example": {
+                "messaging_product": "whatsapp",
+                "status": "read",
+                "message_id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjJBQjE=",
+                "typing_indicator": { "type": "text" }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Indicador exibido e mensagem marcada como lida.",
+            "content": {
+              "application/json": {
+                "example": { "success": true }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de mensagem inválido ou fora do prazo de 30 dias.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "(#131009) Parameter value is not valid",
+                    "type": "OAuthException",
+                    "code": 131009,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": { "statusCode": 401, "message": "Token inválido ou não encontrado." }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token gerado no painel da Datafy ao criar o canal. Formato: `sk_live_xxx`."
+      }
+    },
+    "schemas": {
+      "IndicadorDigitacao": {
+        "type": "object",
+        "required": ["messaging_product", "status", "message_id", "typing_indicator"],
+        "properties": {
+          "messaging_product": {
+            "type": "string",
+            "enum": ["whatsapp"],
+            "default": "whatsapp",
+            "example": "whatsapp",
+            "description": "Sempre `whatsapp`."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["read"],
+            "default": "read",
+            "example": "read",
+            "description": "Sempre `read`. O indicador de digitação é enviado junto com a marcação de leitura."
+          },
+          "message_id": {
+            "type": "string",
+            "example": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjJBQjE=",
+            "description": "ID (`wamid`) da mensagem recebida, encontrado no webhook em `messages[].id`."
+          },
+          "typing_indicator": {
+            "type": "object",
+            "required": ["type"],
+            "description": "Aviso de digitação exibido para o cliente.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["text"],
+                "default": "text",
+                "example": "text",
+                "description": "Sempre `text`."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

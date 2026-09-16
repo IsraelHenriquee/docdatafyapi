@@ -1,5 +1,25 @@
 ---
 title: "Enviar localização"
 description: "Envie um ponto no mapa com nome e endereço."
-api: "POST /v1/{phone_number_id}/messages"
+openapi: "/api-reference/whatsapp/specs/localizacao.json POST /v1/{phone_number_id}/messages"
 ---
+
+Envia uma localização para um cliente com a [janela de 24 horas](/api-reference/whatsapp/mensagens/introducao#janela-de-24-horas) aberta. O cliente vê o ponto no mapa e pode abrir o local no aplicativo de mapas do celular.
+
+<Note>
+  O destinatário pode ser informado pelo **número de telefone** (`to`) ou pelo **ID do usuário** (`recipient`). Se os dois forem enviados, vale o `to`; para enviar pelo ID do usuário, deixe o `to` em branco. Veja a diferença em [Destinatário](/api-reference/whatsapp/mensagens/introducao#destinatário).
+</Note>
+
+## Coordenadas
+
+`location.latitude` e `location.longitude` são obrigatórios e usam **graus decimais**, como `-23.561414` e `-46.655881`. No Brasil, os dois valores são negativos.
+
+`location.name` e `location.address` são opcionais e ajudam o cliente a identificar o local.
+
+<Tip>
+  Para pegar as coordenadas de um endereço, abra o Google Maps, clique com o botão direito no local e clique nos números que aparecem no topo do menu. Eles são copiados no formato `latitude, longitude`.
+</Tip>
+
+No **Testar**, a localização já vem preenchida com o MASP, na Avenida Paulista. Troque pelas coordenadas do seu local.
+
+Veja mais detalhes na [documentação de mensagens de localização da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/location-messages).

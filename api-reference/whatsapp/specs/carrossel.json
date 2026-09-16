@@ -1,0 +1,350 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Enviar carrossel",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://cloud.datafyapi.com.br", "description": "Produção" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/v1/{phone_number_id}/messages": {
+      "post": {
+        "summary": "Enviar carrossel",
+        "operationId": "enviarCarrossel",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID do número que envia a mensagem. Descubra com `GET /me`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MensagemCarrossel" },
+              "example": {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": "5511999999999",
+                "type": "interactive",
+                "interactive": {
+                  "type": "carousel",
+                  "body": {
+                    "text": "Confira as ofertas da semana selecionadas para você."
+                  },
+                  "action": {
+                    "cards": [
+                      {
+                        "card_index": 0,
+                        "type": "cta_url",
+                        "header": {
+                          "type": "image",
+                          "image": { "link": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Culinary_fruits_front_view.jpg" }
+                        },
+                        "body": { "text": "*Cesta de frutas*\nFrutas frescas selecionadas, entregues no mesmo dia." },
+                        "action": {
+                          "name": "cta_url",
+                          "parameters": { "display_text": "Comprar", "url": "https://datafyapi.com.br" }
+                        }
+                      },
+                      {
+                        "card_index": 1,
+                        "type": "cta_url",
+                        "header": {
+                          "type": "image",
+                          "image": { "link": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg" }
+                        },
+                        "body": { "text": "*Kit saudável*\nVerduras, grãos e frutas para a semana toda." },
+                        "action": {
+                          "name": "cta_url",
+                          "parameters": { "display_text": "Comprar", "url": "https://datafyapi.com.br" }
+                        }
+                      },
+                      {
+                        "card_index": 2,
+                        "type": "cta_url",
+                        "header": {
+                          "type": "image",
+                          "image": { "link": "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg" }
+                        },
+                        "body": { "text": "*Buquê de flores*\nArranjo com flores da estação para presentear." },
+                        "action": {
+                          "name": "cta_url",
+                          "parameters": { "display_text": "Comprar", "url": "https://datafyapi.com.br" }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Envio aceito pela Meta. Não confirma a entrega.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "messaging_product": "whatsapp",
+                  "contacts": [{ "input": "5511999999999", "wa_id": "5511999999999" }],
+                  "messages": [{ "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA=" }]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta, como usar `id` em vez de `link` no cabeçalho do cartão.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "(#131009) Parameter value is not valid",
+                    "type": "OAuthException",
+                    "code": 131009,
+                    "error_data": {
+                      "messaging_product": "whatsapp",
+                      "details": "The parameter interactive['action']['cards'][].header.image.link is required"
+                    },
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": { "statusCode": 401, "message": "Token inválido ou não encontrado." }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token gerado no painel da Datafy ao criar o canal. Formato: `sk_live_xxx`."
+      }
+    },
+    "schemas": {
+      "MensagemCarrossel": {
+        "type": "object",
+        "required": ["messaging_product", "to", "type", "interactive"],
+        "properties": {
+          "messaging_product": {
+            "type": "string",
+            "enum": ["whatsapp"],
+            "default": "whatsapp",
+            "example": "whatsapp",
+            "description": "Sempre `whatsapp`."
+          },
+          "recipient_type": {
+            "type": "string",
+            "enum": ["individual"],
+            "default": "individual",
+            "example": "individual",
+            "description": "Sempre `individual`."
+          },
+          "to": {
+            "type": "string",
+            "example": "5511999999999",
+            "description": "Número do destinatário com código do país e DDD, como `5511999999999`. Tem prioridade sobre `recipient`: para enviar pelo ID do usuário, deixe em branco."
+          },
+          "recipient": {
+            "type": "string",
+            "description": "ID do usuário no WhatsApp (BSUID), recebido nos webhooks em `from_user_id` e `contacts[].user_id`, como `BR.13491208655302741918`. Usado quando `to` não é informado."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["interactive"],
+            "default": "interactive",
+            "example": "interactive",
+            "description": "Sempre `interactive`."
+          },
+          "interactive": {
+            "type": "object",
+            "required": ["type", "body", "action"],
+            "description": "Carrossel de cartões com mídia, texto e botão. Não aceita cabeçalho nem rodapé no nível da mensagem.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["carousel"],
+                "default": "carousel",
+                "example": "carousel",
+                "description": "Sempre `carousel`."
+              },
+              "body": {
+                "type": "object",
+                "required": ["text"],
+                "description": "Texto exibido acima dos cartões.",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "maxLength": 1024,
+                    "example": "Confira as ofertas da semana selecionadas para você.",
+                    "description": "Texto da mensagem, com até 1.024 caracteres."
+                  }
+                }
+              },
+              "action": {
+                "type": "object",
+                "required": ["cards"],
+                "properties": {
+                  "cards": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 10,
+                    "description": "De 2 a 10 cartões. Todos precisam usar o mesmo tipo de mídia e o mesmo tipo e quantidade de botões.",
+                    "items": { "$ref": "#/components/schemas/Cartao" }
+                  }
+                }
+              }
+            }
+          },
+          "context": {
+            "type": "object",
+            "description": "Responde citando uma mensagem anterior da conversa.",
+            "properties": {
+              "message_id": {
+                "type": "string",
+                "description": "ID (`wamid`) da mensagem que será citada."
+              }
+            }
+          }
+        }
+      },
+      "Cartao": {
+        "type": "object",
+        "required": ["card_index", "type", "header", "action"],
+        "properties": {
+          "card_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9,
+            "example": 0,
+            "description": "Posição do cartão no carrossel, começando em `0`."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["cta_url", "button"],
+            "default": "cta_url",
+            "example": "cta_url",
+            "description": "Obrigatório. Use `cta_url`, inclusive nos cartões com botões de resposta rápida."
+          },
+          "header": {
+            "type": "object",
+            "required": ["type"],
+            "description": "Mídia do cartão. Todos os cartões precisam usar o mesmo tipo: só imagens ou só vídeos.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["image", "video"],
+                "example": "image",
+                "description": "Tipo da mídia: `image` ou `video`."
+              },
+              "image": {
+                "type": "object",
+                "description": "Imagem do cartão, usada quando `type` é `image`.",
+                "properties": {
+                  "link": {
+                    "type": "string",
+                    "description": "URL pública da imagem. No carrossel, a mídia só é aceita por `link`."
+                  }
+                }
+              },
+              "video": {
+                "type": "object",
+                "description": "Vídeo do cartão, usado quando `type` é `video`.",
+                "properties": {
+                  "link": {
+                    "type": "string",
+                    "description": "URL pública do vídeo. No carrossel, a mídia só é aceita por `link`."
+                  }
+                }
+              }
+            }
+          },
+          "body": {
+            "type": "object",
+            "description": "Texto opcional do cartão.",
+            "properties": {
+              "text": {
+                "type": "string",
+                "maxLength": 160,
+                "description": "Texto do cartão, com até 160 caracteres e no máximo 2 quebras de linha."
+              }
+            }
+          },
+          "action": {
+            "type": "object",
+            "description": "Botões do cartão: um botão com link (`name` e `parameters`) ou botões de resposta rápida (`buttons`).",
+            "properties": {
+              "name": {
+                "type": "string",
+                "enum": ["cta_url"],
+                "description": "Use `cta_url` para um botão com link."
+              },
+              "parameters": {
+                "type": "object",
+                "description": "Botão com link.",
+                "properties": {
+                  "display_text": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "description": "Texto do botão, com até 20 caracteres."
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "URL aberta quando o cliente toca no botão."
+                  }
+                }
+              },
+              "buttons": {
+                "type": "array",
+                "description": "Botões de resposta rápida. Use no lugar de `name` e `parameters`.",
+                "items": {
+                  "type": "object",
+                  "required": ["type", "quick_reply"],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["quick_reply"],
+                      "description": "Sempre `quick_reply`."
+                    },
+                    "quick_reply": {
+                      "type": "object",
+                      "required": ["id", "title"],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "maxLength": 256,
+                          "description": "Identificador do botão, com até 256 caracteres."
+                        },
+                        "title": {
+                          "type": "string",
+                          "maxLength": 20,
+                          "description": "Texto do botão, com até 20 caracteres."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

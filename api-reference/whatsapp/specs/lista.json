@@ -1,0 +1,287 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Enviar lista",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://cloud.datafyapi.com.br", "description": "Produção" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/v1/{phone_number_id}/messages": {
+      "post": {
+        "summary": "Enviar lista",
+        "operationId": "enviarLista",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID do número que envia a mensagem. Descubra com `GET /me`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MensagemLista" },
+              "example": {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": "5511999999999",
+                "type": "interactive",
+                "interactive": {
+                  "type": "list",
+                  "header": {
+                    "type": "text",
+                    "text": "Agende seu atendimento"
+                  },
+                  "body": {
+                    "text": "Escolha o melhor horário para o seu atendimento na próxima segunda-feira."
+                  },
+                  "footer": {
+                    "text": "Clínica Exemplo"
+                  },
+                  "action": {
+                    "button": "Ver horários",
+                    "sections": [
+                      {
+                        "title": "Manhã",
+                        "rows": [
+                          { "id": "seg-09h", "title": "Segunda, 9h", "description": "Unidade Centro" },
+                          { "id": "seg-11h", "title": "Segunda, 11h", "description": "Unidade Centro" }
+                        ]
+                      },
+                      {
+                        "title": "Tarde",
+                        "rows": [
+                          { "id": "seg-15h", "title": "Segunda, 15h", "description": "Unidade Norte" }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Envio aceito pela Meta. Não confirma a entrega.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "messaging_product": "whatsapp",
+                  "contacts": [{ "input": "5511999999999", "wa_id": "5511999999999" }],
+                  "messages": [{ "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA=" }]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "(#100) Invalid parameter",
+                    "type": "OAuthException",
+                    "code": 100,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": { "statusCode": 401, "message": "Token inválido ou não encontrado." }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token gerado no painel da Datafy ao criar o canal. Formato: `sk_live_xxx`."
+      }
+    },
+    "schemas": {
+      "MensagemLista": {
+        "type": "object",
+        "required": ["messaging_product", "to", "type", "interactive"],
+        "properties": {
+          "messaging_product": {
+            "type": "string",
+            "enum": ["whatsapp"],
+            "default": "whatsapp",
+            "example": "whatsapp",
+            "description": "Sempre `whatsapp`."
+          },
+          "recipient_type": {
+            "type": "string",
+            "enum": ["individual"],
+            "default": "individual",
+            "example": "individual",
+            "description": "Sempre `individual`."
+          },
+          "to": {
+            "type": "string",
+            "example": "5511999999999",
+            "description": "Número do destinatário com código do país e DDD, como `5511999999999`. Tem prioridade sobre `recipient`: para enviar pelo ID do usuário, deixe em branco."
+          },
+          "recipient": {
+            "type": "string",
+            "description": "ID do usuário no WhatsApp (BSUID), recebido nos webhooks em `from_user_id` e `contacts[].user_id`, como `BR.13491208655302741918`. Usado quando `to` não é informado."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["interactive"],
+            "default": "interactive",
+            "example": "interactive",
+            "description": "Sempre `interactive`."
+          },
+          "interactive": {
+            "type": "object",
+            "required": ["type", "body", "action"],
+            "description": "Mensagem com um botão que abre uma lista de opções.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["list"],
+                "default": "list",
+                "example": "list",
+                "description": "Sempre `list`."
+              },
+              "header": {
+                "type": "object",
+                "required": ["type", "text"],
+                "description": "Cabeçalho opcional. Na lista, só é aceito cabeçalho de texto.",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["text"],
+                    "default": "text",
+                    "example": "text",
+                    "description": "Sempre `text`."
+                  },
+                  "text": {
+                    "type": "string",
+                    "maxLength": 60,
+                    "example": "Agende seu atendimento",
+                    "description": "Texto do cabeçalho, com até 60 caracteres."
+                  }
+                }
+              },
+              "body": {
+                "type": "object",
+                "required": ["text"],
+                "description": "Texto principal da mensagem.",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "maxLength": 4096,
+                    "example": "Escolha o melhor horário para o seu atendimento na próxima segunda-feira.",
+                    "description": "Texto da mensagem, com até 4.096 caracteres. URLs viram links clicáveis."
+                  }
+                }
+              },
+              "footer": {
+                "type": "object",
+                "description": "Rodapé opcional, exibido abaixo do texto em cinza.",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "maxLength": 60,
+                    "example": "Clínica Exemplo",
+                    "description": "Texto do rodapé, com até 60 caracteres."
+                  }
+                }
+              },
+              "action": {
+                "type": "object",
+                "required": ["button", "sections"],
+                "properties": {
+                  "button": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "example": "Ver horários",
+                    "description": "Texto do botão que abre a lista, com até 20 caracteres."
+                  },
+                  "sections": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "description": "De 1 a 10 seções. Somando todas as seções, a lista aceita no máximo 10 opções.",
+                    "items": { "$ref": "#/components/schemas/Secao" }
+                  }
+                }
+              }
+            }
+          },
+          "context": {
+            "type": "object",
+            "description": "Responde citando uma mensagem anterior da conversa.",
+            "properties": {
+              "message_id": {
+                "type": "string",
+                "description": "ID (`wamid`) da mensagem que será citada."
+              }
+            }
+          }
+        }
+      },
+      "Secao": {
+        "type": "object",
+        "required": ["title", "rows"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 24,
+            "example": "Manhã",
+            "description": "Título da seção, com até 24 caracteres."
+          },
+          "rows": {
+            "type": "array",
+            "minItems": 1,
+            "description": "Opções da seção. O total de opções, somando todas as seções, é de no máximo 10.",
+            "items": { "$ref": "#/components/schemas/Opcao" }
+          }
+        }
+      },
+      "Opcao": {
+        "type": "object",
+        "required": ["id", "title"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "example": "seg-09h",
+            "description": "Identificador da opção, com até 200 caracteres. Volta no webhook quando o cliente escolhe a opção."
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 24,
+            "example": "Segunda, 9h",
+            "description": "Texto da opção, com até 24 caracteres."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 72,
+            "example": "Unidade Centro",
+            "description": "Descrição opcional exibida abaixo do título, com até 72 caracteres."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,108 @@
+---
+title: "Templates"
+description: "Aprovação, qualidade e categoria dos seus templates."
+---
+
+Assim como as mensagens têm eventos de acompanhamento, os templates também têm. Eles avisam o resultado da análise, a queda de qualidade e a reclassificação de categoria, sem precisar consultar a listagem de tempos em tempos.
+
+## Resultado da análise
+
+O evento **`message_template_status_update`** chega quando a Meta termina de analisar um template criado ou editado:
+
+```json
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1234567890123456",
+      "time": 1789008423,
+      "changes": [
+        {
+          "field": "message_template_status_update",
+          "value": {
+            "event": "APPROVED",
+            "message_template_id": 1713142233297685,
+            "message_template_name": "aviso_agendamento",
+            "message_template_language": "pt_BR",
+            "reason": "NONE",
+            "message_template_category": "UTILITY"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `event` | Resultado da análise: `APPROVED`, `REJECTED`, `PAUSED` ou `DISABLED` |
+| `reason` | Motivo da reprovação. Vale `NONE` quando o template é aprovado |
+| `message_template_id` | ID do template, usado em [Editar template](/api-reference/whatsapp/templates/editar-template) |
+| `message_template_category` | Categoria com que o template ficou registrado |
+
+Um template reprovado pode ser corrigido e reenviado para análise sem trocar de nome, o que gera um novo evento com o resultado.
+
+## Qualidade
+
+O evento **`message_template_quality_update`** acompanha a reação dos clientes a um template já aprovado:
+
+```json
+{
+  "field": "message_template_quality_update",
+  "value": {
+    "previous_quality_score": "UNKNOWN",
+    "new_quality_score": "GREEN",
+    "message_template_id": 1665120938950112,
+    "message_template_name": "aviso_agendamento",
+    "message_template_language": "pt_BR"
+  }
+}
+```
+
+A pontuação vale `GREEN`, `YELLOW`, `RED` ou `UNKNOWN`, e cai conforme os bloqueios e denúncias de quem recebe. Um template que chega em `RED` é pausado pela Meta, e volta como `PAUSED` ou `DISABLED` no evento de status.
+
+<Tip>
+  A queda para `YELLOW` é o aviso antecipado. Reveja o conteúdo e a segmentação do disparo antes que o template seja pausado.
+</Tip>
+
+## Reclassificação de categoria
+
+O evento **`template_category_update`** avisa quando a Meta muda a categoria de um template, normalmente de `UTILITY` para `MARKETING`, o que altera o preço do envio:
+
+```json
+{
+  "field": "template_category_update",
+  "value": {
+    "message_template_id": 1234567890123456,
+    "message_template_name": "aviso_agendamento",
+    "message_template_language": "pt_BR",
+    "previous_category": "MARKETING",
+    "new_category": "UTILITY",
+    "correct_category": "MARKETING",
+    "category_appeal_status": "ELIGIBLE"
+  }
+}
+```
+
+## Alteração dos componentes
+
+O evento **`message_template_components_update`** informa que o conteúdo do template foi alterado, trazendo o texto que passou a valer em `message_template_element`:
+
+```json
+{
+  "field": "message_template_components_update",
+  "value": {
+    "message_template_id": 1234567890123456,
+    "message_template_name": "confirmacao_consulta",
+    "message_template_language": "pt_BR",
+    "message_template_element": "Olá, {{1}}. Sua consulta está marcada para {{2}}."
+  }
+}
+```
+
+<Note>
+  Esses eventos tratam do template em si. O acompanhamento das **mensagens enviadas** com um template — `sent`, `delivered`, `read` ou `failed` — está em [Status de mensagem](/api-reference/whatsapp/webhooks/eventos/status-de-mensagem).
+</Note>
+
+As regras de análise e de qualidade estão em [gerenciamento de templates da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-management).

@@ -1,13 +1,13 @@
 ---
-title: "Validar assinatura"
+title: "Assinatura"
 description: "Confirme que o webhook foi enviado pela Datafy e não foi alterado."
 ---
 
-Com a assinatura ativada, cada entrega leva um HMAC-SHA256 que comprova a origem e a integridade do evento.
+Cada entrega leva um HMAC-SHA256 que comprova a origem e a integridade do evento. A assinatura é parte do contrato de entrega e está sempre ativa.
 
-## Ative a assinatura
+## O secret
 
-No [painel da Datafy](https://app.datafyapi.com.br), abra a aba **Webhooks** do número, ative a assinatura e guarde o **secret** (`whsec_...`) no seu servidor. O mesmo secret vale para todas as URLs daquele número.
+Todo número recebe um secret no momento em que é criado, no formato `whsec_...`. Ele fica disponível no [painel da Datafy](https://app.datafyapi.com.br), na aba **Webhooks** do número, e deve ser guardado no seu servidor como variável de ambiente. O mesmo secret vale para todas as URLs daquele número.
 
 ## Como a assinatura é calculada
 
@@ -85,8 +85,4 @@ http_response_code(200);
 
 ## Trocar o secret
 
-Gerar um novo secret no painel **invalida o anterior imediatamente**: a próxima entrega já sai assinada com o novo valor. Atualize o secret no seu servidor junto com a troca, ou as entregas passarão a ser recusadas.
-
-## Desativar a assinatura
-
-Com a assinatura desativada, as entregas saem sem `x-datafy-timestamp` e `x-datafy-signature-256`. Os webhooks continuam funcionando normalmente, apenas sem a verificação de origem.
+O painel permite gerar um novo secret para o número. A chave anterior deixa de valer imediatamente: a próxima entrega já sai assinada com o novo valor. Atualize o secret no seu servidor junto com a troca, ou as entregas passarão a ser recusadas na verificação.

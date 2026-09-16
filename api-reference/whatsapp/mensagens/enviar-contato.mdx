@@ -1,5 +1,45 @@
 ---
 title: "Enviar contato"
 description: "Envie um ou mais cartões de contato."
-api: "POST /v1/{phone_number_id}/messages"
+openapi: "/api-reference/whatsapp/specs/contato.json POST /v1/{phone_number_id}/messages"
 ---
+
+Envia um ou mais cartões de contato para um cliente com a [janela de 24 horas](/api-reference/whatsapp/mensagens/introducao#janela-de-24-horas) aberta. É útil para passar o contato de um vendedor, do suporte ou de outra unidade.
+
+<Note>
+  O destinatário pode ser informado pelo **número de telefone** (`to`) ou pelo **ID do usuário** (`recipient`). Se os dois forem enviados, vale o `to`; para enviar pelo ID do usuário, deixe o `to` em branco. Veja a diferença em [Destinatário](/api-reference/whatsapp/mensagens/introducao#destinatário).
+</Note>
+
+## Dados do contato
+
+Cada item de `contacts` é um cartão. O único campo obrigatório é **`name.formatted_name`**, o nome exibido no cartão. Os demais são opcionais:
+
+| Campo | O que contém |
+| --- | --- |
+| `name` | Nome completo e suas partes: `first_name`, `last_name`, `middle_name`, `prefix` e `suffix`. |
+| `phones` | Telefones, com `phone`, `type` e `wa_id`. |
+| `emails` | E-mails, com `email` e `type`. |
+| `org` | Empresa, com `company`, `department` e `title` (cargo). |
+| `urls` | Sites, com `url` e `type`. |
+| `addresses` | Endereços, com rua, cidade, estado, CEP, país e tipo. |
+| `birthday` | Aniversário, no formato `AAAA-MM-DD`. |
+
+Uma mensagem aceita até **257 contatos**, mas o recomendado é enviar poucos, para facilitar a leitura do cliente.
+
+## Botões do cartão
+
+O `wa_id` do telefone define os botões que o cliente vê:
+
+| Com `phones[].wa_id` | Sem `phones[].wa_id` |
+| --- | --- |
+| Botões **Mensagem** e **Salvar contato**. | Apenas o botão **Convidar para o WhatsApp**. |
+
+Informe no `wa_id` o número do contato no WhatsApp, com código do país e DDD, como `5511988887777`.
+
+<Warning>
+  Alguns dados, como endereço, aniversário e e-mail, podem não aparecer em todos os aparelhos do cliente.
+</Warning>
+
+No **Testar**, o cartão já vem preenchido com um contato de exemplo. Troque pelos dados do contato que você quer enviar.
+
+Veja mais detalhes na [documentação de mensagens de contato da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/contacts-messages).

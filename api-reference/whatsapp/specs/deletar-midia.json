@@ -1,0 +1,78 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Deletar mídia",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://cloud.datafyapi.com.br", "description": "Produção" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/v1/{media_id}": {
+      "delete": {
+        "summary": "Deletar mídia",
+        "operationId": "deletarMidia",
+        "description": "Espelho de `DELETE /{media_id}` da Meta Cloud API. Remove da Meta uma mídia enviada pelo upload.",
+        "parameters": [
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID da mídia retornado pelo upload."
+          },
+          {
+            "name": "phone_number_id",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Opcional. Se informado, a Meta só processa a requisição quando a mídia pertence a esse número."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mídia removida.",
+            "content": {
+              "application/json": {
+                "example": { "success": true }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta, como ID inválido ou já removido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "(#100) Invalid parameter",
+                    "type": "OAuthException",
+                    "code": 100,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": { "statusCode": 401, "message": "Token inválido ou não encontrado." }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token gerado no painel da Datafy ao criar o canal. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}

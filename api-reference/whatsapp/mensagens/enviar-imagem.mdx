@@ -17,7 +17,7 @@ Informe a imagem de uma das duas formas:
 | Campo | Quando usar | Como conseguir |
 | --- | --- | --- |
 | `image.link` | A imagem está em uma URL pública. | Envie o arquivo na aba **Mídias** do número, no [painel da Datafy](https://app.datafyapi.com.br). O link gerado vale por **30 dias**. |
-| `image.id` | Você já enviou o arquivo para a Meta. | Use o `id` retornado pelo endpoint [Upload de mídia](/api-reference/whatsapp/proxy/upload-de-midia). |
+| `image.id` | Você já enviou o arquivo para a Meta. | Use o `id` retornado pelo endpoint [Upload de mídia](/api-reference/whatsapp/recursos/midia/upload-de-midia). |
 
 <Warning>
   **Envie apenas um dos dois.** Com `link` e `id` na mesma requisição, a Meta recusa o envio com o erro `132018` ("Only one of media ID or link must be present").

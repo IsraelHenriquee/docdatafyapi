@@ -1,0 +1,141 @@
+---
+title: "Mensagens recebidas"
+description: "Evento messages: tudo que o cliente envia para o seu número."
+---
+
+O evento **`messages`** é entregue sempre que um cliente envia algo para o seu número: texto, mídia, localização, contato, reação ou a resposta de um botão.
+
+O conteúdo fica em `value.messages`, e os dados de quem enviou em `value.contacts`:
+
+```json
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1234567890123456",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "5511988887777",
+              "phone_number_id": "1234567890123456"
+            },
+            "contacts": [
+              {
+                "profile": { "name": "Maria Souza" },
+                "wa_id": "5511999999999",
+                "user_id": "BR.1234567890123456"
+              }
+            ],
+            "messages": [
+              {
+                "from": "5511999999999",
+                "from_user_id": "BR.1234567890123456",
+                "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA=",
+                "timestamp": "1789529684",
+                "type": "text",
+                "text": { "body": "Bom dia, meu pedido já saiu?" }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `metadata.phone_number_id` | O seu número que recebeu a mensagem |
+| `contacts[].profile.name` | Nome que o cliente usa no WhatsApp |
+| `contacts[].wa_id` | Número do cliente, usado no campo `to` da resposta |
+| `contacts[].user_id` | Identificador alternativo do cliente, aceito no campo `recipient` |
+| `messages[].id` | O `wamid` da mensagem, usado para [marcar como lida](/api-reference/whatsapp/recursos/marcar-como-lida) e para [responder citando](/api-reference/whatsapp/recursos/respostas-contextuais) |
+| `messages[].timestamp` | Unix timestamp, em segundos |
+| `messages[].type` | Tipo da mensagem, que define qual objeto acompanha |
+
+O campo `type` indica qual objeto vem junto: `text` traz `text`, `image` traz `image`, `location` traz `location`, e assim por diante.
+
+## Mensagens com mídia
+
+Imagem, áudio, vídeo, documento e figurinha seguem o mesmo formato, mudando apenas o nome do objeto. O conteúdo **não vem no payload**: o que chega é o identificador do arquivo.
+
+<CodeGroup>
+```json Imagem
+{
+  "from": "5511999999999",
+  "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjE=",
+  "timestamp": "1789529704",
+  "type": "image",
+  "image": {
+    "caption": "Segue o comprovante",
+    "mime_type": "image/jpeg",
+    "sha256": "KSWUYTMB/W8UQtTwZFenlDiHFwteqLnOUDX8w6jrHvI=",
+    "id": "3381848398663457",
+    "url": "https://lookaside.fbsbx.com/whatsapp_business/attachments/?mid=3381848398663457&source=webhook&ext=1789530005&hash=ATzU..."
+  }
+}
+```
+
+```json Áudio
+{
+  "from": "5511999999999",
+  "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjI=",
+  "timestamp": "1789529684",
+  "type": "audio",
+  "audio": {
+    "mime_type": "audio/ogg; codecs=opus",
+    "sha256": "npnJqi2P6ioy+SeytBNFt9nwfvkmqC0awbwgEtpvCtI=",
+    "id": "1086808163834657",
+    "url": "https://lookaside.fbsbx.com/whatsapp_business/attachments/?mid=1086808163834657&source=webhook&ext=1789529986&hash=ATzE...",
+    "voice": true
+  }
+}
+```
+</CodeGroup>
+
+O campo `caption` aparece apenas quando o cliente escreveu uma legenda, e `voice: true` identifica o áudio gravado na hora, em vez de um arquivo enviado da galeria.
+
+<Warning>
+  A `url` que vem no payload **não pode ser aberta diretamente**: ela exige o token da Meta no cabeçalho e expira em poucos minutos. Use o `id` da mídia com os endpoints da Datafy.
+</Warning>
+
+Para obter o arquivo, use o `id`:
+
+- [Baixar mídia recebida](/api-reference/whatsapp/datafy/baixar-midia) devolve uma URL válida por 30 dias, para exibir ou repassar o link.
+- [Baixar o arquivo da mídia](/api-reference/whatsapp/datafy/baixar-arquivo-midia) devolve o arquivo em bytes, para guardar no seu storage.
+
+```bash
+curl https://cloud.datafyapi.com.br/media/3381848398663457 \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+## Localização
+
+```json
+{
+  "from": "5511999999999",
+  "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjM=",
+  "timestamp": "1789529696",
+  "type": "location",
+  "location": {
+    "latitude": -25.532819747925,
+    "longitude": -49.201663970947
+  }
+}
+```
+
+Quando o cliente escolhe um local salvo, o objeto também traz `name` e `address`.
+
+## Respostas de botões e listas
+
+A resposta de um botão ou de uma lista chega com `type: "interactive"`, e o identificador que você definiu no envio vem em `id`. Os formatos estão em [Enviar botões](/api-reference/whatsapp/mensagens/enviar-botoes) e [Enviar lista](/api-reference/whatsapp/mensagens/enviar-lista).
+
+## Confirmar o recebimento
+
+Depois de processar, marque a mensagem como lida para o cliente ver os dois tiques azuis, usando o `messages[].id`. Veja [Marcar como lida](/api-reference/whatsapp/recursos/marcar-como-lida).
+
+A referência completa dos tipos de mensagem está na [documentação de webhooks da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks).

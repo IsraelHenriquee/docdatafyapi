@@ -1,5 +1,69 @@
 ---
 title: "Enviar botão com link"
 description: "Envie uma mensagem com um botão que abre uma URL."
-api: "POST /v1/{phone_number_id}/messages"
+openapi: "/api-reference/whatsapp/specs/botao-link.json POST /v1/{phone_number_id}/messages"
 ---
+
+Envia uma mensagem com **um botão que abre uma URL** no navegador do celular do cliente. O cliente vê só o texto do botão, como **Acompanhar entrega** ou **Pagar agora**, e não o endereço completo. Isso deixa a mensagem mais limpa do que colar um link longo no texto. A [janela de 24 horas](/api-reference/whatsapp/mensagens/introducao#janela-de-24-horas) precisa estar aberta.
+
+<Note>
+  O destinatário pode ser informado pelo **número de telefone** (`to`) ou pelo **ID do usuário** (`recipient`). Se os dois forem enviados, vale o `to`; para enviar pelo ID do usuário, deixe o `to` em branco. Veja a diferença em [Destinatário](/api-reference/whatsapp/mensagens/introducao#destinatário).
+</Note>
+
+## Estrutura da mensagem
+
+A mensagem é do tipo `interactive`, com `interactive.type` igual a `cta_url`:
+
+| Parte | Campo | Obrigatório | Limite |
+| --- | --- | --- | --- |
+| Cabeçalho | `interactive.header` | Não | Texto com até 60 caracteres, ou imagem, vídeo ou documento. |
+| Texto | `interactive.body.text` | **Sim** | 1.024 caracteres. |
+| Rodapé | `interactive.footer.text` | Não | 60 caracteres. |
+| Botão | `interactive.action` | **Sim** | Um botão, com `name` igual a `cta_url`. |
+
+## Botão
+
+O botão fica em `interactive.action`, com `name` igual a `cta_url` e dois parâmetros:
+
+| Campo | Limite | Para que serve |
+| --- | --- | --- |
+| `parameters.display_text` | 20 caracteres | Texto exibido no botão. |
+| `parameters.url` | — | Endereço aberto no navegador do celular quando o cliente toca no botão. |
+
+```json
+"action": {
+  "name": "cta_url",
+  "parameters": {
+    "display_text": "Acompanhar entrega",
+    "url": "https://exemplo.com/pedido/7539?origem=whatsapp"
+  }
+}
+```
+
+<Tip>
+  A Meta não documenta um webhook para o toque no botão. Para medir cliques, inclua um parâmetro de rastreamento na URL, como `?origem=whatsapp` ou um identificador do cliente, e registre o acesso no seu site.
+</Tip>
+
+## Cabeçalho
+
+O cabeçalho é opcional e aceita um texto ou uma mídia:
+
+| `header.type` | Conteúdo |
+| --- | --- |
+| `text` | `header.text`, com até 60 caracteres. |
+| `image` | `header.image`, com `link` ou `id`. |
+| `video` | `header.video`, com `link` ou `id`. |
+| `document` | `header.document`, com `link` ou `id`. |
+
+A mídia do cabeçalho segue as mesmas regras e formatos de [Enviar imagem](/api-reference/whatsapp/mensagens/enviar-imagem), [Enviar vídeo](/api-reference/whatsapp/mensagens/enviar-video) e [Enviar documento](/api-reference/whatsapp/mensagens/enviar-documento): informe `link` **ou** `id`, nunca os dois.
+
+```json
+"header": {
+  "type": "image",
+  "image": { "link": "https://exemplo.com/banner-promocao.jpg" }
+}
+```
+
+No **Testar**, a mensagem já vem preenchida com cabeçalho de texto, texto, rodapé e o botão. Troque a `url` pelo endereço que o cliente deve abrir.
+
+Veja mais detalhes na [documentação de botão com link da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/interactive-cta-url-messages).
