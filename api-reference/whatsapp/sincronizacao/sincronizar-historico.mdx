@@ -34,7 +34,11 @@ O histórico pode ser solicitado **uma única vez**. Repetir a chamada não gera
 
 ## O que chega
 
-As conversas são entregues em blocos, com até 180 dias de mensagens, e o progresso é acompanhado pelos campos `phase`, `chunk_order` e `progress`. Mensagens que continham mídia chegam apenas como marcador: o arquivo não é sincronizado. O formato está detalhado em [Histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico).
+As conversas são entregues em **vários blocos** pelo webhook `history`, com até 180 dias de mensagens, acompanhados dos campos `phase`, `chunk_order` e `progress` para o progresso. Mensagens que continham mídia chegam apenas como marcador: o arquivo não é sincronizado.
+
+Os blocos podem chegar **fora de ordem** e em grande volume — milhares de entregas em poucos minutos —, e uma entrega que falha é reenviada automaticamente. Por isso a sua aplicação deve responder `200` de imediato, tratar as entregas de forma idempotente pelo `x-datafy-delivery-id` e reordenar pelo `chunk_order` e pelo `timestamp` de cada mensagem.
+
+O formato completo, o acompanhamento do progresso e o comportamento de reentrega estão em [Histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico).
 
 <Note>
   Guarde o `request_id` da resposta. Ele é o identificador do pedido junto à Meta, necessário caso seja preciso abrir um chamado por dados que não chegaram.

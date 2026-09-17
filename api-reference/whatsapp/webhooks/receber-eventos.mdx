@@ -63,4 +63,17 @@ Sua URL deve responder **`200` em até 20 segundos**. Depois disso, a entrega é
   Responda `200` imediatamente e processe o evento em segundo plano. Processamento síncrono longo é a causa mais comum de estouro do tempo limite.
 </Tip>
 
+## Reentrega automática
+
+Quando uma entrega falha — resposta diferente de `200` ou tempo limite estourado —, a Datafy tenta de novo automaticamente. O comportamento depende do evento:
+
+- **Eventos em tempo real** (mensagens, status, templates, eventos de conta): a entrega é repetida três vezes, em `2s`, `10s` e `30s`. Persistindo a falha, aquele evento é descartado.
+- **Histórico de conversas** (`history`): por ser uma sincronização única e não repetível, a reentrega dura mais e com intervalos maiores. O detalhamento está em [Histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico).
+
+O `x-datafy-delivery-id` **é o mesmo** em todas as tentativas da mesma entrega. Use-o como chave de idempotência: se uma tentativa chegar depois de a anterior já ter sido processada, descarte a repetida pelo `delivery-id`.
+
+<Note>
+  Cada tentativa é assinada na hora, com um `x-datafy-timestamp` novo. Valide a assinatura sempre contra o timestamp recebido no cabeçalho daquela entrega, não contra um valor guardado.
+</Note>
+
 Os eventos estão detalhados nas páginas desta seção, começando por [Mensagens recebidas](/api-reference/whatsapp/webhooks/eventos/mensagens). A lista completa de eventos da plataforma está na [documentação de webhooks da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks).

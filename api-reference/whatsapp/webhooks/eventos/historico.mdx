@@ -104,4 +104,10 @@ O marcador indica que houve uma mídia naquele ponto da conversa, mas **o arquiv
   O volume desse evento é alto: uma conta com muitas conversas gera milhares de entregas em poucos minutos. Responda `200` de imediato e processe em fila, ou as entregas passam a estourar o tempo limite.
 </Note>
 
+## Se a entrega falhar
+
+Como o histórico é uma sincronização única, as entregas de `history` que falham são reenviadas automaticamente, com intervalos crescentes: `10s`, `1min`, `5min` e `30min`. Enquanto a sua URL responder `200`, os blocos seguem chegando normalmente.
+
+Se a URL ficar indisponível além dessa janela, o pedido de sincronização **não se repete sozinho**. A forma garantida de recuperar o histórico é desconectar o número e [refazer a conexão](/guias/meta/conexao/coexistencia), solicitando a sincronização de novo.
+
 A referência completa está na [documentação do webhook history da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/reference/history).
