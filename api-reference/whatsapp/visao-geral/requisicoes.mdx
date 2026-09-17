@@ -1,0 +1,108 @@
+---
+title: "Requisições e limites"
+description: "Paginação, limites de uso, erros e operações bloqueadas."
+---
+
+## Paginação
+
+Endpoints que retornam listas, como templates, números e usuários bloqueados, devolvem um objeto `paging`:
+
+```json
+"paging": {
+  "cursors": { "before": "QVFIU...", "after": "QVFIU..." },
+  "next": "https://graph.facebook.com/v25.0/{WABA_ID}/message_templates?limit=25&after=QVFIU..."
+}
+```
+
+<Warning>
+  **Não chame a URL de `paging.next` diretamente.** Ela aponta para a Meta e não funciona sem o token da Meta.
+</Warning>
+
+Para buscar a próxima página, repita a mesma chamada na URL da Datafy e acrescente o parâmetro `after` com o valor de `paging.cursors.after`:
+
+```bash
+curl "https://cloud.datafyapi.com.br/v1/{WABA_ID}/message_templates?limit=25&after=QVFIU..." \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+Quando não houver mais páginas, a resposta vem sem `paging.next`.
+
+## Limites de requisição
+
+Os limites são contados **por token**, em janelas de 1 minuto:
+
+| Categoria | Rotas | Limite |
+| --- | --- | --- |
+| Envio de mensagens | `POST /v1/{phone_number_id}/messages` | 500 req/min |
+| Upload de mídia | `POST /v1/{phone_number_id}/media` | 60 req/min |
+| Consultas | Todas as outras | 60 req/min |
+
+Quando o limite é excedido, a API retorna **`429 Too Many Requests`**, com uma mensagem indicando quantos segundos aguardar:
+
+```json
+{
+  "statusCode": 429,
+  "message": "Rate limit excedido (60 req/min). Tente novamente em 12s."
+}
+```
+
+<Tip>
+  Evite consultar o mesmo recurso em loop, como o status do número ou a lista de templates. Para acompanhar mudanças, use os [webhooks](/api-reference/whatsapp/webhooks/receber-eventos).
+</Tip>
+
+## Erros da Datafy
+
+Antes de repassar a requisição para a Meta, a Datafy valida o token, a assinatura, as rotas bloqueadas e o limite de uso. Nesses casos, a resposta tem os campos `statusCode` e `message`:
+
+```json
+{
+  "statusCode": 401,
+  "message": "Token inválido ou não encontrado."
+}
+```
+
+| Código | Quando acontece |
+| --- | --- |
+| `401 Unauthorized` | O header `Authorization` não foi enviado, ou o token é inválido. |
+| `402 Payment Required` | O token existe, mas a assinatura da Datafy está inativa. Ative a assinatura no painel. |
+| `403 Forbidden` | A operação é bloqueada por segurança, o ID do caminho não pertence ao token, ou um token de Instagram foi usado numa rota de WhatsApp. |
+| `429 Too Many Requests` | O limite de requisições foi excedido. A mensagem informa quantos segundos aguardar. |
+
+## Erros da Meta
+
+Quando a requisição chega à Meta e ela recusa, a Datafy **repassa a resposta da Meta sem alteração**, com o mesmo status HTTP:
+
+```json
+{
+  "error": {
+    "message": "(#131030) Recipient phone number not in allowed list",
+    "type": "OAuthException",
+    "code": 131030,
+    "fbtrace_id": "AbCdEfGhIjK"
+  }
+}
+```
+
+Consulte o significado de cada `code` nos [códigos de erro da Meta](https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes).
+
+<Note>
+  Um envio aceito com **HTTP 200** ainda pode falhar depois, por exemplo, fora da janela de 24 horas. Nesse caso, a falha chega pelo webhook de status.
+</Note>
+
+## Rotas bloqueadas
+
+Algumas operações alteram configurações que a Datafy gerencia para manter seu número funcionando, como o destino dos webhooks. Por segurança, elas retornam **`403 Forbidden`**:
+
+- Caminhos que contêm `subscribed_apps` ou `deregister`.
+- `POST` em um ID com os campos `webhook_configuration` ou `pin`, no corpo ou na URL. Eles alteram o destino dos webhooks e o PIN do número.
+- `DELETE` direto no ID do número ou da conta do WhatsApp Business.
+- Chamadas de número ou de conta com um ID diferente do que está ligado ao token, como `POST /v1/{outro_phone_number_id}/messages`.
+
+```json
+{
+  "statusCode": 403,
+  "message": "Operação não permitida via proxy"
+}
+```
+
+Todos os outros endpoints da Meta Cloud API funcionam normalmente. Veja [Outros endpoints da Meta](/api-reference/whatsapp/proxy/outros-endpoints).

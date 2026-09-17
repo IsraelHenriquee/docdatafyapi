@@ -28,7 +28,7 @@ O token `sk_live_xxx` é gerado no [painel da Datafy](https://app.datafyapi.com.
 Para endpoints que não aparecem nesta referência, consulte a [documentação oficial da Meta](https://developers.facebook.com/docs/whatsapp/cloud-api) e aplique a mesma troca.
 
 <Note>
-  Antes de integrar, veja como enviar o token em [Autenticação](/api-reference/whatsapp/visao-geral/autenticacao) e como buscar listas com várias páginas em [Paginação](/api-reference/whatsapp/visao-geral/paginacao).
+  Antes de integrar, veja como enviar o token em [Autenticação](/api-reference/whatsapp/visao-geral/autenticacao) e como buscar listas com várias páginas em [Paginação](/api-reference/whatsapp/visao-geral/requisicoes#paginação).
 </Note>
 
 ## Descubra seus IDs
@@ -57,8 +57,8 @@ curl -X POST https://cloud.datafyapi.com.br/v1/{PHONE_NUMBER_ID}/messages \
 ## Como esta referência está organizada
 
 <CardGroup cols={2}>
-  <Card title="Cloud API Meta" icon="arrow-right-arrow-left" href="/api-reference/whatsapp/mensagens/introducao">
-    Os endpoints mais usados da Meta Cloud API, como mensagens, templates e mídia.
+  <Card title="Mensagens" icon="paper-plane" href="/api-reference/whatsapp/mensagens/introducao">
+    Enviar texto, mídia, localização, contato, botões, listas e carrossel.
   </Card>
   <Card title="Endpoints Datafy" icon="bolt" href="/api-reference/whatsapp/datafy/me">
     Recursos exclusivos da Datafy, como baixar mídia recebida e gerar handle para templates.
@@ -66,7 +66,7 @@ curl -X POST https://cloud.datafyapi.com.br/v1/{PHONE_NUMBER_ID}/messages \
   <Card title="Webhooks" icon="webhook" href="/api-reference/whatsapp/webhooks/receber-eventos">
     Como receber os eventos do seu número e validar a assinatura.
   </Card>
-  <Card title="Limitações" icon="triangle-exclamation" href="/api-reference/whatsapp/limitacoes/erros">
+  <Card title="Requisições e limites" icon="triangle-exclamation" href="/api-reference/whatsapp/visao-geral/requisicoes">
     Códigos de erro, limites de requisição e rotas bloqueadas.
   </Card>
 </CardGroup>
