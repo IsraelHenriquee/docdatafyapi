@@ -68,7 +68,7 @@ Sua URL deve responder **`200` em até 20 segundos**. Depois disso, a entrega é
 Quando uma entrega falha — resposta diferente de `200` ou tempo limite estourado —, a Datafy tenta de novo automaticamente. O comportamento depende do evento:
 
 - **Eventos em tempo real** (mensagens, status, templates, eventos de conta): a entrega é repetida três vezes, em `2s`, `10s` e `30s`. Persistindo a falha, aquele evento é descartado.
-- **Histórico de conversas** (`history`): por ser uma sincronização única e não repetível, a reentrega dura mais e com intervalos maiores. O detalhamento está em [Histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico).
+- **Sincronizações de coexistência** (`history` e `smb_app_state_sync`): por entregarem dados únicos e não repetíveis, a reentrega dura mais e com intervalos maiores — `10s`, `1min`, `5min` e `30min`. Detalhes em [Histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico) e [Contatos sincronizados](/api-reference/whatsapp/webhooks/eventos/contatos-sincronizados).
 
 O `x-datafy-delivery-id` **é o mesmo** em todas as tentativas da mesma entrega. Use-o como chave de idempotência: se uma tentativa chegar depois de a anterior já ter sido processada, descarte a repetida pelo `delivery-id`.
 

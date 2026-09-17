@@ -5,7 +5,7 @@ openapi: "/api-reference/whatsapp/specs/sincronizar-contatos.json POST /v1/{phon
 
 Quando um número é conectado por [coexistência](/guias/meta/conexao/coexistencia), a agenda de contatos continua apenas no aplicativo do WhatsApp Business, no celular. Esta chamada pede à Meta que envie esses contatos para a sua aplicação.
 
-A resposta apenas confirma o aceite do pedido. **Os dados não vêm nela**: chegam depois, pelo webhook [Contatos sincronizados](/api-reference/whatsapp/webhooks/eventos/contatos-sincronizados), distribuídos em várias entregas.
+A resposta apenas confirma o aceite do pedido. **Os dados não vêm nela**: chegam depois, pelo webhook [Contatos sincronizados](/api-reference/whatsapp/webhooks/eventos/contatos-sincronizados), com a agenda na lista `state_sync`.
 
 ```json
 {

@@ -65,10 +65,16 @@ O evento **`smb_app_state_sync`** entrega os contatos da agenda do aplicativo do
 
 ## Carga inicial
 
-Na sincronização inicial, todos os contatos chegam como `add`, distribuídos em várias entregas. Não existe um campo de progresso como no [histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico): as entregas simplesmente cessam quando a agenda termina.
+Na sincronização inicial, todos os contatos chegam com a ação `add`, na lista `state_sync`. Diferente do [histórico de conversas](/api-reference/whatsapp/webhooks/eventos/historico), não há divisão em blocos nem campo de progresso: a agenda vem junta, em uma única entrega.
 
 <Note>
   Contato na agenda não significa conversa iniciada. Enviar mensagem para esses números continua sujeito à [janela de 24 horas](/guias/whatsapp/conceitos/janela-de-24-horas), o que exige um [template aprovado](/api-reference/whatsapp/templates/enviar-template) quando não há conversa aberta.
 </Note>
+
+## Se a entrega falhar
+
+As entregas de `smb_app_state_sync` que falham são reenviadas automaticamente, com intervalos crescentes: `10s`, `1min`, `5min` e `30min`. Enquanto a sua URL responder `200`, a entrega é concluída normalmente.
+
+Como a carga inicial é uma sincronização única, se a URL ficar indisponível além dessa janela a forma garantida de recuperar a agenda é desconectar o número e [refazer a conexão](/guias/meta/conexao/coexistencia), solicitando a sincronização de novo.
 
 A referência completa está na [documentação do webhook smb_app_state_sync da Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/reference/smb_app_state_sync).
