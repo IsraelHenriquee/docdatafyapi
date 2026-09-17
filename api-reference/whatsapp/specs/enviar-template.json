@@ -1,0 +1,260 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Datafy API — Enviar template", "version": "1.0.0" },
+  "servers": [{ "url": "https://cloud.datafyapi.com.br", "description": "Produção" }],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/v1/{phone_number_id}/messages": {
+      "post": {
+        "summary": "Enviar template",
+        "operationId": "enviarTemplate",
+        "description": "Envia uma mensagem de template aprovado pela Meta. É o único tipo aceito quando a janela de 24 horas está fechada.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID do número que envia a mensagem. Descubra com `GET /me`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MensagemTemplate" },
+              "examples": {
+                "posicional": {
+                  "summary": "Variáveis posicionais",
+                  "value": {
+                    "messaging_product": "whatsapp",
+                    "recipient_type": "individual",
+                    "to": "5511999999999",
+                    "type": "template",
+                    "template": {
+                      "name": "pedido_pronto",
+                      "language": { "code": "pt_BR" },
+                      "components": [
+                        {
+                          "type": "body",
+                          "parameters": [
+                            { "type": "text", "text": "Rafael" },
+                            { "type": "text", "text": "7539" }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "nomeado": {
+                  "summary": "Variáveis nomeadas",
+                  "value": {
+                    "messaging_product": "whatsapp",
+                    "recipient_type": "individual",
+                    "to": "5511999999999",
+                    "type": "template",
+                    "template": {
+                      "name": "retirada_equipamento",
+                      "language": { "code": "pt_BR" },
+                      "components": [
+                        {
+                          "type": "body",
+                          "parameters": [
+                            { "type": "text", "parameter_name": "nome", "text": "Rafael" },
+                            { "type": "text", "parameter_name": "numero_os", "text": "7539" }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "sem_variaveis": {
+                  "summary": "Template sem variáveis",
+                  "value": {
+                    "messaging_product": "whatsapp",
+                    "recipient_type": "individual",
+                    "to": "5511999999999",
+                    "type": "template",
+                    "template": {
+                      "name": "aviso_horario",
+                      "language": { "code": "pt_BR" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Envio aceito pela Meta. Não confirma a entrega.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "messaging_product": "whatsapp",
+                  "contacts": [{ "input": "5511999999999", "wa_id": "5511999999999" }],
+                  "messages": [{ "id": "wamid.HBgNNTUxMTk5OTk5OTk5ORUCABIYFjNFQjA=", "message_status": "accepted" }]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta, como template não aprovado ou variáveis em quantidade diferente da esperada.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "(#132000) Number of parameters does not match the expected number of params",
+                    "type": "OAuthException",
+                    "code": 132000,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": { "statusCode": 401, "message": "Token inválido ou não encontrado." }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token gerado no painel da Datafy ao criar o canal. Formato: `sk_live_xxx`."
+      }
+    },
+    "schemas": {
+      "ParametroTemplate": {
+        "type": "object",
+        "required": ["type"],
+        "description": "Valor de uma variável do template.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["text", "currency", "date_time", "image", "document", "video", "payload"],
+            "default": "text",
+            "example": "text",
+            "description": "Tipo do valor. `text` para variáveis do corpo; `image`, `document` e `video` para cabeçalho com mídia; `payload` para botão de resposta rápida."
+          },
+          "text": {
+            "type": "string",
+            "description": "Valor da variável, quando `type` é `text`.",
+            "example": "Rafael"
+          },
+          "parameter_name": {
+            "type": "string",
+            "description": "Nome da variável. Obrigatório apenas em templates criados com `parameter_format: NAMED`.",
+            "example": "nome"
+          }
+        }
+      },
+      "ComponenteTemplate": {
+        "type": "object",
+        "required": ["type"],
+        "description": "Parte do template que recebe valores.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["body", "header", "button"],
+            "default": "body",
+            "example": "body",
+            "description": "Parte do template: `body` para as variáveis do texto, `header` para o cabeçalho com mídia, `button` para botões dinâmicos."
+          },
+          "sub_type": {
+            "type": "string",
+            "enum": ["quick_reply", "url", "copy_code"],
+            "description": "Tipo do botão. Informe apenas quando `type` for `button`."
+          },
+          "index": {
+            "type": "string",
+            "description": "Posição do botão, começando em `0`. Informe apenas quando `type` for `button`.",
+            "example": "0"
+          },
+          "parameters": {
+            "type": "array",
+            "description": "Valores das variáveis desta parte, na ordem em que aparecem no template.",
+            "items": { "$ref": "#/components/schemas/ParametroTemplate" }
+          }
+        }
+      },
+      "Idioma": {
+        "type": "object",
+        "required": ["code"],
+        "description": "Idioma da versão do template que será enviada.",
+        "properties": {
+          "code": {
+            "type": "string",
+            "default": "pt_BR",
+            "example": "pt_BR",
+            "description": "Código do idioma aprovado para este template, como `pt_BR` ou `en_US`."
+          }
+        }
+      },
+      "Template": {
+        "type": "object",
+        "required": ["name", "language"],
+        "description": "Template aprovado e os valores das suas variáveis.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "pedido_pronto",
+            "description": "Nome do template, exatamente como foi aprovado."
+          },
+          "language": { "$ref": "#/components/schemas/Idioma" },
+          "components": {
+            "type": "array",
+            "description": "Valores das variáveis. Pode ser omitido em templates sem variáveis.",
+            "items": { "$ref": "#/components/schemas/ComponenteTemplate" }
+          }
+        }
+      },
+      "MensagemTemplate": {
+        "type": "object",
+        "required": ["messaging_product", "to", "type", "template"],
+        "properties": {
+          "messaging_product": {
+            "type": "string",
+            "enum": ["whatsapp"],
+            "default": "whatsapp",
+            "example": "whatsapp",
+            "description": "Sempre `whatsapp`."
+          },
+          "recipient_type": {
+            "type": "string",
+            "enum": ["individual"],
+            "default": "individual",
+            "example": "individual",
+            "description": "Sempre `individual`."
+          },
+          "to": {
+            "type": "string",
+            "example": "5511999999999",
+            "description": "Número do destinatário com código do país e DDD, como `5511999999999`. Tem prioridade sobre `recipient`: para enviar pelo ID do usuário, deixe em branco."
+          },
+          "recipient": {
+            "type": "string",
+            "description": "ID do usuário no WhatsApp (BSUID), recebido nos webhooks em `from_user_id` e `contacts[].user_id`, como `BR.13491208655302741918`. Usado quando `to` não é informado."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["template"],
+            "default": "template",
+            "example": "template",
+            "description": "Sempre `template`."
+          },
+          "template": { "$ref": "#/components/schemas/Template" }
+        }
+      }
+    }
+  }
+}
