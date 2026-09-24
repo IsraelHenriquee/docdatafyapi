@@ -1,0 +1,21 @@
+---
+title: "Listar canais"
+openapi: "/api-reference/administracao/specs/canais.json GET /channels/whatsapp"
+---
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `subscription` | Status da assinatura da conta na Datafy. Os valores estão em [Assinatura](/api-reference/administracao/introducao#assinatura). |
+| `channels[].id` | ID do canal |
+| `channels[].name` | Nome dado ao canal |
+| `channels[].description` | Descrição dada ao canal |
+| `channels[].subscribed` | Indica se a assinatura financeira do canal está ativa |
+| `channels[].on_trial` | Indica se o canal está no período de teste |
+| `channels[].trial_ends_at` | Data e hora do fim do período de teste |
+| `channels[].paused` | Indica se o canal está pausado, sem enviar nem receber mensagens |
+| `channels[].waba_id` | ID da conta do WhatsApp Business na Meta |
+| `channels[].phone_number_id` | ID do número na Meta, usado nas URLs de envio |
+| `channels[].business_id` | ID do portfólio empresarial na Meta |
+| `channels[].display_name` | Nome exibido no WhatsApp |

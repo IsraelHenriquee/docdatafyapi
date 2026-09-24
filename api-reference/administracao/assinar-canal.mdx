@@ -1,0 +1,23 @@
+---
+title: "Assinar canal"
+openapi: "/api-reference/administracao/specs/canais.json POST /channels/whatsapp/{id}/subscribe"
+---
+
+## Como funciona a cobrança
+
+A conta tem uma assinatura, e o valor cobrado acompanha a quantidade de canais ativos. Assinar um canal aumenta essa quantidade em um.
+
+- A cobrança proporcional aos dias restantes do ciclo é feita no momento da chamada.
+- Se o cartão for recusado, o canal não é ativado e a resposta é `402`.
+- Assinar um canal que já está ativo não altera nada e devolve a mesma resposta.
+
+<Note>
+  A primeira assinatura da conta e o encerramento dela são feitos no [painel da Datafy](https://app.datafyapi.com.br). Pela API é possível assinar e cancelar canais enquanto a conta tiver uma assinatura ativa.
+</Note>
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do canal |
+| `subscribed` | Situação da assinatura do canal |

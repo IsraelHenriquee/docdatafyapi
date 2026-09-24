@@ -1,0 +1,63 @@
+---
+title: "Introdução"
+description: "Crie e gerencie os canais de WhatsApp da sua conta pela API."
+---
+
+A API de administração permite criar e gerenciar os canais de WhatsApp da conta por requisições, sem passar pelo painel. É voltada a quem integra a Datafy a um sistema próprio e precisa provisionar canais de forma automática.
+
+<Note>
+  Esta seção trata apenas de canais de WhatsApp. A administração de contas do Instagram terá documentação própria.
+</Note>
+
+## Token de conta
+
+As operações de administração usam o **token de conta**, que é diferente do token de cada canal:
+
+| Token | Formato | Escopo | Onde é usado |
+| --- | --- | --- | --- |
+| Token de conta | `sk_acct_...` | Toda a conta | Endpoints de administração (`/channels`) |
+| Token de canal | `sk_live_...` | Um canal | Envio de mensagens e demais endpoints do WhatsApp |
+
+Todas as requisições de administração exigem o token de conta no cabeçalho `Authorization`:
+
+```http
+Authorization: Bearer sk_acct_xxx
+```
+
+Sem o cabeçalho, ou com um token de canal no lugar do token de conta, a resposta é `401`.
+
+### Gerar o token
+
+1. Acesse o painel da Datafy em [Minha conta](https://app.datafyapi.com.br/conta) e abra a aba **Parceiros**.
+2. Na seção **Token de API**, clique em **Criar token**.
+3. Copie o token exibido.
+
+<Warning>
+  O token é exibido **uma única vez**, no momento da criação. Depois disso, o painel mostra apenas o final dele, para identificação. Guarde-o no servidor, como variável de ambiente.
+</Warning>
+
+### Regenerar o token
+
+O botão **Regenerar**, na mesma seção, emite um token novo. A conta mantém apenas um token ativo: ao regenerar, o anterior deixa de funcionar imediatamente, e as integrações que o utilizam passam a receber `401` até serem atualizadas.
+
+## Assinatura
+
+Os endpoints de administração funcionam apenas com a assinatura da conta ativa. A conta é assinante quando tem ao menos um canal ativo, seja de WhatsApp ou de Instagram.
+
+A tabela usa os mesmos valores do campo `subscription`, retornado em [Listar canais](/api-reference/administracao/listar-canais):
+
+| `subscription` | Situação | Acesso à API |
+| --- | --- | --- |
+| `active` | Assinatura ativa | Permitido |
+| `past_due` | Pagamento em atraso | Permitido |
+| `trial` | Período de teste | Não permitido |
+| `pending` | Teste encerrado sem assinatura | Não permitido |
+| `canceled` | Assinatura cancelada | Não permitido |
+
+Para sair do período de teste, acesse o [painel da Datafy](https://app.datafyapi.com.br), crie um canal e ative a assinatura dele. A partir desse momento a conta passa a ser assinante e os endpoints de administração ficam disponíveis.
+
+Quando a assinatura não permite o acesso, a resposta é `403`.
+
+## Limite de requisições
+
+Os endpoints de administração aceitam **120 requisições por minuto** por token de conta, contadas à parte dos [limites da API do WhatsApp](/api-reference/whatsapp/visao-geral/requisicoes#limites-de-requisição). Acima disso, a resposta é `429`.

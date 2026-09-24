@@ -1,0 +1,15 @@
+---
+title: "Listar webhooks"
+openapi: "/api-reference/administracao/specs/canais.json GET /channels/whatsapp/{id}/webhooks"
+---
+
+## Resposta
+
+Uma lista de webhooks, cada um com os campos:
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do webhook |
+| `url` | URL que recebe os eventos |
+| `events` | [Eventos](/api-reference/whatsapp/webhooks/receber-eventos) que o webhook recebe |
+| `enabled` | Indica se o webhook está ativo |

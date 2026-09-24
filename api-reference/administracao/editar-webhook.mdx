@@ -1,0 +1,15 @@
+---
+title: "Editar webhook"
+openapi: "/api-reference/administracao/specs/canais.json PATCH /channels/whatsapp/{id}/webhooks/{webhookId}"
+---
+
+Os valores aceitos em `events` estão em [Criar webhook](/api-reference/administracao/criar-webhook#eventos-disponíveis).
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do webhook |
+| `url` | URL que recebe os eventos |
+| `events` | [Eventos](/api-reference/whatsapp/webhooks/receber-eventos) que o webhook recebe |
+| `enabled` | Indica se o webhook está ativo |

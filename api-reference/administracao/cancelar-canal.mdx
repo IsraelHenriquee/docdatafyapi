@@ -1,0 +1,20 @@
+---
+title: "Cancelar assinatura do canal"
+sidebarTitle: "Cancelar assinatura"
+openapi: "/api-reference/administracao/specs/canais.json POST /channels/whatsapp/{id}/cancel"
+---
+
+Cancelar um canal reduz em um a quantidade cobrada na [assinatura da conta](/api-reference/administracao/assinar-canal#como-funciona-a-cobrança). O crédito proporcional aos dias restantes entra no próximo ciclo.
+
+Cancelar um canal que já está inativo não altera nada e devolve a mesma resposta.
+
+<Warning>
+  Não é possível cancelar o último canal ativo pela API, porque isso encerraria a assinatura da conta. A resposta é `409`, e o encerramento é feito no [painel da Datafy](https://app.datafyapi.com.br).
+</Warning>
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do canal |
+| `subscribed` | Situação da assinatura do canal |

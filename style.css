@@ -110,3 +110,10 @@ body {
 [data-testid="try-it-button"]::before {
   content: "Testar";
 }
+
+/* Rótulo do método na barra lateral: PATCH é a palavra mais longa e quebrava em
+   duas linhas ("PAT-CH"). Mantém o rótulo sempre numa linha só. */
+#navigation-items [class*="text-[0.55rem]"],
+#navigation-items span[class*="rounded-md"][class*="font-bold"] {
+  white-space: nowrap;
+}

@@ -1,0 +1,19 @@
+---
+title: "Criar canal"
+openapi: "/api-reference/administracao/specs/canais.json POST /channels/whatsapp"
+---
+
+<Note>
+  O canal pode ser usado por **2 dias** sem assinatura, para testes. Depois desse prazo é preciso [assinar o canal](/api-reference/administracao/assinar-canal) para ele voltar a funcionar. O fim do prazo vem em `trial_ends_at`, retornado em [Consultar canal](/api-reference/administracao/consultar-canal).
+</Note>
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do canal |
+| `name` | Nome dado ao canal |
+| `description` | Descrição dada ao canal |
+| `token` | Token do canal (`sk_live_`), usado nas requisições da API do WhatsApp deste canal |
+| `webhook_secret` | Segredo usado na [assinatura](/api-reference/whatsapp/webhooks/validar-assinatura) de todos os webhooks deste canal |
+| `subscribed` | Situação da assinatura do canal. Sempre `false` na criação |

@@ -1,0 +1,27 @@
+---
+title: "Consultar canal"
+openapi: "/api-reference/administracao/specs/canais.json GET /channels/whatsapp/{id}"
+---
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do canal |
+| `name` | Nome dado ao canal |
+| `description` | Descrição dada ao canal |
+| `token` | Token do canal (`sk_live_`), usado nas requisições da API do WhatsApp deste canal |
+| `subscribed` | Situação da assinatura do canal |
+| `on_trial` | Indica se o canal está no período de teste |
+| `trial_ends_at` | Data e hora do fim do período de teste |
+| `paused` | Indica se o canal está pausado, sem enviar nem receber mensagens |
+| `waba_id` | ID da conta do WhatsApp Business na Meta |
+| `phone_number_id` | ID do número na Meta, usado nas URLs de envio |
+| `business_id` | ID do portfólio empresarial na Meta |
+| `phone` | Número de telefone conectado ao canal |
+| `display_name` | Nome exibido no WhatsApp |
+| `webhook_secret` | Segredo usado na [assinatura](/api-reference/whatsapp/webhooks/validar-assinatura) de todos os webhooks deste canal |
+| `webhooks[].id` | ID do webhook |
+| `webhooks[].url` | URL que recebe os eventos |
+| `webhooks[].events` | [Eventos](/api-reference/whatsapp/webhooks/receber-eventos) assinados pelo webhook |
+| `webhooks[].enabled` | Indica se o webhook está ativo |

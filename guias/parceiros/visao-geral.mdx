@@ -1,0 +1,47 @@
+---
+title: "Seja um parceiro"
+sidebarTitle: "Visão geral"
+description: "Ofereça o WhatsApp dentro do seu próprio produto, usando a infraestrutura da Datafy."
+---
+
+Como parceiro, você usa a Datafy por trás do seu produto: cria os canais, conecta os números dos seus clientes e gerencia tudo pela API. O cliente final faz a conexão dentro do seu SaaS, sem acessar o painel da Datafy.
+
+Tudo isso é feito pela [API de administração](/api-reference/administracao/introducao), com um token que vale para a sua conta inteira.
+
+## O que você precisa
+
+<Steps>
+  <Step title="Uma assinatura ativa na Datafy">
+    A API de administração exige assinatura ativa. Acesse o [painel](https://app.datafyapi.com.br), crie um canal e assine esse canal. A partir desse momento a API fica liberada para criar e gerenciar os demais canais.
+  </Step>
+  <Step title="Uma chave de API">
+    No painel, em [Minha conta](https://app.datafyapi.com.br/conta), abra a aba **Parceiros** e, na seção **Token de API**, clique em **Criar token**. O token tem o formato `sk_acct_` e é exibido uma única vez.
+  </Step>
+</Steps>
+
+<Warning>
+  A chave de API dá acesso a todos os canais da sua conta. Use-a apenas no seu servidor, nunca no navegador do cliente.
+</Warning>
+
+## Como a cobrança acompanha os canais
+
+A sua conta tem **uma assinatura**, e o valor acompanha a quantidade de canais ativos:
+
+- Assinar um canal acrescenta uma unidade.
+- Cancelar a assinatura de um canal remove uma unidade.
+
+A primeira assinatura e o encerramento da assinatura são feitos no painel. Entre um e outro, você assina e cancela canais pela API.
+
+## Próximos passos
+
+<CardGroup cols={2}>
+  <Card title="Fluxo de integração" icon="diagram-project" href="/guias/parceiros/fluxo-de-integracao">
+    A sequência de chamadas para criar, assinar e conectar o canal do seu cliente.
+  </Card>
+  <Card title="Pausar e retomar" icon="circle-pause" href="/guias/parceiros/pausar-e-retomar">
+    Como bloquear e liberar o tráfego de um canal.
+  </Card>
+  <Card title="Assinatura e cobrança" icon="receipt" href="/guias/parceiros/assinatura-e-cobranca">
+    O preço por canal e como as mudanças no meio do ciclo são calculadas.
+  </Card>
+</CardGroup>

@@ -1,0 +1,16 @@
+---
+title: "Pausar e retomar"
+description: "Bloqueie e libere o tráfego de um canal sem desfazer a conexão."
+---
+
+Quando um cliente seu suspende o uso, [Pausar canal](/api-reference/administracao/pausar-canal) bloqueia o tráfego daquele canal: ele para de enviar e de receber mensagens. As chamadas feitas com o token do canal passam a responder `409`, e nenhum evento é entregue nos webhooks.
+
+Para liberar de novo, use [Retomar canal](/api-reference/administracao/retomar-canal). O canal volta a funcionar na hora.
+
+<Note>
+  Pausar não desfaz a conexão com a Meta. A Cloud API não permite desconectar um número por API: isso só acontece pelo aplicativo no celular do cliente ou removendo o parceiro no portfólio empresarial dele. O que a pausa faz é interromper o tráfego, o que basta para suspender o uso.
+</Note>
+
+## Quando retomar não resolve
+
+Se o número tiver saído da API, porque foi conectado em outra conta por exemplo, retomar responde `409`. Nesse caso o canal precisa ser conectado de novo: gere um [link de conexão](/api-reference/administracao/gerar-link-de-conexao) novo e repita o [fluxo de conexão](/guias/parceiros/fluxo-de-integracao#4-abra-a-janela-de-conexão) com o cliente.

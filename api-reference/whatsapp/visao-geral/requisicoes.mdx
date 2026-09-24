@@ -29,13 +29,15 @@ Quando não houver mais páginas, a resposta vem sem `paging.next`.
 
 ## Limites de requisição
 
-Os limites são contados **por token**, em janelas de 1 minuto:
+Os limites são contados **por token**, em janelas de 1 minuto. Os endpoints de [Administração](/api-reference/administracao/introducao) são contados à parte, pelo token de conta:
 
 | Categoria | Rotas | Limite |
 | --- | --- | --- |
-| Envio de mensagens | `POST /v1/{phone_number_id}/messages` | 500 req/min |
+| Envio de mensagens | `POST /v1/{phone_number_id}/messages` | 4.800 req/min |
+| Download de mídia recebida | `GET /media/...` | 6.000 req/min |
 | Upload de mídia | `POST /v1/{phone_number_id}/media` | 60 req/min |
-| Consultas | Todas as outras | 60 req/min |
+| Consultas | Demais endpoints do WhatsApp | 60 req/min |
+| Administração de canais | `/channels` | 120 req/min |
 
 Quando o limite é excedido, a API retorna **`429 Too Many Requests`**, com uma mensagem indicando quantos segundos aguardar:
 
@@ -66,6 +68,7 @@ Antes de repassar a requisição para a Meta, a Datafy valida o token, a assinat
 | `401 Unauthorized` | O header `Authorization` não foi enviado, ou o token é inválido. |
 | `402 Payment Required` | O token existe, mas a assinatura da Datafy está inativa. Ative a assinatura no painel. |
 | `403 Forbidden` | A operação é bloqueada por segurança, o ID do caminho não pertence ao token, ou um token de Instagram foi usado numa rota de WhatsApp. |
+| `409 Conflict` | O canal está pausado e não envia nem recebe mensagens. Libere-o em [Retomar canal](/api-reference/administracao/retomar-canal). |
 | `429 Too Many Requests` | O limite de requisições foi excedido. A mensagem informa quantos segundos aguardar. |
 
 ## Erros da Meta

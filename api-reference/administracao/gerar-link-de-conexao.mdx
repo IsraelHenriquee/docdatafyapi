@@ -1,0 +1,72 @@
+---
+title: "Gerar link de conexão"
+sidebarTitle: "Gerar link"
+openapi: "/api-reference/administracao/specs/canais.json POST /channels/whatsapp/{id}/connect-link"
+---
+
+Um canal criado pela API nasce sem número. Esta chamada gera o link que o cliente abre para conectar o WhatsApp dele ao canal.
+
+## Como usar o link
+
+Gere o link no seu servidor e abra a `url` no navegador do cliente, em uma janela nova:
+
+```js
+const janela = window.open(url, 'datafy-conexao', 'width=600,height=760')
+```
+
+<Frame>
+  <img src="/images/administracao/janela-de-conexao.webp" alt="Janela de conexão aberta para o cliente, com a marca do parceiro e o botão para conectar o WhatsApp." width="380" height="447" style={{ maxWidth: "380px", margin: "0 auto" }} />
+</Frame>
+
+<Note>
+  A janela de conexão pode levar a sua marca. No [painel da Datafy](https://app.datafyapi.com.br/conta), na aba **Parceiros**, é possível definir o logotipo, o nome da empresa e a cor do fundo.
+</Note>
+
+<Warning>
+  Gere o link a partir do seu servidor. O token de conta dá acesso a todos os canais e não deve ser exposto no navegador.
+</Warning>
+
+## Resultado da conexão
+
+Ao terminar, a janela envia uma mensagem para a página que a abriu, já com os dados da conexão:
+
+```js
+window.addEventListener('message', (evento) => {
+  if (evento.origin !== 'https://app.datafyapi.com.br') return
+  if (evento.data?.source !== 'datafy') return
+
+  if (evento.data.event === 'connected') {
+    const { phone_number_id, waba_id, business_id, coexistence } = evento.data.data
+    // canal conectado
+  }
+
+  if (evento.data.event === 'error') {
+    // evento.data.message traz o motivo
+  }
+})
+```
+
+| Evento | Conteúdo |
+| --- | --- |
+| `connected` | `data` com `phone_number_id`, `waba_id`, `business_id` e `coexistence` |
+| `error` | `message` com o motivo da falha |
+
+O campo `coexistence` indica que o número foi conectado mantendo o aplicativo do WhatsApp Business em uso.
+
+Depois do sucesso, a janela se fecha sozinha. Em caso de erro ela permanece aberta, para o cliente tentar de novo.
+
+<Note>
+  Os dados da mensagem já bastam para registrar a conexão. Use [Consultar canal](/api-reference/administracao/consultar-canal) quando precisar dos demais campos, como o número exibido e os webhooks, ou para confirmar a conexão mais tarde.
+</Note>
+
+## Validade
+
+O link vale **24 horas** e é de **uso único**: ele deixa de funcionar assim que a conexão é concluída. Para conectar de novo, gere um link novo.
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `url` | Endereço da página de conexão, para abrir no navegador do cliente |
+| `token` | Token do link, já incluído na `url` |
+| `expires_in` | Validade do link, em segundos |

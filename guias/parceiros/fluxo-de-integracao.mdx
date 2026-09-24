@@ -1,0 +1,68 @@
+---
+title: "Fluxo de integração"
+description: "A sequência de chamadas para criar, assinar e conectar o canal de um cliente."
+---
+
+O caminho abaixo é o que o seu produto executa cada vez que um cliente novo vai usar o WhatsApp.
+
+## 1. Crie o canal
+
+[Criar canal](/api-reference/administracao/criar-canal) devolve o `id` do canal e as credenciais dele: o `token`, usado para enviar mensagens, e o `webhook_secret`, usado para validar os webhooks. Guarde os dois junto do cadastro do cliente no seu sistema.
+
+O canal nasce sem número e sem assinatura.
+
+## 2. Assine o canal
+
+[Assinar canal](/api-reference/administracao/assinar-canal) ativa a cobrança e libera o uso. Um canal recém-criado também pode ser usado por **2 dias** sem assinatura, para testes.
+
+## 3. Gere o link de conexão
+
+[Gerar link de conexão](/api-reference/administracao/gerar-link-de-conexao) devolve a `url` que o cliente abre para conectar o WhatsApp dele.
+
+<Note>
+  O link vale 24 horas e é de uso único. Gere um link novo no momento em que o cliente clica no botão, em vez de reaproveitar um link guardado.
+</Note>
+
+## 4. Abra a janela de conexão
+
+Abra a `url` numa janela nova, a partir da tela do seu produto:
+
+```js
+const janela = window.open(url, 'datafy-conexao', 'width=600,height=760')
+```
+
+O cliente vê esta janela e segue o processo da Meta por ela:
+
+<Frame>
+  <img src="/images/administracao/janela-de-conexao.webp" alt="Janela de conexão aberta para o cliente, com a marca do parceiro e o botão para conectar o WhatsApp." width="380" height="447" style={{ maxWidth: "380px", margin: "0 auto" }} />
+</Frame>
+
+A janela leva a sua marca. No painel, em [Minha conta](https://app.datafyapi.com.br/conta), na aba **Parceiros**, defina o logotipo, o nome da empresa e a cor do fundo.
+
+## 5. Receba os dados da conexão
+
+Ao terminar, a janela envia os dados para a página que a abriu e se fecha sozinha:
+
+```js
+window.addEventListener('message', (evento) => {
+  if (evento.origin !== 'https://app.datafyapi.com.br') return
+  if (evento.data?.source !== 'datafy') return
+
+  if (evento.data.event === 'connected') {
+    const { phone_number_id, waba_id, business_id, coexistence } = evento.data.data
+    // canal conectado: registre os dados no seu sistema
+  }
+
+  if (evento.data.event === 'error') {
+    // evento.data.message traz o motivo
+  }
+})
+```
+
+Em caso de erro, a janela permanece aberta para o cliente tentar de novo.
+
+Esses dados também ficam disponíveis a qualquer momento em [Consultar canal](/api-reference/administracao/consultar-canal), junto do número exibido, dos webhooks e da situação da assinatura.
+
+## 6. Use o canal
+
+Com o canal conectado, o `token` dele passa a valer na [API do WhatsApp](/api-reference/whatsapp/introducao): enviar mensagens, criar templates e receber eventos nos [webhooks](/api-reference/whatsapp/webhooks/receber-eventos).

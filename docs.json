@@ -83,6 +83,19 @@
                   },
                   "guias/meta/pagamento"
                 ]
+              },
+              {
+                "group": "Parceiros",
+                "icon": {
+                  "name": "handshake",
+                  "style": "regular"
+                },
+                "pages": [
+                  "guias/parceiros/visao-geral",
+                  "guias/parceiros/fluxo-de-integracao",
+                  "guias/parceiros/pausar-e-retomar",
+                  "guias/parceiros/assinatura-e-cobranca"
+                ]
               }
             ]
           },
@@ -103,6 +116,56 @@
                   "api-reference/whatsapp/introducao",
                   "api-reference/whatsapp/visao-geral/autenticacao",
                   "api-reference/whatsapp/visao-geral/requisicoes"
+                ]
+              },
+              {
+                "group": "Administração",
+                "icon": {
+                  "name": "user-gear",
+                  "style": "regular"
+                },
+                "pages": [
+                  "api-reference/administracao/introducao",
+                  {
+                    "group": "Canais",
+                    "pages": [
+                      "api-reference/administracao/listar-canais",
+                      "api-reference/administracao/criar-canal",
+                      "api-reference/administracao/consultar-canal",
+                      "api-reference/administracao/editar-canal",
+                      "api-reference/administracao/rotacionar-token",
+                      "api-reference/administracao/assinar-canal",
+                      "api-reference/administracao/cancelar-canal",
+                      "api-reference/administracao/deletar-canal"
+                    ]
+                  },
+                  {
+                    "group": "Conexão",
+                    "pages": [
+                      "api-reference/administracao/gerar-link-de-conexao",
+                      "api-reference/administracao/pausar-canal",
+                      "api-reference/administracao/retomar-canal"
+                    ]
+                  },
+                  {
+                    "group": "Webhooks do canal",
+                    "pages": [
+                      "api-reference/administracao/listar-webhooks",
+                      "api-reference/administracao/criar-webhook",
+                      "api-reference/administracao/editar-webhook",
+                      "api-reference/administracao/remover-webhook",
+                      "api-reference/administracao/rotacionar-webhook-secret"
+                    ]
+                  },
+                  {
+                    "group": "Webhook global",
+                    "pages": [
+                      "api-reference/administracao/consultar-webhook-global",
+                      "api-reference/administracao/configurar-webhook-global",
+                      "api-reference/administracao/remover-webhook-global",
+                      "api-reference/administracao/rotacionar-secret-global"
+                    ]
+                  }
                 ]
               },
               {
@@ -164,8 +227,7 @@
                   "api-reference/whatsapp/templates/editar-template",
                   "api-reference/whatsapp/templates/listar-templates",
                   "api-reference/whatsapp/templates/deletar-template",
-                  "api-reference/whatsapp/templates/enviar-template",
-                  "api-reference/whatsapp/templates/migrar-templates"
+                  "api-reference/whatsapp/templates/enviar-template"
                 ]
               },
               {
@@ -254,6 +316,9 @@
       "auth": {
         "method": "bearer"
       }
+    },
+    "playground": {
+      "proxy": false
     }
   },
   "footer": {

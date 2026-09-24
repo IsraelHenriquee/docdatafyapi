@@ -3,7 +3,9 @@ title: "Autenticação"
 description: "Envie o token da Datafy no header de todas as requisições."
 ---
 
-Todas as requisições usam o token `sk_live_xxx`, gerado no [painel da Datafy](https://app.datafyapi.com.br) quando você cria o canal. Envie o token **sempre no header** `Authorization`:
+## Token do canal
+
+As requisições da API do WhatsApp usam o token do canal, `sk_live_xxx`, gerado no [painel da Datafy](https://app.datafyapi.com.br) quando você cria o canal. Envie o token **sempre no header** `Authorization`:
 
 ```http
 Authorization: Bearer sk_live_xxx
@@ -29,3 +31,18 @@ curl "https://cloud.datafyapi.com.br/v1/{WABA_ID}?fields=analytics&access_token=
 Um `access_token` enviado na URL é ignorado. A Datafy usa o token do header e envia a credencial real para a Meta por conta própria, sem expô-la.
 
 Se o token estiver ausente ou inválido, a resposta é **`401`**. Se a assinatura da Datafy estiver inativa, é **`402`**. Veja todos os códigos em [Erros](/api-reference/whatsapp/visao-geral/requisicoes#erros-da-datafy).
+
+## Token de conta
+
+Os endpoints de [Administração](/api-reference/administracao/introducao), que criam e gerenciam canais, usam outro token: o **token de conta**, no formato `sk_acct_xxx`. Ele vale para a conta inteira e é gerado no painel, em [Minha conta](https://app.datafyapi.com.br/conta), na aba **Parceiros**.
+
+```http
+Authorization: Bearer sk_acct_xxx
+```
+
+| Token | Onde é usado |
+| --- | --- |
+| `sk_live_` | Endpoints do WhatsApp, em um canal |
+| `sk_acct_` | Endpoints de administração, em `/channels` |
+
+A administração exige que a conta tenha uma assinatura ativa. Sem isso, a resposta é **`403`**.

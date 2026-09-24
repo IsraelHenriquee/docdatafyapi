@@ -1,0 +1,16 @@
+---
+title: "Deletar canal"
+openapi: "/api-reference/administracao/specs/canais.json DELETE /channels/whatsapp/{id}"
+---
+
+O canal sai da listagem e o token dele deixa de funcionar.
+
+<Warning>
+  A assinatura do canal precisa estar cancelada antes. Com a assinatura ativa, a resposta é `409`. Veja [Cancelar assinatura do canal](/api-reference/administracao/cancelar-canal).
+</Warning>
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `ok` | Confirma a remoção |

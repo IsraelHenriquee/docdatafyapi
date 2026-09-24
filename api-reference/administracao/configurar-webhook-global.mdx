@@ -1,0 +1,26 @@
+---
+title: "Configurar webhook global"
+sidebarTitle: "Configurar"
+openapi: "/api-reference/administracao/specs/canais.json PUT /channels/whatsapp/global-webhook"
+---
+
+O webhook global é um destino único que recebe os eventos de **todos os canais** de WhatsApp da conta, sem precisar configurar um webhook em cada canal.
+
+## Como funciona
+
+- A conta tem **um** webhook global, apenas para WhatsApp.
+- Ele funciona junto com os webhooks dos canais: um evento é entregue no webhook global e no webhook do canal. Se os dois apontam para a mesma URL, ela recebe o mesmo evento duas vezes, cada entrega assinada com o secret correspondente.
+- As entregas são assinadas com o `secret` do próprio webhook global, no mesmo esquema de [assinatura](/api-reference/whatsapp/webhooks/validar-assinatura) dos webhooks dos canais. O secret é gerado na primeira configuração e mantido nas substituições seguintes; para trocá-lo, use [Rotacionar secret global](/api-reference/administracao/rotacionar-secret-global).
+
+<Warning>
+  Diferente da edição dos webhooks dos canais, esta chamada substitui o webhook inteiro. Campos omitidos voltam ao valor padrão: `events` passa a ser `messages` e `smb_message_echoes`, e `enabled` passa a ser `true`.
+</Warning>
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `webhook.url` | URL que recebe os eventos de todos os canais |
+| `webhook.events` | [Eventos](/api-reference/administracao/criar-webhook#eventos-disponíveis) que o webhook recebe |
+| `webhook.enabled` | Indica se o webhook está ativo |
+| `webhook.secret` | Secret usado na [assinatura](/api-reference/whatsapp/webhooks/validar-assinatura) das entregas deste webhook |

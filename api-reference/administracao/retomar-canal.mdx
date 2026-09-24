@@ -1,0 +1,18 @@
+---
+title: "Retomar canal"
+sidebarTitle: "Retomar"
+openapi: "/api-reference/administracao/specs/canais.json POST /channels/whatsapp/{id}/resume"
+---
+
+Desfaz a pausa feita em [Pausar canal](/api-reference/administracao/pausar-canal). O canal volta a enviar e a receber mensagens na hora.
+
+<Warning>
+  Se o número tiver saído da API — por ter sido conectado em outra conta, por exemplo — a resposta é `409`. Nesse caso retomar não resolve: gere um novo link em [Gerar link de conexão](/api-reference/administracao/gerar-link-de-conexao) e refaça a conexão.
+</Warning>
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do canal |
+| `paused` | Indica se o canal está pausado |

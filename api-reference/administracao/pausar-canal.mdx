@@ -1,0 +1,20 @@
+---
+title: "Pausar canal"
+sidebarTitle: "Pausar"
+openapi: "/api-reference/administracao/specs/canais.json POST /channels/whatsapp/{id}/pause"
+---
+
+Pausa o canal: ele para de enviar e de receber mensagens. Enquanto está pausado, as chamadas feitas com o token do canal respondem `409`, e nenhum evento é entregue nos webhooks.
+
+<Note>
+  O número continua conectado à Meta. A Cloud API não permite desfazer a conexão por API: isso só acontece pelo aplicativo no celular do cliente ou removendo o parceiro no portfólio empresarial. O que esta chamada faz é interromper o tráfego do canal, o que basta para suspender o uso.
+</Note>
+
+Para liberar de novo, use [Retomar canal](/api-reference/administracao/retomar-canal).
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do canal |
+| `paused` | Indica se o canal está pausado |

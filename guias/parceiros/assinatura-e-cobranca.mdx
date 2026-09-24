@@ -1,0 +1,58 @@
+---
+title: "Assinatura e cobrança"
+description: "Quanto custa cada canal e como as mudanças no meio do ciclo são calculadas."
+---
+
+A sua conta tem uma assinatura só, e o valor acompanha a quantidade de canais ativos. Cada canal custa **R\$ 49,90 por mês**. O valor por canal diminui conforme o volume, e as faixas estão na [página de preços](https://datafyapi.com.br/#preco).
+
+Toda mudança feita no meio do ciclo é proporcional aos dias restantes.
+
+## Assinar um canal no meio do ciclo
+
+<Steps>
+  <Step title="Dia 10: primeiro canal">
+    Você assina o primeiro canal e paga **R\$ 49,90**. A partir daí, o ciclo fecha todo dia 10.
+  </Step>
+  <Step title="Dia 20: segundo canal">
+    Você assina outro canal. Faltam 20 dias para o fim do ciclo, então você paga agora apenas por esses dias: cerca de **R\$ 33,27**.
+  </Step>
+  <Step title="Dia 10 do mês seguinte: renovação">
+    Você paga **R\$ 99,80**, que é o mês inteiro dos dois canais ativos.
+  </Step>
+</Steps>
+
+## Cancelar um canal no meio do ciclo
+
+Partindo da situação anterior: dois canais ativos, fatura de R\$ 99,80 e ciclo fechando todo dia 10.
+
+<Steps>
+  <Step title="Dia 23: cancelamento">
+    Você cancela um dos canais. Nada é cobrado nem devolvido agora. Fica registrado um crédito de cerca de **R\$ 28,28**, referente aos 17 dias que faltavam.
+  </Step>
+  <Step title="Dia 10 do mês seguinte — renovação">
+    Você paga **R\$ 21,62**: são R\$ 49,90 do canal que continuou ativo, menos os R\$ 28,28 de crédito.
+  </Step>
+</Steps>
+
+<Note>
+  Os valores são aproximados. O cálculo considera o tempo exato em que cada canal ficou ativo e a duração do mês em questão.
+</Note>
+
+## O que é feito no painel
+
+Duas operações não passam pela API:
+
+- **A primeira assinatura da conta**, que cria a assinatura na Datafy.
+- **O cancelamento do último canal ativo**, que encerraria a assinatura. Cancelar o único canal ativo pela API devolve `409`, e o encerramento precisa ser feito no [painel](https://app.datafyapi.com.br).
+
+Entre uma e outra, assinar e cancelar canais funciona normalmente pela API.
+
+## Resumo
+
+| Ação | Cobrança |
+| --- | --- |
+| Assinar um canal | Proporcional aos dias restantes, cobrada na hora |
+| Cancelar um canal | Crédito abatido na fatura seguinte |
+| Renovação | Valor cheio de todos os canais ativos |
+
+Em todos os casos, o que se paga corresponde aos dias em que cada canal ficou ativo.

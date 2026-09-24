@@ -1,0 +1,1866 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Administração de canais",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "tokenDeConta": []
+    }
+  ],
+  "paths": {
+    "/channels/whatsapp": {
+      "get": {
+        "summary": "Listar canais",
+        "operationId": "listarCanais",
+        "description": "Lista os canais de WhatsApp da conta, com o status da assinatura.",
+        "responses": {
+          "200": {
+            "description": "Canais da conta.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListaDeCanais"
+                },
+                "example": {
+                  "subscription": "active",
+                  "channels": [
+                    {
+                      "id": "3f1c9a2e-7b4d-4c1a-9f0e-2d8b6a5c4e10",
+                      "name": "Atendimento",
+                      "description": "Canal do suporte",
+                      "subscribed": true,
+                      "on_trial": false,
+                      "trial_ends_at": null,
+                      "paused": false,
+                      "waba_id": "1804533510429086",
+                      "phone_number_id": "833381263194512",
+                      "business_id": "7284633064948531",
+                      "display_name": "Minha Empresa"
+                    },
+                    {
+                      "id": "8a2d4f6b-1c3e-4a5b-8d7f-9e0a1b2c3d4e",
+                      "name": "Vendas",
+                      "description": null,
+                      "subscribed": false,
+                      "on_trial": true,
+                      "trial_ends_at": "2026-09-25T12:00:00Z",
+                      "paused": false,
+                      "waba_id": null,
+                      "phone_number_id": null,
+                      "business_id": null,
+                      "display_name": null
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar canal",
+        "operationId": "criarCanal",
+        "description": "Cria um canal de comunicação, que depois é conectado ao WhatsApp.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Atendimento",
+                    "description": "Nome do canal."
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Canal do suporte",
+                    "description": "Descrição do canal. Opcional."
+                  }
+                }
+              },
+              "example": {
+                "name": "Atendimento",
+                "description": "Canal do suporte"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Canal criado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "name": "Atendimento",
+                  "description": "Canal do suporte",
+                  "token": "sk_live_xxx",
+                  "webhook_secret": "whsec_xxx",
+                  "subscribed": false
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CanalCriado"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "O campo name não foi informado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 400,
+                  "message": "O nome do canal (name) é obrigatório"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/{id}": {
+      "get": {
+        "summary": "Consultar canal",
+        "operationId": "consultarCanal",
+        "description": "Retorna um canal com as credenciais e os webhooks cadastrados.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do canal.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "3f1c9a2e-7b4d-4c1a-9f0e-2d8b6a5c4e10",
+                  "name": "Atendimento",
+                  "description": "Canal do suporte",
+                  "token": "sk_live_xxx",
+                  "subscribed": true,
+                  "on_trial": false,
+                  "trial_ends_at": null,
+                  "paused": false,
+                  "waba_id": "1804533510429086",
+                  "phone_number_id": "833381263194512",
+                  "business_id": "7284633064948531",
+                  "phone": "+55 11 98888-7777",
+                  "display_name": "Minha Empresa",
+                  "webhook_secret": "whsec_xxx",
+                  "webhooks": [
+                    {
+                      "id": "9d8c7b6a-5f4e-4d3c-2b1a-0f9e8d7c6b5a",
+                      "url": "https://exemplo.com/webhook",
+                      "events": [
+                        "messages"
+                      ],
+                      "enabled": true
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CanalDetalhe"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Editar canal",
+        "operationId": "editarCanal",
+        "description": "Altera o nome e a descrição do canal. Envie apenas os campos que mudam.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Atendimento",
+                    "description": "Novo nome do canal. Não pode ser vazio."
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Canal do suporte",
+                    "description": "Nova descrição do canal."
+                  }
+                }
+              },
+              "example": {
+                "name": "Atendimento",
+                "description": "Canal do suporte"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Canal editado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID do canal."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nome do canal."
+                    },
+                    "description": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Descrição do canal."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "name": "Atendimento",
+                  "description": "Canal do suporte"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nenhum campo enviado, ou name vazio.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "sem_campos": {
+                    "summary": "Nenhum campo enviado",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Envie \"name\" e/ou \"description\" para editar"
+                    }
+                  },
+                  "nome_vazio": {
+                    "summary": "name vazio",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "O nome do canal (name) não pode ser vazio"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletar canal",
+        "operationId": "deletarCanal",
+        "description": "Remove o canal da conta. A assinatura do canal precisa estar cancelada.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Canal deletado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "Confirma a remoção."
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "O canal ainda tem assinatura ativa.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 409,
+                  "message": "Cancele a assinatura do canal antes de deletá-lo."
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/{id}/token": {
+      "post": {
+        "summary": "Rotacionar token",
+        "operationId": "rotacionarToken",
+        "description": "Gera um novo token para o canal. O token anterior deixa de funcionar imediatamente.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credencial gerada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "Novo token do canal (`sk_live_`)."
+                    }
+                  }
+                },
+                "example": {
+                  "token": "sk_live_xxx"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/{id}/webhook-secret": {
+      "post": {
+        "summary": "Rotacionar webhook secret",
+        "operationId": "rotacionarWebhookSecret",
+        "description": "Gera um novo secret para a assinatura dos webhooks do canal. As próximas entregas já são assinadas com ele.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credencial gerada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "webhook_secret": {
+                      "type": "string",
+                      "description": "Novo secret dos webhooks do canal."
+                    }
+                  }
+                },
+                "example": {
+                  "webhook_secret": "whsec_xxx"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/{id}/webhooks": {
+      "get": {
+        "summary": "Listar webhooks",
+        "operationId": "listarWebhooks",
+        "description": "Lista os webhooks cadastrados no canal.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhooks do canal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebhookResposta"
+                  }
+                },
+                "example": [
+                  {
+                    "id": "9d8c7b6a-5f4e-4d3c-2b1a-0f9e8d7c6b5a",
+                    "url": "https://exemplo.com/webhook",
+                    "events": [
+                      "messages"
+                    ],
+                    "enabled": true
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar webhook",
+        "operationId": "criarWebhook",
+        "description": "Cadastra uma URL para receber os eventos do canal.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "url"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "example": "https://exemplo.com/webhook",
+                    "description": "URL que recebe os eventos. Precisa usar HTTPS."
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "messages",
+                        "smb_message_echoes",
+                        "message_template_status_update",
+                        "message_template_quality_update",
+                        "message_template_components_update",
+                        "account_alerts",
+                        "account_update",
+                        "account_review_update",
+                        "account_settings_update",
+                        "phone_number_name_update",
+                        "phone_number_quality_update",
+                        "business_capability_update",
+                        "business_status_update",
+                        "template_category_update",
+                        "template_correct_category_detection",
+                        "flows",
+                        "calls",
+                        "security",
+                        "automatic_events",
+                        "tracking_events",
+                        "history",
+                        "smb_app_state_sync",
+                        "payment_configuration_update",
+                        "partner_solutions",
+                        "group_lifecycle_update",
+                        "group_participants_update",
+                        "group_settings_update",
+                        "group_status_update",
+                        "user_preferences"
+                      ]
+                    },
+                    "example": [
+                      "messages"
+                    ],
+                    "description": "Eventos que o webhook recebe. Se omitido, recebe `messages` e `smb_message_echoes`. Não pode ser uma lista vazia."
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "example": true,
+                    "default": true,
+                    "description": "Ativa ou desativa o webhook."
+                  }
+                }
+              },
+              "example": {
+                "url": "https://exemplo.com/webhook",
+                "events": [
+                  "messages"
+                ],
+                "enabled": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook criado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResposta"
+                },
+                "example": {
+                  "id": "9d8c7b6a-5f4e-4d3c-2b1a-0f9e8d7c6b5a",
+                  "url": "https://exemplo.com/webhook",
+                  "events": [
+                    "messages"
+                  ],
+                  "enabled": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "url_invalida": {
+                    "summary": "URL sem HTTPS",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "URL inválida — precisa ser https://…"
+                    }
+                  },
+                  "events_nao_lista": {
+                    "summary": "events não é uma lista",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "events deve ser uma lista de eventos"
+                    }
+                  },
+                  "events_vazio": {
+                    "summary": "events vazio",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "O webhook precisa de ao menos um evento (sem evento ele nunca dispara)"
+                    }
+                  },
+                  "evento_inexistente": {
+                    "summary": "Evento inexistente",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Evento(s) inválido(s): mesages"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/{id}/webhooks/{webhookId}": {
+      "patch": {
+        "summary": "Editar webhook",
+        "operationId": "editarWebhook",
+        "description": "Altera a URL, os eventos ou a situação do webhook. Envie apenas os campos que mudam; use `enabled` para ativar ou desativar.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          },
+          {
+            "$ref": "#/components/parameters/WebhookId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "example": "https://exemplo.com/webhook",
+                    "description": "URL que recebe os eventos. Precisa usar HTTPS."
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "messages",
+                        "smb_message_echoes",
+                        "message_template_status_update",
+                        "message_template_quality_update",
+                        "message_template_components_update",
+                        "account_alerts",
+                        "account_update",
+                        "account_review_update",
+                        "account_settings_update",
+                        "phone_number_name_update",
+                        "phone_number_quality_update",
+                        "business_capability_update",
+                        "business_status_update",
+                        "template_category_update",
+                        "template_correct_category_detection",
+                        "flows",
+                        "calls",
+                        "security",
+                        "automatic_events",
+                        "tracking_events",
+                        "history",
+                        "smb_app_state_sync",
+                        "payment_configuration_update",
+                        "partner_solutions",
+                        "group_lifecycle_update",
+                        "group_participants_update",
+                        "group_settings_update",
+                        "group_status_update",
+                        "user_preferences"
+                      ]
+                    },
+                    "example": [
+                      "messages"
+                    ],
+                    "description": "Eventos que o webhook recebe. Não pode ser uma lista vazia."
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "example": true,
+                    "default": true,
+                    "description": "Ativa ou desativa o webhook."
+                  }
+                }
+              },
+              "example": {
+                "enabled": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook editado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResposta"
+                },
+                "example": {
+                  "id": "9d8c7b6a-5f4e-4d3c-2b1a-0f9e8d7c6b5a",
+                  "url": "https://exemplo.com/webhook",
+                  "events": [
+                    "messages"
+                  ],
+                  "enabled": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "sem_campos": {
+                    "summary": "Nenhum campo enviado",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Envie url, events e/ou enabled para editar"
+                    }
+                  },
+                  "url_invalida": {
+                    "summary": "URL sem HTTPS",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "URL inválida — precisa ser https://…"
+                    }
+                  },
+                  "events_nao_lista": {
+                    "summary": "events não é uma lista",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "events deve ser uma lista de eventos"
+                    }
+                  },
+                  "events_vazio": {
+                    "summary": "events vazio",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "O webhook precisa de ao menos um evento (sem evento ele nunca dispara)"
+                    }
+                  },
+                  "evento_inexistente": {
+                    "summary": "Evento inexistente",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Evento(s) inválido(s): mesages"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "description": "Canal ou webhook não encontrado.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "canal": {
+                    "summary": "Canal não encontrado",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Canal não encontrado"
+                    }
+                  },
+                  "webhook": {
+                    "summary": "Webhook não encontrado",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Webhook não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remover webhook",
+        "operationId": "removerWebhook",
+        "description": "Remove um webhook do canal.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          },
+          {
+            "$ref": "#/components/parameters/WebhookId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook removido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "Confirma a remoção."
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "description": "Canal ou webhook não encontrado.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "canal": {
+                    "summary": "Canal não encontrado",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Canal não encontrado"
+                    }
+                  },
+                  "webhook": {
+                    "summary": "Webhook não encontrado",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Webhook não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/global-webhook": {
+      "get": {
+        "summary": "Consultar webhook global",
+        "operationId": "consultarWebhookGlobal",
+        "description": "Retorna o webhook global da conta, que recebe os eventos de todos os canais.",
+        "responses": {
+          "200": {
+            "description": "Webhook global da conta.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespostaWebhookGlobal"
+                },
+                "examples": {
+                  "configurado": {
+                    "summary": "Webhook configurado",
+                    "value": {
+                      "webhook": {
+                        "url": "https://exemplo.com/webhook-global",
+                        "events": [
+                          "messages",
+                          "smb_message_echoes"
+                        ],
+                        "enabled": true,
+                        "secret": "whsec_xxx"
+                      }
+                    }
+                  },
+                  "nao_configurado": {
+                    "summary": "Sem webhook global",
+                    "value": {
+                      "webhook": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      },
+      "put": {
+        "summary": "Configurar webhook global",
+        "operationId": "configurarWebhookGlobal",
+        "description": "Cria ou substitui o webhook global da conta. O corpo define o webhook inteiro: os campos omitidos voltam ao valor padrão.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "url"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "example": "https://exemplo.com/webhook-global",
+                    "description": "URL que recebe os eventos de todos os canais. Precisa usar HTTPS."
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "messages",
+                        "smb_message_echoes",
+                        "message_template_status_update",
+                        "message_template_quality_update",
+                        "message_template_components_update",
+                        "account_alerts",
+                        "account_update",
+                        "account_review_update",
+                        "account_settings_update",
+                        "phone_number_name_update",
+                        "phone_number_quality_update",
+                        "business_capability_update",
+                        "business_status_update",
+                        "template_category_update",
+                        "template_correct_category_detection",
+                        "flows",
+                        "calls",
+                        "security",
+                        "automatic_events",
+                        "tracking_events",
+                        "history",
+                        "smb_app_state_sync",
+                        "payment_configuration_update",
+                        "partner_solutions",
+                        "group_lifecycle_update",
+                        "group_participants_update",
+                        "group_settings_update",
+                        "group_status_update",
+                        "user_preferences"
+                      ]
+                    },
+                    "example": [
+                      "messages",
+                      "smb_message_echoes"
+                    ],
+                    "description": "Eventos que o webhook recebe. Se omitido, recebe `messages` e `smb_message_echoes`. Não pode ser uma lista vazia."
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Ativa ou desativa o webhook. Se omitido, fica ativo."
+                  }
+                }
+              },
+              "example": {
+                "url": "https://exemplo.com/webhook-global",
+                "events": [
+                  "messages",
+                  "smb_message_echoes"
+                ],
+                "enabled": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook global configurado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespostaWebhookGlobal"
+                },
+                "example": {
+                  "webhook": {
+                    "url": "https://exemplo.com/webhook-global",
+                    "events": [
+                      "messages",
+                      "smb_message_echoes"
+                    ],
+                    "enabled": true,
+                    "secret": "whsec_xxx"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "url_invalida": {
+                    "summary": "URL sem HTTPS",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "URL inválida — precisa ser https://…"
+                    }
+                  },
+                  "events_nao_lista": {
+                    "summary": "events não é uma lista",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "events deve ser uma lista de eventos"
+                    }
+                  },
+                  "events_vazio": {
+                    "summary": "events vazio",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "O webhook precisa de ao menos um evento (sem evento ele nunca dispara)"
+                    }
+                  },
+                  "evento_inexistente": {
+                    "summary": "Evento inexistente",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Evento(s) inválido(s): mesages"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remover webhook global",
+        "operationId": "removerWebhookGlobal",
+        "description": "Remove o webhook global da conta.",
+        "responses": {
+          "200": {
+            "description": "Webhook global removido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "Confirma a remoção."
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não havia webhook global configurado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 404,
+                  "message": "Nenhum webhook global configurado"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/global-webhook/rotate-secret": {
+      "post": {
+        "summary": "Rotacionar secret global",
+        "operationId": "rotacionarSecretGlobal",
+        "description": "Gera um novo secret para o webhook global. As próximas entregas já são assinadas com ele.",
+        "responses": {
+          "200": {
+            "description": "Secret gerado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "webhook_secret": {
+                      "type": "string",
+                      "description": "Novo secret do webhook global."
+                    }
+                  }
+                },
+                "example": {
+                  "webhook_secret": "whsec_xxx"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "description": "Não há webhook global configurado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 404,
+                  "message": "Nenhum webhook global configurado"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/{id}/subscribe": {
+      "post": {
+        "summary": "Assinar canal",
+        "operationId": "assinarCanal",
+        "description": "Ativa a assinatura do canal. A cobrança proporcional aos dias restantes do ciclo é feita na hora.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Situação da assinatura do canal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID do canal."
+                    },
+                    "subscribed": {
+                      "type": "boolean",
+                      "description": "Situação da assinatura do canal."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "subscribed": true
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Pagamento recusado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 402,
+                  "message": "Pagamento recusado. Verifique o cartão e tente novamente."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A assinatura da conta não permite assinar canais.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "agendada_para_cancelar": {
+                    "summary": "Assinatura agendada para cancelamento",
+                    "value": {
+                      "statusCode": 409,
+                      "message": "Sua assinatura está agendada para cancelamento. Reative pelo painel antes de assinar novos canais."
+                    }
+                  },
+                  "sem_assinatura": {
+                    "summary": "Conta sem assinatura",
+                    "value": {
+                      "statusCode": 409,
+                      "message": "Você ainda não tem uma assinatura. Crie a primeira assinatura pelo painel."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/{id}/cancel": {
+      "post": {
+        "summary": "Cancelar canal",
+        "operationId": "cancelarCanal",
+        "description": "Cancela a assinatura do canal. O crédito proporcional entra no próximo ciclo.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Situação da assinatura do canal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID do canal."
+                    },
+                    "subscribed": {
+                      "type": "boolean",
+                      "description": "Situação da assinatura do canal."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "subscribed": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "É o único canal ativo da conta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 409,
+                  "message": "Este é seu único canal ativo. Para encerrar a assinatura, cancele pelo painel."
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/{id}/connect-link": {
+      "post": {
+        "summary": "Gerar link de conexão",
+        "operationId": "gerarLinkDeConexao",
+        "description": "Gera o link que o cliente abre para conectar o número do WhatsApp ao canal.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Link de conexão gerado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "Endereço da página de conexão, para abrir no navegador do cliente."
+                    },
+                    "token": {
+                      "type": "string",
+                      "description": "Token do link, já incluído na `url`."
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "description": "Validade do link, em segundos."
+                    }
+                  }
+                },
+                "example": {
+                  "url": "https://app.datafyapi.com.br/c/ct_1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f",
+                  "token": "ct_1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f",
+                  "expires_in": 86400
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          },
+          "409": {
+            "description": "O canal não pode receber uma conexão agora.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ja_conectado": {
+                    "summary": "Canal já conectado",
+                    "value": {
+                      "statusCode": 409,
+                      "message": "Canal já conectado. Desconecte ou delete o canal antes de conectar outro número."
+                    }
+                  },
+                  "teste_expirado": {
+                    "summary": "Período de teste do canal expirou",
+                    "value": {
+                      "statusCode": 409,
+                      "message": "O período de teste deste canal expirou. Assine o canal para conectar."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/{id}/pause": {
+      "post": {
+        "summary": "Pausar canal",
+        "operationId": "pausarCanal",
+        "description": "Bloqueia o envio e o recebimento de mensagens do canal.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Situação do canal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID do canal."
+                    },
+                    "paused": {
+                      "type": "boolean",
+                      "description": "Indica se o canal está pausado."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "paused": true
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "O canal ainda não tem número conectado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 409,
+                  "message": "Canal ainda não conectado."
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/whatsapp/{id}/resume": {
+      "post": {
+        "summary": "Retomar canal",
+        "operationId": "retomarCanal",
+        "description": "Libera novamente o envio e o recebimento de mensagens do canal.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Situação do canal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID do canal."
+                    },
+                    "paused": {
+                      "type": "boolean",
+                      "description": "Indica se o canal está pausado."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "paused": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "O canal não pôde ser retomado.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "sem_conexao": {
+                    "summary": "Número saiu da API",
+                    "value": {
+                      "statusCode": 409,
+                      "message": "Não foi possível retomar. Refaça a conexão pelo Embedded Signup (gere um novo link)."
+                    }
+                  },
+                  "nao_conectado": {
+                    "summary": "Canal ainda não conectado",
+                    "value": {
+                      "statusCode": 409,
+                      "message": "Canal ainda não conectado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "tokenDeConta": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token de conta gerado no painel da Datafy, em Perfil. Formato: `sk_acct_xxx`. Diferente do token de canal (`sk_live_`)."
+      }
+    },
+    "responses": {
+      "NaoAutorizado": {
+        "description": "Token de conta ausente ou inválido.",
+        "content": {
+          "application/json": {
+            "example": {
+              "statusCode": 401,
+              "message": "Token de conta ausente ou inválido"
+            }
+          }
+        }
+      },
+      "AssinaturaInativa": {
+        "description": "A assinatura da conta não está ativa.",
+        "content": {
+          "application/json": {
+            "example": {
+              "statusCode": 403,
+              "message": "Sua assinatura precisa estar ativa para usar a API. Acesse o painel para ativá-la."
+            }
+          }
+        }
+      },
+      "CanalNaoEncontrado": {
+        "description": "Canal inexistente ou de outra conta.",
+        "content": {
+          "application/json": {
+            "example": {
+              "statusCode": 404,
+              "message": "Canal não encontrado"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ListaDeCanais": {
+        "type": "object",
+        "properties": {
+          "subscription": {
+            "type": "string",
+            "enum": [
+              "active",
+              "past_due",
+              "trial",
+              "pending",
+              "canceled"
+            ],
+            "description": "Status da assinatura da conta na Datafy."
+          },
+          "channels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Canal"
+            }
+          }
+        }
+      },
+      "Canal": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do canal."
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome dado ao canal."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Descrição dada ao canal."
+          },
+          "subscribed": {
+            "type": "boolean",
+            "description": "Indica se a assinatura financeira do canal está ativa."
+          },
+          "on_trial": {
+            "type": "boolean",
+            "description": "Indica se o canal está no período de teste."
+          },
+          "trial_ends_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Data e hora do fim do período de teste."
+          },
+          "paused": {
+            "type": "boolean",
+            "description": "Indica se o canal está pausado, sem enviar nem receber mensagens."
+          },
+          "waba_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ID da conta do WhatsApp Business na Meta."
+          },
+          "phone_number_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ID do número na Meta."
+          },
+          "business_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ID do portfólio empresarial na Meta."
+          },
+          "display_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Nome exibido no WhatsApp."
+          }
+        }
+      },
+      "CanalCriado": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do canal."
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome dado ao canal."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Descrição dada ao canal."
+          },
+          "token": {
+            "type": "string",
+            "description": "Token do canal (`sk_live_`), usado nas requisições da API do WhatsApp deste canal."
+          },
+          "webhook_secret": {
+            "type": "string",
+            "description": "Segredo usado na assinatura de todos os webhooks deste canal."
+          },
+          "subscribed": {
+            "type": "boolean",
+            "description": "Situação da assinatura do canal. Sempre `false` na criação."
+          }
+        }
+      },
+      "Webhook": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do webhook."
+          },
+          "url": {
+            "type": "string",
+            "description": "URL que recebe os eventos."
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Eventos assinados pelo webhook."
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Indica se o webhook está ativo."
+          }
+        }
+      },
+      "CanalDetalhe": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do canal."
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome dado ao canal."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Descrição dada ao canal."
+          },
+          "token": {
+            "type": "string",
+            "description": "Token do canal (`sk_live_`), usado nas requisições da API do WhatsApp deste canal."
+          },
+          "subscribed": {
+            "type": "boolean",
+            "description": "Situação da assinatura do canal."
+          },
+          "on_trial": {
+            "type": "boolean",
+            "description": "Indica se o canal está no período de teste."
+          },
+          "trial_ends_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Data e hora do fim do período de teste."
+          },
+          "paused": {
+            "type": "boolean",
+            "description": "Indica se o canal está pausado, sem enviar nem receber mensagens."
+          },
+          "waba_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ID da conta do WhatsApp Business na Meta."
+          },
+          "phone_number_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ID do número na Meta."
+          },
+          "business_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ID do portfólio empresarial na Meta."
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Número de telefone conectado ao canal."
+          },
+          "display_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Nome exibido no WhatsApp."
+          },
+          "webhook_secret": {
+            "type": "string",
+            "description": "Segredo usado na assinatura de todos os webhooks deste canal."
+          },
+          "webhooks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Webhook"
+            },
+            "description": "Webhooks cadastrados no canal."
+          }
+        }
+      },
+      "WebhookResposta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do webhook."
+          },
+          "url": {
+            "type": "string",
+            "description": "URL que recebe os eventos."
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Eventos que o webhook recebe."
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Indica se o webhook está ativo."
+          }
+        }
+      },
+      "WebhookGlobal": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL que recebe os eventos de todos os canais."
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Eventos que o webhook recebe."
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Indica se o webhook está ativo."
+          },
+          "secret": {
+            "type": "string",
+            "description": "Secret usado na assinatura das entregas deste webhook."
+          }
+        }
+      },
+      "RespostaWebhookGlobal": {
+        "type": "object",
+        "properties": {
+          "webhook": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/WebhookGlobal"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Webhook global da conta, ou `null` quando não configurado."
+          }
+        }
+      }
+    },
+    "parameters": {
+      "CanalId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "ID do canal, retornado em Listar canais e em Criar canal."
+      },
+      "WebhookId": {
+        "name": "webhookId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "ID do webhook, retornado em Listar webhooks e em Criar webhook."
+      }
+    }
+  }
+}

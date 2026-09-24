@@ -1,0 +1,49 @@
+---
+title: "Criar webhook"
+openapi: "/api-reference/administracao/specs/canais.json POST /channels/whatsapp/{id}/webhooks"
+---
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do webhook |
+| `url` | URL que recebe os eventos |
+| `events` | [Eventos](/api-reference/whatsapp/webhooks/receber-eventos) que o webhook recebe |
+| `enabled` | Indica se o webhook está ativo |
+
+## Eventos disponíveis
+
+Valores aceitos em `events`. Se o campo não for enviado, o webhook recebe `messages` e `smb_message_echoes`.
+
+| Evento | Descrição |
+| --- | --- |
+| [`messages`](/api-reference/whatsapp/webhooks/eventos/mensagens) | Mensagens recebidas e status de entrega |
+| [`smb_message_echoes`](/api-reference/whatsapp/webhooks/eventos/mensagens-do-celular) | Mensagens enviadas pelo aplicativo ou pelo WhatsApp Web |
+| [`message_template_status_update`](/api-reference/whatsapp/webhooks/eventos/templates) | Aprovação ou reprovação de templates |
+| [`message_template_quality_update`](/api-reference/whatsapp/webhooks/eventos/templates) | Mudanças na qualidade dos templates |
+| [`message_template_components_update`](/api-reference/whatsapp/webhooks/eventos/templates) | Atualizações nos componentes de templates |
+| [`account_alerts`](/api-reference/whatsapp/webhooks/eventos/conta) | Alertas da conta (qualidade, aprovações, bloqueios) |
+| [`account_update`](/api-reference/whatsapp/webhooks/eventos/conta) | Atualizações gerais da conta do WhatsApp Business |
+| `account_review_update` | Atualizações no processo de revisão da conta |
+| `account_settings_update` | Mudanças nas configurações da conta |
+| `phone_number_name_update` | Mudanças no nome do número de telefone |
+| [`phone_number_quality_update`](/api-reference/whatsapp/webhooks/eventos/qualidade-do-numero) | Atualizações na qualidade do número |
+| `business_capability_update` | Mudanças nas capacidades do negócio |
+| `business_status_update` | Atualizações no status do negócio |
+| [`template_category_update`](/api-reference/whatsapp/webhooks/eventos/templates) | Reclassificação de categoria de templates |
+| `template_correct_category_detection` | Detecção de categoria correta em templates |
+| `flows` | Eventos relacionados aos WhatsApp Flows |
+| `calls` | Chamadas de voz iniciadas pelos usuários |
+| `security` | Eventos de segurança da conta |
+| `automatic_events` | Eventos automáticos do sistema |
+| `tracking_events` | Eventos de rastreamento |
+| [`history`](/api-reference/whatsapp/webhooks/eventos/historico) | Histórico de conversas, na sincronização da coexistência |
+| [`smb_app_state_sync`](/api-reference/whatsapp/webhooks/eventos/contatos-sincronizados) | Contatos do aplicativo, na sincronização da coexistência |
+| `payment_configuration_update` | Atualizações na configuração de pagamentos |
+| `partner_solutions` | Soluções de parceiros integradas |
+| `group_lifecycle_update` | Ciclo de vida de grupos (criação, encerramento) |
+| `group_participants_update` | Entrada e saída de participantes em grupos |
+| `group_settings_update` | Mudanças nas configurações de grupos |
+| `group_status_update` | Atualizações de status de grupos |
+| `user_preferences` | Preferências e configurações dos usuários |
