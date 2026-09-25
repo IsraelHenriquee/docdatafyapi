@@ -19,12 +19,6 @@
     ]
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Suporte",
-        "href": "https://wa.me/5541991338055"
-      }
-    ],
     "primary": {
       "type": "button",
       "label": "Acessar painel",
