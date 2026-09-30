@@ -1,0 +1,33 @@
+---
+title: "Chatwoot"
+sidebarTitle: "Introdução"
+description: "Atenda pelo seu Chatwoot self-hosted usando o número de WhatsApp conectado na Datafy API."
+---
+
+A integração liga o número de WhatsApp da Datafy API a um Chatwoot self-hosted. A Datafy API cria a caixa de entrada do tipo WhatsApp dentro do seu Chatwoot e passa a entregar ali as mensagens recebidas. O atendimento acontece no Chatwoot, com os agentes e as regras que você já usa.
+
+## O que funciona depois de conectar
+
+| Recurso | Comportamento |
+| --- | --- |
+| Mensagens recebidas | Entram como conversa no Chatwoot, com o contato criado automaticamente. |
+| Respostas do agente | Saem pelo WhatsApp do número conectado. |
+| Templates | Os templates aprovados ficam disponíveis para o agente iniciar conversa fora da janela de 24 horas. |
+| Mídia | Imagem, áudio, vídeo e documento recebidos são anexados à conversa. |
+| Status de entrega | Enviado, entregue e lido atualizam na própria mensagem. |
+| Mensagens do app | O que o dono do número envia pelo aplicativo do celular ou pelo WhatsApp Web aparece na mesma conversa. |
+| Envios pela API | Mensagens enviadas pela API também aparecem na conversa do agente. |
+
+## Requisitos
+
+- Chatwoot self-hosted, com acesso às variáveis de ambiente da instalação. O Chatwoot Cloud não permite alterar essas variáveis e não é compatível.
+- Número já conectado à Meta no painel da Datafy API.
+- Um usuário administrador no Chatwoot, para gerar o token de acesso e criar a caixa de entrada.
+
+<Note>
+A configuração é feita uma vez por número. Cada número conectado corresponde a uma caixa de entrada no Chatwoot.
+</Note>
+
+<Card title="Conectar o Chatwoot" href="/guias/chatwoot/conectar" horizontal>
+  O passo a passo completo, da variável de ambiente até a primeira conversa.
+</Card>

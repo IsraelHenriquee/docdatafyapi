@@ -89,6 +89,18 @@
                 ]
               },
               {
+                "group": "Chatwoot",
+                "icon": {
+                  "name": "headset",
+                  "style": "regular"
+                },
+                "pages": [
+                  "guias/chatwoot/introducao",
+                  "guias/chatwoot/conectar",
+                  "guias/chatwoot/templates"
+                ]
+              },
+              {
                 "group": "Parceiros",
                 "icon": {
                   "name": "handshake",

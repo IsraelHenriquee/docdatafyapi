@@ -1,0 +1,138 @@
+---
+title: "Conectar o Chatwoot"
+sidebarTitle: "Conectar"
+description: "Adicione a variável de ambiente, informe a URL e o token do seu Chatwoot e conecte o número."
+---
+
+<Steps>
+<Step title="Adicionar a variável de ambiente no seu servidor">
+
+No servidor do seu Chatwoot, adicione a variável abaixo às variáveis de ambiente da instalação:
+
+```bash
+WHATSAPP_CLOUD_BASE_URL=https://cloud.datafyapi.com.br/v1
+```
+
+É ela que faz o Chatwoot falar com a Datafy API. Sem ela, o Chatwoot tenta validar a conexão direto na Meta e a criação do canal é recusada.
+
+A variável precisa valer para a aplicação e para o worker (Sidekiq):
+
+- **Docker Compose ou Portainer:** inclua no arquivo `.env` ou no bloco de variáveis compartilhado da stack.
+- **EasyPanel:** adicione nos dois serviços.
+
+O exemplo abaixo é no EasyPanel. O caminho muda conforme a instalação, mas a ideia é a mesma nos outros painéis.
+
+No menu lateral, em **Serviços**, selecione o serviço da aplicação (`chatwoot`) e abra **Ambiente**, ou **Environment** se o painel estiver em inglês. Acrescente a variável no final da lista e clique em **Salvar**. Em seguida, repita no serviço do worker (`chatwoot-sidekiq`).
+
+<Frame>
+  <img src="/images/chatwoot/easypanel-variavel.webp" alt="Exemplo no EasyPanel: os serviços chatwoot e chatwoot-sidekiq destacados no menu, e a variável WHATSAPP_CLOUD_BASE_URL no final da lista de variáveis de ambiente." width="1700" height="1136" />
+</Frame>
+
+Com a variável salva nos dois serviços, faça o redeploy ou atualize a stack. Salvar a variável não aplica a mudança.
+
+</Step>
+
+<Step title="Copiar o token de acesso do Chatwoot">
+
+No Chatwoot, clique no seu usuário, no canto inferior esquerdo, e abra **Profile settings**.
+
+<Frame>
+  <img src="/images/chatwoot/perfil-settings.webp" alt="Menu do usuário aberto no Chatwoot, com a opção Profile settings destacada." width="420" height="637" style={{ maxWidth: "420px", margin: "0 auto" }} />
+</Frame>
+
+Role a página de perfil até o final. Em **Access Token**, clique em **Copy**.
+
+<Frame>
+  <img src="/images/chatwoot/copiar-token.webp" alt="Final da página de perfil do Chatwoot, com a seção Access Token e o botão Copy." width="1600" height="828" />
+</Frame>
+
+O token precisa ser de um usuário administrador da conta, porque é com ele que a caixa de entrada é criada.
+
+</Step>
+
+<Step title="Preencher os dados no painel da Datafy API">
+
+No [painel da Datafy API](https://app.datafyapi.com.br), abra o número e vá na aba **Chatwoot**. Preencha:
+
+| Campo | O que informar |
+| --- | --- |
+| URL do Chatwoot | A URL base do seu Chatwoot, como `https://chat.suaempresa.com.br`. |
+| Token de acesso | O token copiado no passo anterior. |
+| Nome do canal | O nome que a caixa de entrada terá no Chatwoot, por exemplo `Atendimento`. |
+
+<Tip>
+Pode copiar a URL inteira do seu Chatwoot, de qualquer tela em que você esteja. O formulário ajusta sozinho e mantém só o endereço base.
+</Tip>
+
+<Frame>
+  <img src="/images/chatwoot/painel-formulario.webp" alt="Aba Chatwoot no painel da Datafy API, com a URL, o token de acesso e o nome do canal preenchidos." width="1600" height="1024" />
+</Frame>
+
+Clique em **Conectar**. A Datafy API acessa o seu Chatwoot, cria a caixa de entrada com o número e configura a entrega das mensagens recebidas. O processo leva alguns segundos, então aguarde a confirmação na tela.
+
+</Step>
+
+<Step title="Conferir no Chatwoot">
+
+No menu do Chatwoot, em **Conversations**, na seção **Channels**, a caixa de entrada aparece com o nome que você informou. O ícone do WhatsApp ao lado indica que o canal é uma conexão oficial.
+
+<Frame>
+  <img src="/images/chatwoot/canal-no-chatwoot.webp" alt="Menu do Chatwoot mostrando a caixa de entrada criada na seção Channels, com o ícone do WhatsApp." width="300" height="436" style={{ maxWidth: "300px", margin: "0 auto" }} />
+</Frame>
+
+A integração já está funcionando. Cada mensagem recebida no número abre uma conversa em tempo real, e o agente responde por ali.
+
+<Frame>
+  <img src="/images/chatwoot/conversa-recebida.webp" alt="Conversa recebida aparecendo na caixa de entrada do Chatwoot logo após a conexão." width="1074" height="548" />
+</Frame>
+
+</Step>
+</Steps>
+
+## O webhook criado na conexão
+
+Ao conectar, a Datafy API cadastra um webhook no número apontando para o seu Chatwoot. Ele fica visível na aba **Webhooks** do número, depois de atualizar a página, com os eventos `messages` e `smb_message_echoes` ativos.
+
+<Frame>
+  <img src="/images/chatwoot/webhook-criado.webp" alt="Webhook criado automaticamente, apontando para o Chatwoot, com os eventos messages e smb_message_echoes." width="1322" height="214" />
+</Frame>
+
+É por ele que as mensagens recebidas chegam ao Chatwoot. Se o webhook for removido, as conversas deixam de aparecer.
+
+## Editar ou remover a conexão
+
+Com a integração ativa, a aba mostra o canal conectado, com a URL, a conta e o inbox no Chatwoot.
+
+<Frame>
+  <img src="/images/chatwoot/painel-conectado.webp" alt="Aba Chatwoot com a integração conectada, mostrando o canal, a conta e o inbox, e os botões Remover e Editar." width="1600" height="489" />
+</Frame>
+
+**Editar** permite trocar a URL, o token ou o nome do canal. Deixar o token em branco mantém o que já está salvo.
+
+Se você gerar um novo token na Datafy API ou um novo token de acesso no Chatwoot, clique em **Editar**, informe os dados atualizados e clique em **Conectar** para refazer a conexão.
+
+**Remover** desliga a integração: o número deixa de receber e enviar mensagens pelo Chatwoot. As conversas já existentes continuam lá para consulta.
+
+## Se algo der errado
+
+<AccordionGroup>
+<Accordion title="Não conseguimos acessar seu Chatwoot com esses dados">
+A URL ou o token estão incorretos, ou o Chatwoot não está respondendo. Confirme o endereço do servidor e gere o token novamente.
+</Accordion>
+
+<Accordion title="Seu Chatwoot não conseguiu validar a conexão">
+A variável `WHATSAPP_CLOUD_BASE_URL` não está valendo na instalação. Confirme que ela foi adicionada à aplicação e ao worker e que os serviços foram reiniciados.
+</Accordion>
+
+<Accordion title="O canal foi criado, mas aparece como conexão expirada">
+Abra a caixa de entrada no Chatwoot e reconecte. Nesse estado o Chatwoot descarta as mensagens recebidas.
+</Accordion>
+
+<Accordion title="Já existe uma caixa de entrada com esse número">
+A caixa de entrada existente é reaproveitada, com as configurações corrigidas. Nenhuma conversa é perdida e o nome atual dela é mantido.
+</Accordion>
+</AccordionGroup>
+
+<Note>
+Se você já usava a integração pelo canal API, conectar por aqui substitui a configuração antiga. A troca só acontece depois de o novo canal estar funcionando.
+</Note>
