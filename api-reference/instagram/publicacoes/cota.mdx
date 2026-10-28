@@ -1,0 +1,24 @@
+---
+title: "Consultar cota"
+description: "Veja quantas publicações ainda cabem no período."
+openapi: "/api-reference/instagram/specs/pub-cota.json GET /ig/me/content_publishing_limit"
+---
+
+Retorna a cota de publicações da conta e quanto dela já foi consumido:
+
+```json
+{
+  "data": [
+    {
+      "config": { "quota_total": 100, "quota_duration": 86400 },
+      "quota_usage": 1
+    }
+  ]
+}
+```
+
+O `quota_duration` vem em **segundos**: 86400 corresponde a 24 horas. No exemplo, restam 99 publicações no período.
+
+Contêiner criado e não publicado não consome cota. O consumo acontece em [Publicar](/api-reference/instagram/publicacoes/publicar).
+
+Consulte antes de disparar publicações em lote, para não descobrir o limite no meio da execução.

@@ -1,0 +1,255 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Enviar botões",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/ig/me/messages": {
+      "post": {
+        "summary": "Enviar botões",
+        "operationId": "igEnviarBotoes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "recipient",
+                  "message"
+                ],
+                "properties": {
+                  "recipient": {
+                    "type": "object",
+                    "required": [
+                      "id"
+                    ],
+                    "description": "Quem recebe a mensagem.",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "IGSID do contato, recebido no webhook em `sender.id`.",
+                        "example": "1000000000000001"
+                      }
+                    }
+                  },
+                  "message": {
+                    "type": "object",
+                    "required": [
+                      "attachment"
+                    ],
+                    "properties": {
+                      "attachment": {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "payload"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "template"
+                            ],
+                            "default": "template",
+                            "description": "Sempre `template`."
+                          },
+                          "payload": {
+                            "type": "object",
+                            "required": [
+                              "template_type",
+                              "elements"
+                            ],
+                            "properties": {
+                              "template_type": {
+                                "type": "string",
+                                "enum": [
+                                  "generic"
+                                ],
+                                "default": "generic",
+                                "description": "Sempre `generic`."
+                              },
+                              "elements": {
+                                "type": "array",
+                                "maxItems": 1,
+                                "description": "Um cartão.",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "title"
+                                  ],
+                                  "properties": {
+                                    "title": {
+                                      "type": "string",
+                                      "description": "Título do cartão.",
+                                      "example": "Plano Pro"
+                                    },
+                                    "subtitle": {
+                                      "type": "string",
+                                      "description": "Linha de apoio, opcional.",
+                                      "example": "Tudo liberado"
+                                    },
+                                    "image_url": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "Imagem do cartão, opcional."
+                                    },
+                                    "buttons": {
+                                      "type": "array",
+                                      "maxItems": 3,
+                                      "description": "Até 3 botões. Acima disso a Meta recusa com `code 100` e `error_subcode 2018343`.",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "type",
+                                          "title"
+                                        ],
+                                        "properties": {
+                                          "type": {
+                                            "type": "string",
+                                            "enum": [
+                                              "postback",
+                                              "web_url"
+                                            ],
+                                            "description": "`postback` devolve o payload no webhook. `web_url` abre um endereço e não gera evento."
+                                          },
+                                          "title": {
+                                            "type": "string",
+                                            "maxLength": 20,
+                                            "description": "Texto do botão.",
+                                            "example": "Quero assinar"
+                                          },
+                                          "payload": {
+                                            "type": "string",
+                                            "description": "Só para `postback`. Valor devolvido no webhook.",
+                                            "example": "ASSINAR_PRO"
+                                          },
+                                          "url": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "description": "Só para `web_url`. Endereço aberto no clique."
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "recipient": {
+                  "id": "1000000000000001"
+                },
+                "message": {
+                  "attachment": {
+                    "type": "template",
+                    "payload": {
+                      "template_type": "generic",
+                      "elements": [
+                        {
+                          "title": "Plano Pro",
+                          "subtitle": "Tudo liberado",
+                          "buttons": [
+                            {
+                              "type": "postback",
+                              "title": "Quero assinar",
+                              "payload": "ASSINAR_PRO"
+                            },
+                            {
+                              "type": "web_url",
+                              "title": "Ver site",
+                              "url": "https://exemplo.com"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Aceito pela Meta. Não confirma a entrega.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "recipient_id": "1000000000000001",
+                  "message_id": "aWdfZAG1faXRlbTo......"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "Não foi possível encontrar o usuário solicitado.",
+                    "type": "IGApiException",
+                    "code": 100,
+                    "error_subcode": 2534014,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 401,
+                  "message": "Token inválido ou não encontrado."
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Assinatura da Datafy inativa.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 402,
+                  "message": "Assinatura inativa (status: canceled). Ative sua assinatura no painel para voltar a usar a API."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token do canal do Instagram, gerado no painel da Datafy. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}

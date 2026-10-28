@@ -1,0 +1,11 @@
+---
+title: "Indicador de digitação"
+description: "Exiba o indicador de digitação na conversa."
+openapi: "/api-reference/instagram/specs/indicador-de-digitacao.json POST /ig/me/messages"
+---
+
+Exibe o indicador de digitação na conversa, com `typing_on`. Ele desliga sozinho depois de alguns segundos, ou imediatamente com `typing_off`.
+
+Indicado antes de respostas com latência, como consultas a sistemas externos, para sinalizar que o processamento está em curso.
+
+A resposta traz apenas o `recipient_id`, porque nenhuma mensagem é criada.

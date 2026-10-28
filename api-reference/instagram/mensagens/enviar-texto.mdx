@@ -1,0 +1,11 @@
+---
+title: "Enviar texto"
+description: "Envie uma mensagem de texto no Direct."
+openapi: "/api-reference/instagram/specs/texto.json POST /ig/me/messages"
+---
+
+Envia uma mensagem de texto para um contato com a [janela de 24 horas](/api-reference/instagram/mensagens/introducao#janela-de-24-horas) aberta.
+
+URLs no texto viram links clicáveis automaticamente. O Instagram não tem formatação de negrito ou itálico em mensagens: o texto é enviado como está.
+
+No **Testar**, troque o `recipient.id` pelo IGSID de uma conversa real. Ele chega no webhook em `sender.id`.

@@ -1,0 +1,15 @@
+---
+title: "Ler um comentário"
+description: "Consulte um comentário específico pelo ID."
+openapi: "/api-reference/instagram/specs/comentarios-ler.json GET /ig/{comment_id}"
+---
+
+Retorna um comentário pelo ID, útil quando o ID chega pelo webhook e você precisa do conteúdo completo.
+
+Assim como na listagem, nenhum campo além do `id` vem por padrão. Liste em `fields` os campos que você precisa.
+
+O campo `media` traz a publicação a que o comentário pertence:
+
+```json
+"media": { "id": "17900000000000001" }
+```

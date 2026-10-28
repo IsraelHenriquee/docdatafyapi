@@ -1,0 +1,137 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Enviar texto",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/ig/me/messages": {
+      "post": {
+        "summary": "Enviar texto",
+        "operationId": "igEnviarTexto",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "recipient",
+                  "message"
+                ],
+                "properties": {
+                  "recipient": {
+                    "type": "object",
+                    "required": [
+                      "id"
+                    ],
+                    "description": "Quem recebe a mensagem.",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "IGSID do contato, recebido no webhook em `sender.id`.",
+                        "example": "1000000000000001"
+                      }
+                    }
+                  },
+                  "message": {
+                    "type": "object",
+                    "required": [
+                      "text"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "description": "Conteúdo da mensagem.",
+                        "example": "Olá! Como podemos ajudar?"
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "recipient": {
+                  "id": "1000000000000001"
+                },
+                "message": {
+                  "text": "Olá! Como podemos ajudar?"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Aceito pela Meta. Não confirma a entrega.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "recipient_id": "1000000000000001",
+                  "message_id": "aWdfZAG1faXRlbTo......"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "Não foi possível encontrar o usuário solicitado.",
+                    "type": "IGApiException",
+                    "code": 100,
+                    "error_subcode": 2534014,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 401,
+                  "message": "Token inválido ou não encontrado."
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Assinatura da Datafy inativa.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 402,
+                  "message": "Assinatura inativa (status: canceled). Ative sua assinatura no painel para voltar a usar a API."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token do canal do Instagram, gerado no painel da Datafy. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}

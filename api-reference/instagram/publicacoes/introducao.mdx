@@ -1,0 +1,51 @@
+---
+title: "Visão geral"
+sidebarTitle: "Introdução"
+description: "Como publicar no feed a partir da API."
+---
+
+Publicar é um processo de **duas etapas**. Não existe um endpoint único que receba o arquivo e publique.
+
+<Steps>
+  <Step title="Criar o contêiner">
+    `POST /ig/me/media` recebe a URL do arquivo e a legenda, e devolve um `creation_id`. A Meta baixa o arquivo nesse momento.
+  </Step>
+  <Step title="Publicar o contêiner">
+    `POST /ig/me/media_publish` recebe o `creation_id` e devolve o ID da publicação.
+  </Step>
+</Steps>
+
+Entre as duas etapas, conteúdo de vídeo precisa ser processado. Veja [Consultar status](/api-reference/instagram/publicacoes/status).
+
+## Origem do arquivo
+
+Quem baixa o arquivo é a Meta, a partir da URL informada. Não há upload direto.
+
+<Warning>
+  A URL precisa ser **pública e direta**. Endereços que respondem com redirecionamento, exigem autenticação ou bloqueiam o download falham.
+</Warning>
+
+## Tipos de publicação
+
+| Tipo | `media_type` | Campo do arquivo |
+| --- | --- | --- |
+| Imagem | omitido ou `IMAGE` | `image_url` |
+| Reel | `REELS` | `video_url` |
+| Story | `STORIES` | `image_url` ou `video_url` |
+| Carrossel | `CAROUSEL` | `children` |
+
+O carrossel tem um passo a mais: cada item é um contêiner próprio criado com `is_carousel_item: true`, e os IDs deles entram em `children`. São aceitos de 2 a 10 itens.
+
+## Cota
+
+A conta tem uma cota de publicações por período, consultável em [Consultar cota](/api-reference/instagram/publicacoes/cota):
+
+```json
+{ "config": { "quota_total": 100, "quota_duration": 86400 }, "quota_usage": 1 }
+```
+
+O `quota_duration` vem em segundos, então 86400 corresponde a 24 horas. Contêiner criado e não publicado **não** consome a cota.
+
+## Limitações
+
+A API não permite editar nem excluir publicações. As duas operações existem apenas no aplicativo do Instagram.

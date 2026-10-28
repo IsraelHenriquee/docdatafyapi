@@ -1,0 +1,40 @@
+---
+title: "Reações"
+description: "Evento message_reactions: reação adicionada ou removida."
+---
+
+Identificador do evento: **`message_reactions`**.
+
+Chega em `messaging[]`, identificado pela presença da chave `reaction`.
+
+```json
+{
+  "object": "instagram",
+  "entry": [
+    {
+      "id": "17841400000000001",
+      "time": 1793200000000,
+      "messaging": [
+        {
+          "sender": { "id": "1000000000000001" },
+          "recipient": { "id": "17841400000000001" },
+          "timestamp": 1793199998000,
+          "reaction": {
+            "mid": "aWdfZAG1faXRlbTo...",
+            "action": "react",
+            "reaction": "love",
+            "emoji": "❤️"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+O `mid` aponta para a mensagem que recebeu a reação, não para um evento novo.
+
+| `action` | Significado |
+| --- | --- |
+| `react` | Reação adicionada |
+| `unreact` | Reação removida. Os campos `reaction` e `emoji` não vêm |

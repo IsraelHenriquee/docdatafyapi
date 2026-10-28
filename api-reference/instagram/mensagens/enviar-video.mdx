@@ -1,0 +1,39 @@
+---
+title: "Enviar vídeo"
+description: "Envie um vídeo por link público."
+openapi: "/api-reference/instagram/specs/video.json POST /ig/me/messages"
+---
+
+Envia um vídeo para um contato com a [janela de 24 horas](/api-reference/instagram/mensagens/introducao#janela-de-24-horas) aberta.
+
+Quem baixa o arquivo é a Meta, a partir do endereço informado em `payload.url`. Não existe upload prévio nem ID de mídia: o vídeo precisa estar hospedado em algum lugar acessível antes do envio.
+
+## Formatos aceitos
+
+| Formato | Content-Type | Tamanho máximo |
+| --- | --- | --- |
+| MP4 | `video/mp4` | 25 MB |
+| MOV | `video/quicktime` | 25 MB |
+| WEBM | `video/webm` | 25 MB |
+| AVI | `video/x-msvideo` | 25 MB |
+| OGG | `video/ogg` | 25 MB |
+
+O formato é determinado pelo cabeçalho `Content-Type` devolvido pelo servidor que hospeda o arquivo, não pela extensão informada na URL. Em caso de recusa de um formato presente na tabela, verifique o cabeçalho:
+
+```bash
+curl -sI https://exemplo.com/arquivo.mp4 | grep -i content-type
+```
+
+Formato recusado volta com `code 100` e `error_subcode 2534080`.
+
+<Note>
+  OGG é aceito em vídeo e recusado em [áudio](/api-reference/instagram/mensagens/enviar-audio). As listas de formatos são independentes.
+</Note>
+
+<Warning>
+  A URL precisa ser **pública e direta**. Endereços que respondem com redirecionamento, exigem autenticação ou bloqueiam o download falham, mesmo abrindo normalmente no navegador.
+</Warning>
+
+Vídeos grandes passam por um processamento da Meta antes de aparecerem na conversa. A resposta `200` chega antes disso, então a mensagem pode demorar alguns segundos para ficar visível.
+
+O vídeo não aceita legenda. Para acompanhar texto, envie uma [mensagem de texto](/api-reference/instagram/mensagens/enviar-texto) separada.

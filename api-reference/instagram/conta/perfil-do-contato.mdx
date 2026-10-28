@@ -1,0 +1,46 @@
+---
+title: "Perfil de um contato"
+description: "Consulte nome, foto e relação de seguimento de quem conversa com a conta."
+openapi: "/api-reference/instagram/specs/conta-perfil.json GET /ig/{igsid}"
+---
+
+Retorna o perfil de uma pessoa que conversa com a conta, a partir do IGSID recebido no webhook em `sender.id`.
+
+## Exige janela de mensagem aberta
+
+<Warning>
+  O perfil só é retornado enquanto a [janela de 24 horas](/api-reference/instagram/mensagens/introducao#janela-de-24-horas) daquela conversa estiver aberta. Fora dela, a resposta é:
+
+```json
+{
+  "error": {
+    "message": "Unsupported get request. Object with ID '...' does not exist, cannot be loaded due to missing permissions, or does not support this operation",
+    "type": "IGApiException",
+    "code": 100,
+    "error_subcode": 33
+  }
+}
+```
+</Warning>
+
+A consequência prática é que o perfil precisa ser consultado **no momento em que a mensagem chega**, e o resultado guardado. Uma consulta adiada para depois do prazo não tem como ser atendida.
+
+O IGSID também é escopado por conta: o mesmo perfil do Instagram tem identificadores diferentes em contas profissionais diferentes, e um IGSID de outra conta devolve o mesmo erro.
+
+## Campos
+
+| Campo | Conteúdo |
+| --- | --- |
+| `name` | Nome de exibição |
+| `username` | Nome de usuário, sem o arroba |
+| `profile_pic` | Foto do perfil, com validade limitada |
+| `follower_count` | Seguidores que a pessoa tem |
+| `is_user_follow_business` | A pessoa segue a sua conta |
+| `is_business_follow_user` | A sua conta segue a pessoa |
+| `is_verified_user` | A pessoa tem selo de verificação |
+
+O `is_user_follow_business` é o campo que responde "essa pessoa me segue". Ele é uma fotografia do momento da consulta: se a pessoa deixar de seguir depois, o valor guardado fica desatualizado.
+
+<Note>
+  O campo se chama `profile_pic` aqui e `profile_picture_url` em [Dados da conta](/api-reference/instagram/conta/dados-da-conta). São endpoints diferentes com nomes diferentes para a mesma ideia.
+</Note>

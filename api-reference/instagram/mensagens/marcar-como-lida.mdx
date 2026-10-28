@@ -1,0 +1,11 @@
+---
+title: "Marcar como lida"
+description: "Confirme a leitura das mensagens de uma conversa."
+openapi: "/api-reference/instagram/specs/marcar-como-lida.json POST /ig/me/messages"
+---
+
+Marca as mensagens da conversa como lidas, exibindo a confirmação de leitura para a pessoa.
+
+Use quando sua integração realmente processou a mensagem. Marcar tudo como lido assim que chega, sem tratar, cria a expectativa de uma resposta que pode não vir.
+
+A resposta traz apenas o `recipient_id`, porque nenhuma mensagem é criada.

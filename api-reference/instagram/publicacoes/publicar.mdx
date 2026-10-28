@@ -1,0 +1,28 @@
+---
+title: "Publicar"
+description: "Segunda etapa: publique um contêiner pronto no feed."
+openapi: "/api-reference/instagram/specs/pub-publicar.json POST /ig/me/media_publish"
+---
+
+Publica o contêiner no feed e devolve o ID da publicação:
+
+```json
+{ "id": "17900000000000001" }
+```
+
+Esse ID é o `media_id` usado em [Listar comentários](/api-reference/instagram/comentarios/listar) e nos demais endpoints de comentário.
+
+<Warning>
+  Para vídeo e reel, confirme que o contêiner está `FINISHED` em [Consultar status](/api-reference/instagram/publicacoes/status) antes de publicar. Contêiner em `ERROR` é recusado.
+</Warning>
+
+Cada publicação consome uma unidade da [cota](/api-reference/instagram/publicacoes/cota). Contêineres criados e não publicados não consomem.
+
+## Obter o link
+
+A resposta não traz o endereço público. Consulte o `permalink` depois:
+
+```bash
+curl "https://cloud.datafyapi.com.br/ig/17900000000000001?fields=permalink" \
+  -H 'Authorization: Bearer sk_live_xxx'
+```

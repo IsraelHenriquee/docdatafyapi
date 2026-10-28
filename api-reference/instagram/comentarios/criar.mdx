@@ -1,0 +1,15 @@
+---
+title: "Comentar em uma publicação"
+description: "Publique um comentário em uma publicação da própria conta."
+openapi: "/api-reference/instagram/specs/comentarios-criar.json POST /ig/{media_id}/comments"
+---
+
+Publica um comentário novo, como autor a própria conta.
+
+Não há limite de quantidade: a mesma conta pode comentar várias vezes na mesma publicação.
+
+<Warning>
+  Só funciona em publicações da própria conta. Em publicação de terceiros, a resposta é `code 100` com `error_subcode 33`.
+</Warning>
+
+Para responder um comentário existente em vez de criar um novo, use [Responder um comentário](/api-reference/instagram/comentarios/responder).

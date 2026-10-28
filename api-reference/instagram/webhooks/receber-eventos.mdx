@@ -1,0 +1,45 @@
+---
+title: "Receber eventos"
+description: "Cadastre uma URL e receba os eventos da conta em tempo real."
+---
+
+A Datafy recebe os eventos da Meta e os repassa para as URLs cadastradas no canal. O corpo é entregue **exatamente como a Meta enviou**, sem reformatação.
+
+## Cadastrar a URL
+
+No [painel da Datafy](https://app.datafyapi.com.br), abra o canal do Instagram e vá na aba **Webhooks**. Cada URL escolhe quais tipos de evento quer receber.
+
+Uma URL recebe um evento apenas se tiver assinado algum dos tipos presentes naquele envio.
+
+## Entrega
+
+| Item | Valor |
+| --- | --- |
+| Método | `POST` |
+| Content-Type | `application/json` |
+| Timeout | 20 segundos |
+| Sucesso | qualquer status `2xx` |
+
+Responda **`200` o mais rápido possível** e processe depois. A Meta desativa a assinatura de aplicativos que respondem devagar, e esse prazo é compartilhado por todos os clientes da Datafy.
+
+## Cabeçalhos
+
+| Cabeçalho | Conteúdo |
+| --- | --- |
+| `x-datafy-signature-256` | Assinatura HMAC do corpo. Veja [Validar assinatura](/api-reference/instagram/webhooks/validar-assinatura) |
+| `x-datafy-timestamp` | Momento da assinatura, em segundos |
+| `x-datafy-delivery-id` | Identificador da entrega, estável entre as retentativas |
+
+## Retentativas
+
+Falha de rede ou status fora da faixa `2xx` provoca novas tentativas, em **2, 10 e 30 segundos**. Depois disso a entrega é descartada.
+
+<Warning>
+  Não há fila durável nem reenvio posterior para os eventos do Instagram. Um endpoint fora do ar por mais de 40 segundos perde os eventos daquele período em definitivo.
+</Warning>
+
+O `x-datafy-delivery-id` é o mesmo nas retentativas de um mesmo evento. Use-o para descartar duplicatas: um evento processado duas vezes é mais provável que um evento perdido.
+
+<Note>
+  A assinatura é recalculada a cada tentativa, então o `x-datafy-timestamp` muda entre elas. Valide a assinatura com o timestamp que veio naquela requisição.
+</Note>

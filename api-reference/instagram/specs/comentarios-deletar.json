@@ -1,0 +1,86 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Deletar um comentário",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/ig/{comment_id}": {
+      "delete": {
+        "summary": "Deletar um comentário",
+        "operationId": "igDeletarComentario",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do comentário. Chega no webhook ou em `GET /ig/{media_id}/comments`.",
+            "example": "17800000000000001"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação aceita.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "Unsupported post request.",
+                    "type": "IGApiException",
+                    "code": 100,
+                    "error_subcode": 33,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 401,
+                  "message": "Token inválido ou não encontrado."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token do canal do Instagram, gerado no painel da Datafy. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}

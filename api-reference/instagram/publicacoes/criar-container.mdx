@@ -1,0 +1,58 @@
+---
+title: "Criar contêiner"
+description: "Primeira etapa da publicação: envie a URL do arquivo e a legenda."
+openapi: "/api-reference/instagram/specs/pub-container.json POST /ig/me/media"
+---
+
+Cria o contêiner e devolve o `creation_id`, que é consumido por [Publicar](/api-reference/instagram/publicacoes/publicar).
+
+O contêiner **não aparece no feed**. Ele é um rascunho do lado da Meta e expira sozinho se não for publicado.
+
+## Imagem
+
+```json
+{
+  "image_url": "https://exemplo.com/foto.jpg",
+  "caption": "Lançamento da semana. #novidade"
+}
+```
+
+O `media_type` pode ser omitido: a ausência equivale a `IMAGE`.
+
+## Reel
+
+```json
+{
+  "media_type": "REELS",
+  "video_url": "https://exemplo.com/video.mp4",
+  "caption": "Bastidores da produção."
+}
+```
+
+<Warning>
+  Para vídeo, a resposta `200` **não significa que o arquivo foi aceito**. A Meta baixa e processa o vídeo depois de responder. Um `video_url` inexistente também devolve um `creation_id` válido, e a falha só aparece em [Consultar status](/api-reference/instagram/publicacoes/status).
+</Warning>
+
+## Carrossel
+
+Cada item é um contêiner próprio, criado com `is_carousel_item: true` e **sem legenda**:
+
+```json
+{ "image_url": "https://exemplo.com/foto-1.jpg", "is_carousel_item": true }
+```
+
+Com os IDs em mãos, crie o contêiner do carrossel, aí sim com a legenda:
+
+```json
+{
+  "media_type": "CAROUSEL",
+  "caption": "Três novidades desta semana.",
+  "children": ["17900000000000003", "17900000000000004"]
+}
+```
+
+São aceitos de 2 a 10 itens. O contêiner do carrossel é o que vai para `media_publish`; os filhos não são publicados individualmente.
+
+## Legenda
+
+A legenda aceita quebras de linha, hashtags e menções. Menção só notifica se o perfil mencionado existir.

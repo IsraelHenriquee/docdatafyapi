@@ -1,0 +1,28 @@
+---
+title: "Listar publicações"
+description: "Liste as publicações da conta."
+openapi: "/api-reference/instagram/specs/pub-listar.json GET /ig/me/media"
+---
+
+Retorna as publicações da conta, da mais recente para a mais antiga.
+
+Nenhum campo além do `id` é devolvido por padrão. Liste em `fields`, separados por vírgula, os campos que você precisa:
+
+```
+fields=id,media_type,permalink,caption,comments_count,timestamp
+```
+
+## Campos úteis
+
+| Campo | Conteúdo |
+| --- | --- |
+| `media_type` | `IMAGE`, `VIDEO` ou `CAROUSEL_ALBUM` |
+| `permalink` | Endereço público da publicação |
+| `comments_count` | Quantidade de comentários |
+| `like_count` | Quantidade de curtidas |
+| `media_url` | Endereço do arquivo, com validade limitada |
+| `children` | Itens de um carrossel |
+
+O `id` desta listagem é o `media_id` usado nos endpoints de comentário.
+
+A resposta é paginada por cursor. Veja [Requisições e limites](/api-reference/instagram/visao-geral/requisicoes#paginação).

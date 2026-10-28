@@ -1,0 +1,117 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Listar publicações",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/ig/me/media": {
+      "get": {
+        "summary": "Listar publicações",
+        "operationId": "igListarPublicacoes",
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Campos a retornar, separados por vírgula.",
+            "example": "id,media_type,permalink,caption,comments_count,timestamp"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 25
+            },
+            "description": "Itens por página."
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cursor de `paging.cursors.after`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação aceita.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "id": "17900000000000001",
+                      "media_type": "IMAGE",
+                      "permalink": "https://www.instagram.com/p/C0xAmPl3xYz/",
+                      "caption": "Publicação de teste da API. #datafy",
+                      "comments_count": 7,
+                      "timestamp": "2026-10-28T15:59:37+0000"
+                    }
+                  ],
+                  "paging": {
+                    "cursors": {
+                      "before": "QVFIVGRnSS...",
+                      "after": "QVFIVGZAPNnU..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "Invalid parameter",
+                    "type": "OAuthException",
+                    "code": 100,
+                    "error_subcode": 2207076,
+                    "error_user_title": "Falha ao baixar a mídia."
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 401,
+                  "message": "Token inválido ou não encontrado."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token do canal do Instagram, gerado no painel da Datafy. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}

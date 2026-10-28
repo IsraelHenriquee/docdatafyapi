@@ -1,0 +1,57 @@
+---
+title: "Enviar botões"
+description: "Envie um cartão com até três botões que permanecem na conversa."
+openapi: "/api-reference/instagram/specs/botoes.json POST /ig/me/messages"
+---
+
+O cartão fica **fixo na conversa** e os botões continuam clicáveis depois do primeiro toque. É a forma indicada para ofertas e menus que a pessoa pode consultar de novo.
+
+Até **3** botões por cartão. Acima disso a Meta recusa:
+
+```json
+{
+  "error": {
+    "message": "Limite de botões de modelos genéricos excedido. O número máximo de botões permitidos para modelos genéricos é 3",
+    "code": 100,
+    "error_subcode": 2018343
+  }
+}
+```
+
+## Tipos de botão
+
+| Tipo | O que faz | Gera evento |
+| --- | --- | --- |
+| `postback` | Devolve o `payload` para o seu webhook, sem tirar a pessoa do Instagram | Sim |
+| `web_url` | Abre o endereço informado em `url` | Não |
+
+Um clique em `web_url` não chega para a sua integração. Para medir o clique, use um link com parâmetros próprios ou um redirecionador.
+
+<Warning>
+  Os campos `payload` e `url` são **exclusivos**. Um botão `postback` aceita apenas `payload`; um botão `web_url` aceita apenas `url`. Enviar os dois no mesmo botão é recusado:
+
+```json
+{
+  "error": {
+    "message": "Invalid message data for IG Generic templates",
+    "type": "IGApiException",
+    "code": 100,
+    "error_subcode": 2018340
+  }
+}
+```
+</Warning>
+
+## Retorno no webhook
+
+O clique em um `postback` chega como um evento **separado**, sem o campo `message`:
+
+```json
+"postback": {
+  "mid": "aWdfZAG1faXRlbTo...",
+  "title": "Quero assinar",
+  "payload": "ASSINAR_PRO"
+}
+```
+
+Essa é a diferença prática em relação às [respostas rápidas](/api-reference/instagram/mensagens/enviar-respostas-rapidas), que chegam dentro de uma mensagem. Sua integração precisa tratar os dois caminhos para montar um fluxo encadeado.

@@ -1,0 +1,79 @@
+---
+title: "Visão geral"
+sidebarTitle: "Introdução"
+description: "Como funcionam os comentários das publicações."
+---
+
+Comentários são públicos e ficam na publicação. A conta pode lê-los, responder, criar comentários próprios, ocultar e deletar. Também pode abrir uma conversa no Direct a partir de um comentário.
+
+## Escopo
+
+As operações alcançam **apenas as publicações da própria conta**. Comentar em publicação de terceiros é recusado:
+
+```json
+{
+  "error": {
+    "message": "Unsupported post request. Object with ID '...' does not exist, cannot be loaded due to missing permissions, or does not support this operation",
+    "type": "IGApiException",
+    "code": 100,
+    "error_subcode": 33
+  }
+}
+```
+
+## Escolhendo os campos da resposta
+
+Os endpoints de leitura **não devolvem os campos por padrão**. Sem o parâmetro `fields` na URL, a resposta traz apenas o `id`:
+
+```bash
+curl "https://cloud.datafyapi.com.br/ig/{comment_id}" \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+```json
+{ "id": "17800000000000001" }
+```
+
+Liste em `fields`, separados por vírgula, os campos que você precisa:
+
+```bash
+curl "https://cloud.datafyapi.com.br/ig/{comment_id}?fields=id,text,like_count,from" \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+## Quem comentou
+
+O autor vem no campo `from`, que é um objeto e precisa constar da lista de `fields`:
+
+```json
+"from": {
+  "id": "17841400000000001",
+  "username": "mariasilva",
+  "self_ig_scoped_id": "1000000000000002"
+}
+```
+
+<Warning>
+  O campo `username` de primeiro nível **não é devolvido** para comentários de terceiros. Inclua `from` na lista de `fields` para obter o autor.
+</Warning>
+
+O `self_ig_scoped_id` é o IGSID daquela pessoa na sua conta, o mesmo identificador usado no Direct. É por ele que um comentário e uma conversa se ligam à mesma pessoa.
+
+## Limites de resposta
+
+As duas formas de responder têm regras opostas:
+
+| Forma | Endpoint | Limite |
+| --- | --- | --- |
+| Pública, na publicação | [Responder um comentário](/api-reference/instagram/comentarios/responder) | Sem limite por comentário |
+| Privada, no Direct | [Responder no direct](/api-reference/instagram/comentarios/responder-no-direct) | **Uma por comentário**, dentro de 7 dias |
+
+A regra vale igual para comentários de terceiros e da própria conta.
+
+<Note>
+  Depois da resposta privada, a conversa segue pelo Direct normalmente, endereçada pelo IGSID em `recipient.id` e sujeita à [janela de 24 horas](/api-reference/instagram/mensagens/introducao#janela-de-24-horas). O `comment_id` serve só para abrir.
+</Note>
+
+## Paginação
+
+A listagem devolve `paging` com cursores. Repita a chamada na URL da Datafy acrescentando `after`, sem usar a URL de `paging.next`, que aponta para a Meta. Veja [Requisições e limites](/api-reference/instagram/visao-geral/requisicoes#paginação).

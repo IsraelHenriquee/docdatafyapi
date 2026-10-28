@@ -1,0 +1,62 @@
+---
+title: "Como funciona o Instagram"
+description: "Requisitos da conta, origem das conversas e recursos disponíveis."
+---
+
+## Requisitos da conta
+
+O canal do Instagram na Datafy utiliza a API oficial da Meta com **Instagram Login**. A autenticação é feita diretamente com a conta do Instagram, sem Página do Facebook associada.
+
+A conta precisa ser **profissional**, do tipo Empresa ou Criador de conteúdo. Contas pessoais não podem ser conectadas.
+
+## Origem das conversas
+
+A API não permite que a conta inicie conversas. Não há equivalente aos templates do WhatsApp nem envio a partir de uma lista de contatos.
+
+Toda conversa é originada por uma ação do contato:
+
+| Ação do contato | Evento recebido |
+| --- | --- |
+| Mensagem no direct | `messages`, com a [janela de 24 horas](/guias/instagram/janela-de-24-horas) aberta |
+| Comentário em publicação | `comments`, com direito a uma resposta no direct |
+| Resposta a um story | `messages`, com referência ao story |
+| Menção à conta | `messages` |
+| Clique em link `ig.me` ou anúncio | `messaging_referral`, com a origem identificada |
+
+Seguidores não constituem uma base de contatos endereçável. O envio depende de contato prévio registrado.
+
+## Recursos disponíveis
+
+| Recurso | Disponível |
+| --- | --- |
+| Responder mensagens no direct | Sim |
+| Enviar imagem, vídeo e áudio | Sim, por URL pública |
+| Botões e respostas rápidas | Sim |
+| Responder comentários publicamente | Sim, sem limite por comentário |
+| Abrir conversa a partir de um comentário | Sim, uma vez por comentário |
+| Publicar no feed, reels e carrossel | Sim |
+| Ocultar e deletar comentários | Sim |
+| Iniciar conversa sem contato prévio | Não |
+| Editar ou excluir publicação | Não, apenas pelo aplicativo |
+| Comentar em publicação de outra conta | Não |
+
+## Canais e cobrança
+
+Cada conta do Instagram corresponde a um canal na Datafy, com token próprio. A assinatura cobre canais de WhatsApp e de Instagram no mesmo plano, e cada canal ativo é contabilizado na quantidade.
+
+## Documentação relacionada
+
+<CardGroup cols={2}>
+  <Card title="Janela de 24 horas" icon="clock" href="/guias/instagram/janela-de-24-horas">
+    Prazo para envio e condições de reabertura.
+  </Card>
+  <Card title="Comentários e direct" icon="comments" href="/guias/instagram/comentarios-e-direct">
+    Relação entre comentário e conversa, e limites aplicáveis.
+  </Card>
+  <Card title="Referência da API" icon="code" href="/api-reference/instagram/introducao">
+    Endpoints, formatos e códigos de erro.
+  </Card>
+  <Card title="Receber eventos" icon="webhook" href="/api-reference/instagram/webhooks/receber-eventos">
+    Estrutura dos eventos e validação de assinatura.
+  </Card>
+</CardGroup>

@@ -1,0 +1,62 @@
+---
+title: "Janela de 24 horas"
+description: "Prazo para envio de mensagens no direct e condições de reabertura."
+---
+
+## Definição
+
+Cada mensagem recebida de um contato abre um período de **24 horas** durante o qual a conta pode enviar mensagens para ele. Esse período é a janela de atendimento.
+
+O prazo é calculado a partir da **última mensagem recebida** daquele contato. Mensagens enviadas pela conta não alteram o prazo. Cada conversa tem a própria janela.
+
+## Exemplo de sequência
+
+| Horário | Evento | Fim da janela |
+| --- | --- | --- |
+| Segunda, 9h00 | Mensagem recebida | Terça, 9h00 |
+| Segunda, 9h10 | Mensagem enviada | Terça, 9h00 |
+| Segunda, 15h00 | Mensagem recebida | Terça, 15h00 |
+| Terça, 10h00 | Mensagem enviada | Terça, 15h00 |
+| Terça, 15h01 | Nenhum evento | Janela encerrada |
+
+## Envio fora da janela
+
+Envios após o prazo são recusados pela Meta:
+
+```json
+{
+  "error": {
+    "message": "Essa mensagem foi enviada fora do período permitido.",
+    "code": 10,
+    "error_subcode": 2534022
+  }
+}
+```
+
+Não há mecanismo equivalente aos templates do WhatsApp. Uma janela encerrada só é reaberta por uma nova mensagem do contato.
+
+## Tag human_agent
+
+A Meta prevê uma extensão de **7 dias** para respostas redigidas por um operador humano, solicitada pela tag `human_agent` no corpo do envio.
+
+<Warning>
+  A tag não é aceita pela API da Datafy. Envios que a contenham são recusados com `403`.
+
+  A tag declara que a mensagem foi escrita por um operador humano, condição que uma chamada de API não permite verificar. As contas de Instagram da Datafy operam sob um único aplicativo registrado na Meta, de modo que o uso indevido por um cliente afeta todos os demais.
+</Warning>
+
+Respostas fora da janela são enviadas pelo chat do painel, onde a origem humana é verificável.
+
+## Anúncios Click-to-Direct
+
+Quando a primeira mensagem do contato é originada por clique em anúncio Click-to-Direct, a janela padrão é de até **7 dias**, sem necessidade de tag.
+
+## Prazos por origem
+
+| Origem | Prazo para envio |
+| --- | --- |
+| Mensagem no direct | 24 horas |
+| Primeira mensagem via anúncio Click-to-Direct | Até 7 dias |
+| Comentário em publicação ou reel | 7 dias, uma única mensagem |
+| Comentário em transmissão ao vivo | Durante a transmissão |
+| Chat do painel, com tag `human_agent` | 7 dias |

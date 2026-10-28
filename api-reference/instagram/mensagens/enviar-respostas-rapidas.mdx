@@ -1,0 +1,29 @@
+---
+title: "Enviar respostas rápidas"
+description: "Ofereça opções em balões acima do campo de texto."
+openapi: "/api-reference/instagram/specs/respostas-rapidas.json POST /ig/me/messages"
+---
+
+As respostas rápidas aparecem como balões acima do campo de texto e **somem depois do clique**. São indicadas para perguntas de uma etapa, como escolher um assunto no início do atendimento.
+
+Até **13** opções por mensagem. Acima disso a Meta recusa com `param message[quick_replies] has too many elements`.
+
+## Retorno no webhook
+
+O clique chega como uma **mensagem comum**, com o valor escolhido dentro:
+
+```json
+"message": {
+  "mid": "aWdfZAG1faXRlbTo...",
+  "text": "Planos",
+  "quick_reply": { "payload": "PLANOS" }
+}
+```
+
+O `text` é o título do botão, e o `payload` é o que você definiu.
+
+<Warning>
+  Decida o caminho do fluxo pelo **`payload`**, nunca pelo `text`. O título é visível e pode ser digitado manualmente pela pessoa; o payload não.
+</Warning>
+
+Para opções que continuam visíveis na conversa, use [botões](/api-reference/instagram/mensagens/enviar-botoes).

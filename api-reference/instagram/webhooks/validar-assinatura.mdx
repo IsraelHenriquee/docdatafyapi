@@ -1,0 +1,48 @@
+---
+title: "Validar assinatura"
+description: "Confirme que o evento veio da Datafy antes de processá-lo."
+---
+
+Toda entrega é assinada com o **segredo do canal**, no formato `whsec_` seguido de 64 caracteres. Ele fica na aba **Webhooks** do canal, no painel.
+
+## Como a assinatura é calculada
+
+```
+assinatura = "sha256=" + HMAC_SHA256(segredo, timestamp + "." + corpo_cru)
+```
+
+O `timestamp` é o valor do cabeçalho `x-datafy-timestamp`, e o `corpo_cru` são os **bytes exatos** recebidos.
+
+<Warning>
+  Calcule sobre o corpo **cru**, antes de qualquer interpretação. Converter para objeto e serializar de novo muda espaços e ordem de chaves, e a assinatura deixa de bater.
+</Warning>
+
+## Exemplo
+
+```js
+import crypto from 'node:crypto';
+
+function assinaturaValida(segredo, cabecalhos, corpoCru) {
+  const recebida = cabecalhos['x-datafy-signature-256'];
+  const ts = cabecalhos['x-datafy-timestamp'];
+  if (!recebida || !ts) return false;
+
+  // Recusa entregas antigas: protege contra reenvio de um corpo capturado.
+  if (Math.abs(Date.now() / 1000 - Number(ts)) > 300) return false;
+
+  const esperada = 'sha256=' + crypto
+    .createHmac('sha256', segredo)
+    .update(`${ts}.${corpoCru}`)
+    .digest('hex');
+
+  const a = Buffer.from(recebida);
+  const b = Buffer.from(esperada);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+```
+
+Compare com `timingSafeEqual` em vez de `===`. A comparação comum encerra no primeiro caractere diferente, e o tempo de resposta revela quanto do valor estava correto.
+
+## Trocar o segredo
+
+O segredo pode ser rotacionado no painel. A troca passa a valer na entrega seguinte, então atualize o valor na sua aplicação antes de rotacionar.

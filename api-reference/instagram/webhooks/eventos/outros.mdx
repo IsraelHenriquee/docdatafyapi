@@ -1,0 +1,44 @@
+---
+title: "Outros eventos"
+description: "Referral, edição de mensagem, opt-in, handover e standby."
+---
+
+Eventos menos frequentes, todos em `messaging[]`.
+
+## messaging_referral
+
+Conversa aberta por um link `ig.me` com parâmetro `ref`, ou por um anúncio Click-to-Direct.
+
+```json
+"referral": { "ref": "campanha-verao", "source": "ADS", "type": "OPEN_THREAD" }
+```
+
+O `ref` é o valor que você colocou no link, e serve para saber de onde a pessoa veio.
+
+<Note>
+  Em uma conversa que já existe, o referral chega **sozinho**, sem mensagem junto. A mensagem da pessoa vem em um evento separado logo depois.
+</Note>
+
+## message_edit
+
+Mensagem editada por quem a enviou.
+
+```json
+"message_edit": { "mid": "aWdfZAG1faXRlbTo..." }
+```
+
+<Warning>
+  O evento **não traz o texto novo**. Ele informa apenas que a mensagem mudou. Para refletir a edição, consulte a mensagem ou marque o registro como desatualizado.
+</Warning>
+
+## messaging_optins
+
+Opt-in de notification messages, que autoriza o envio fora da janela de 24 horas para um assunto específico.
+
+## messaging_handover
+
+Passagem do controle da conversa entre aplicativos, usada quando um atendimento humano assume de um bot. Chega com `pass_thread_control`, `take_thread_control` ou `request_thread_control`.
+
+## standby
+
+Mensagens que chegam enquanto **outro aplicativo** tem o controle da conversa. Sua integração recebe para acompanhar, mas não deve responder sem antes receber o controle.

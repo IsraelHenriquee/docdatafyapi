@@ -1,0 +1,65 @@
+---
+title: "Estrutura do evento"
+description: "O envelope comum a todos os eventos do Instagram."
+---
+
+Todo evento chega com a mesma casca:
+
+```json
+{
+  "object": "instagram",
+  "entry": [
+    {
+      "id": "17841400000000001",
+      "time": 1793200000000,
+      "messaging": [ ... ]
+    }
+  ]
+}
+```
+
+O `entry[].id` é o **`user_id` da conta profissional**, o mesmo devolvido por [Dados da conta](/api-reference/instagram/conta/dados-da-conta). Use-o para saber a qual canal o evento pertence.
+
+<Warning>
+  O `entry[].id` não é o `id` que `GET /ig/me` devolve no campo `id`. São valores diferentes, e só o `user_id` casa com o webhook.
+</Warning>
+
+## Duas formas dentro do mesmo envelope
+
+O conteúdo vem em uma de duas listas, e elas se comportam de maneiras diferentes:
+
+| Lista | Usada por | Como identificar o tipo |
+| --- | --- | --- |
+| `messaging[]` | mensagens, postbacks, reações, leitura | **Não há campo de tipo.** O tipo é a chave presente no objeto |
+| `changes[]` | comentários, comentários de live | O campo `field` diz o tipo |
+
+Em `changes[]` basta ler `field`. Em `messaging[]` é preciso testar quais chaves existem:
+
+| Chave presente | Tipo de evento |
+| --- | --- |
+| `message` | `messages` |
+| `postback` | `messaging_postbacks` |
+| `reaction` | `message_reactions` |
+| `read` | `messaging_seen` |
+| `referral` | `messaging_referral` |
+| `message_edit` | `message_edit` |
+| `optin` | `messaging_optins` |
+| `pass_thread_control`, `take_thread_control`, `request_thread_control` | `messaging_handover` |
+
+## A unidade de `entry.time` muda
+
+<Warning>
+  O `entry[].time` vem em **milissegundos** quando o evento está em `messaging[]`, e em **segundos** quando está em `changes[]`.
+</Warning>
+
+Tratar os dois como a mesma unidade coloca comentários em 1970 ou mensagens em um futuro distante. Normalize antes de guardar:
+
+```js
+const ms = entry.time > 1e12 ? entry.time : entry.time * 1000;
+```
+
+Dentro de `messaging[]`, o campo `timestamp` do próprio evento é sempre em milissegundos e costuma ser mais preciso que o `time` do `entry`.
+
+## Um envio pode trazer vários eventos
+
+A lista `entry[]` aceita mais de um item, e cada item aceita vários eventos. Percorra as listas em vez de ler apenas o primeiro elemento.

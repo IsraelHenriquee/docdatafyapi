@@ -1,0 +1,11 @@
+---
+title: "Ocultar ou exibir"
+description: "Oculte um comentário da publicação, ou exiba de volta."
+openapi: "/api-reference/instagram/specs/comentarios-ocultar.json POST /ig/{comment_id}"
+---
+
+Oculta o comentário na publicação, com `hide=true`, ou exibe de volta, com `hide=false`.
+
+Comentário oculto deixa de aparecer na publicação para o público, mas **continua na listagem** da API, com `hidden: true`. É a forma de moderar sem apagar: diferente de [deletar](/api-reference/instagram/comentarios/deletar), a ação é reversível e o conteúdo permanece consultável.
+
+A resposta é `{"success": true}` nos dois sentidos.

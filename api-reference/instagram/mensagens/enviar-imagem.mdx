@@ -1,0 +1,32 @@
+---
+title: "Enviar imagem"
+description: "Envie uma imagem por link público."
+openapi: "/api-reference/instagram/specs/imagem.json POST /ig/me/messages"
+---
+
+Envia uma imagem para um contato com a [janela de 24 horas](/api-reference/instagram/mensagens/introducao#janela-de-24-horas) aberta.
+
+Quem baixa o arquivo é a Meta, a partir do endereço informado em `payload.url`. Não existe upload prévio nem ID de mídia: a imagem precisa estar hospedada em algum lugar acessível antes do envio.
+
+## Formatos aceitos
+
+| Formato | Content-Type | Tamanho máximo |
+| --- | --- | --- |
+| JPEG | `image/jpeg` | 8 MB |
+| PNG | `image/png` | 8 MB |
+
+O formato é determinado pelo cabeçalho `Content-Type` devolvido pelo servidor que hospeda o arquivo, não pela extensão informada na URL. Em caso de recusa de um formato presente na tabela, verifique o cabeçalho:
+
+```bash
+curl -sI https://exemplo.com/arquivo.jpg | grep -i content-type
+```
+
+Formato recusado volta com `code 100` e `error_subcode 2534080`.
+
+<Warning>
+  A URL precisa ser **pública e direta**. Endereços que respondem com redirecionamento, exigem autenticação ou bloqueiam o download falham, mesmo abrindo normalmente no navegador.
+</Warning>
+
+Quando a Meta não consegue baixar o arquivo, a resposta é `code 100` sem subcódigo, com a mensagem "Ocorreu um erro ao carregar o anexo".
+
+A imagem não aceita legenda. Para acompanhar texto, envie uma [mensagem de texto](/api-reference/instagram/mensagens/enviar-texto) separada.

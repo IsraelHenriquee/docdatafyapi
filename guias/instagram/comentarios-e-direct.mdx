@@ -1,0 +1,70 @@
+---
+title: "Comentários e direct"
+description: "Relação entre comentários e conversas no direct, e limites aplicáveis."
+---
+
+## Identificação do contato
+
+Comentários e mensagens são canais distintos que referenciam o mesmo contato. O Instagram atribui o mesmo identificador (IGSID) nos dois contextos, o que permite associar um comentário à conversa correspondente no direct.
+
+O identificador é escopado por conta profissional: o mesmo perfil possui identificadores diferentes em contas diferentes.
+
+## Formas de resposta
+
+| Forma | Destino | Limite por comentário |
+| --- | --- | --- |
+| Resposta pública | Publicação, abaixo do comentário | Sem limite |
+| Resposta no direct | Caixa de mensagens do contato | **Uma** |
+
+A segunda tentativa de resposta no direct para o mesmo comentário é recusada:
+
+```json
+{
+  "error": {
+    "message": "O comentário ao qual você está tentando responder já tem uma resposta.",
+    "code": 100,
+    "error_subcode": 2534023
+  }
+}
+```
+
+A restrição independe do autor do comentário e vale tanto para comentários de terceiros quanto da própria conta.
+
+## Sequência de uma automação
+
+<Steps>
+  <Step title="Recebimento do comentário">
+    O evento `comments` entrega o identificador do comentário e do contato.
+  </Step>
+  <Step title="Resposta no direct">
+    Uma mensagem endereçada ao comentário. A resposta retorna o identificador do contato.
+  </Step>
+  <Step title="Continuidade da conversa">
+    As mensagens seguintes são endereçadas ao contato e passam a observar a [janela de 24 horas](/guias/instagram/janela-de-24-horas).
+  </Step>
+</Steps>
+
+<Warning>
+  A segunda mensagem não pode ser endereçada ao comentário. Ela deve usar o identificador do contato retornado na primeira resposta.
+</Warning>
+
+## Prazos e limites
+
+| Item | Valor |
+| --- | --- |
+| Prazo para resposta no direct a partir de comentário | 7 dias |
+| Comentário em transmissão ao vivo | Durante a transmissão |
+| Respostas no direct por hora, por conta | **750** |
+| Respostas públicas | Sem limite definido |
+
+<Warning>
+  O limite de 750 por hora equivale a 12,5 por minuto e é aplicado à conta inteira. Atingido o limite, a Meta recusa a requisição e a Datafy repassa a resposta sem alteração. Não há fila nem reenvio automático.
+</Warning>
+
+Integrações com volume elevado devem distribuir os envios ao longo do período.
+
+## Moderação
+
+Comentários podem ser ocultados ou deletados. A ocultação é reversível e mantém o comentário acessível pela API com `hidden: true`. A exclusão é definitiva.
+
+Automações que respondem comentários devem comparar o autor do comentário com o identificador do canal e ignorar os próprios. Sem essa verificação, a automação responde às próprias respostas de forma recursiva.

@@ -1,0 +1,52 @@
+---
+title: "Enviar áudio"
+description: "Envie um áudio por link público."
+openapi: "/api-reference/instagram/specs/audio.json POST /ig/me/messages"
+---
+
+Envia um áudio para um contato com a [janela de 24 horas](/api-reference/instagram/mensagens/introducao#janela-de-24-horas) aberta.
+
+Quem baixa o arquivo é a Meta, a partir do endereço informado em `payload.url`. Não existe upload prévio nem ID de mídia: o áudio precisa estar hospedado em algum lugar acessível antes do envio.
+
+## Formatos aceitos
+
+| Formato | Content-Type | Tamanho máximo |
+| --- | --- | --- |
+| AAC | `audio/aac` | 25 MB |
+| M4A e MP4 | `audio/mp4` | 25 MB |
+| WAV | `audio/wav` | 25 MB |
+
+<Warning>
+  **MP3 e OGG não são aceitos em áudio.** São os dois formatos que mais aparecem em quem vem do WhatsApp, onde a mensagem de voz é OGG/Opus. Converta para AAC, M4A ou WAV antes de enviar.
+</Warning>
+
+## Cabeçalho Content-Type
+
+O formato é determinado pelo cabeçalho `Content-Type` devolvido pelo servidor que hospeda o arquivo, não pela extensão informada na URL.
+
+Um arquivo `.m4a` servido como `audio/mp4a-latm` é recusado; o mesmo arquivo servido como `audio/mp4` é aceito. Em caso de recusa de um formato presente na tabela, verifique o cabeçalho:
+
+```bash
+curl -sI https://exemplo.com/arquivo.m4a | grep -i content-type
+```
+
+## Formato recusado
+
+```json
+{
+  "error": {
+    "message": "Esse formato de anexo não é aceito.",
+    "type": "IGApiException",
+    "code": 100,
+    "error_subcode": 2534080
+  }
+}
+```
+
+O `error_subcode` **2534080** indica formato recusado. O `code 100` sem subcódigo indica falha ao baixar o arquivo.
+
+<Warning>
+  A URL precisa ser **pública e direta**. Endereços que respondem com redirecionamento, exigem autenticação ou bloqueiam o download falham, mesmo abrindo normalmente no navegador.
+</Warning>
+
+O áudio aparece como mensagem de voz na conversa.

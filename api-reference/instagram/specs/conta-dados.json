@@ -1,0 +1,93 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Dados da conta",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/ig/me": {
+      "get": {
+        "summary": "Dados da conta",
+        "operationId": "igDadosConta",
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Campos a retornar, separados por vírgula.",
+            "example": "user_id,username,name,account_type,media_count,followers_count,follows_count,profile_picture_url,biography"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados retornados.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "user_id": "17841400000000001",
+                  "username": "minhaloja",
+                  "name": "Minha Loja",
+                  "account_type": "BUSINESS",
+                  "media_count": 48,
+                  "followers_count": 1250,
+                  "follows_count": 310,
+                  "profile_picture_url": "https://scontent.cdninstagram.com/v/...",
+                  "biography": "Loja de roupas e acessórios",
+                  "id": "17000000000000001"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "Unsupported get request. Object with ID '...' does not exist, cannot be loaded due to missing permissions, or does not support this operation",
+                    "type": "IGApiException",
+                    "code": 100,
+                    "error_subcode": 33
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 401,
+                  "message": "Token inválido ou não encontrado."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token do canal do Instagram, gerado no painel da Datafy. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+---
+title: "Postbacks"
+description: "Evento messaging_postbacks: clique em botão de template ou ice breaker."
+---
+
+Identificador do evento: **`messaging_postbacks`**.
+
+Chega em `messaging[]`, identificado pela presença da chave `postback`. O objeto `message` **não existe** nesse evento.
+
+```json
+{
+  "object": "instagram",
+  "entry": [
+    {
+      "id": "17841400000000001",
+      "time": 1793200000000,
+      "messaging": [
+        {
+          "sender": { "id": "1000000000000001" },
+          "recipient": { "id": "17841400000000001" },
+          "timestamp": 1793199998000,
+          "postback": {
+            "mid": "aWdfZAG1faXRlbTo...",
+            "title": "Quero assinar",
+            "payload": "ASSINAR_PRO"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+O `payload` é o valor definido ao [enviar os botões](/api-reference/instagram/mensagens/enviar-botoes). O `title` é o texto que a pessoa viu.
+
+<Warning>
+  Uma integração que escuta apenas `messages` **não recebe os cliques em botões**. Assine `messaging_postbacks` também, ou o fluxo encadeado para no primeiro botão.
+</Warning>
+
+Botões do tipo `web_url` não geram evento: eles abrem um endereço e a Datafy nunca fica sabendo do clique.
+
+## Ice breakers
+
+Perguntas sugeridas configuradas no perfil chegam pelo mesmo evento, com o `payload` definido no aplicativo do Instagram.

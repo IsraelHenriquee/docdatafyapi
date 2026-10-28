@@ -1,0 +1,57 @@
+---
+title: "Responder no direct"
+description: "Abra uma conversa no Direct a partir de um comentário."
+openapi: "/api-reference/instagram/specs/comentarios-dm.json POST /ig/me/messages"
+---
+
+Envia uma mensagem no Direct para quem comentou, usando o mesmo endpoint de envio de mensagens, mas endereçando o **comentário** em vez da pessoa:
+
+```json
+"recipient": { "comment_id": "17800000000000001" }
+```
+
+A Meta resolve quem é o autor. Você não precisa conhecer o IGSID para enviar a primeira mensagem.
+
+## Uma por comentário
+
+Cada comentário permite **uma única** resposta no direct. A segunda tentativa é recusada:
+
+```json
+{
+  "error": {
+    "message": "O comentário ao qual você está tentando responder já tem uma resposta.",
+    "type": "IGApiException",
+    "code": 100,
+    "error_subcode": 2534023
+  }
+}
+```
+
+O prazo é de **7 dias** a partir do comentário. Em comentários de transmissão ao vivo, apenas durante a transmissão.
+
+## Limite por hora
+
+A Meta permite **750 respostas privadas por hora** por conta profissional, somando comentários de publicações e reels. Em comentários de transmissão ao vivo o limite é outro, de 100 por segundo.
+
+<Warning>
+  O limite da Meta é mais restritivo que o da Datafy. São 750 por hora, equivalentes a 12,5 por minuto, contra 4.800 por minuto no limite de envio da Datafy. Uma integração pode exceder o limite da Meta sem atingir o da Datafy.
+</Warning>
+
+Quando o limite é atingido, a Meta recusa e a Datafy repassa a resposta dela. **Não há fila nem retentativa**: a mensagem não sai e cabe à sua integração decidir o que fazer. Para volume alto, distribua os envios ao longo da hora em vez de disparar em rajada.
+
+## Continuar a conversa
+
+A resposta do envio traz o `recipient_id`, que é o IGSID da pessoa:
+
+```json
+{
+  "recipient_id": "1000000000000002",
+  "message_id": "aWdfZAG1faXRlbTo......"
+}
+```
+
+Guarde esse valor. As mensagens seguintes saem pelo [envio normal](/api-reference/instagram/mensagens/enviar-texto), com `recipient.id`, e passam a valer pela [janela de 24 horas](/api-reference/instagram/mensagens/introducao#janela-de-24-horas), contada a partir da resposta da pessoa.
+
+<Warning>
+  Uma automação que manda a primeira mensagem por `comment_id` e tenta mandar a segunda pelo mesmo caminho vai falhar. A segunda precisa ser endereçada por `recipient.id`.
+</Warning>

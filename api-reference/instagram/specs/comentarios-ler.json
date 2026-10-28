@@ -1,0 +1,107 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Ler um comentário",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/ig/{comment_id}": {
+      "get": {
+        "summary": "Ler um comentário",
+        "operationId": "igLerComentario",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do comentário. Chega no webhook ou em `GET /ig/{media_id}/comments`.",
+            "example": "17800000000000001"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Campos a retornar, separados por vírgula.",
+            "example": "id,text,timestamp,like_count,hidden,media,from"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação aceita.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "17800000000000001",
+                  "text": "Oi",
+                  "timestamp": "2026-10-28T16:12:00+0000",
+                  "like_count": 0,
+                  "hidden": false,
+                  "from": {
+                    "id": "17841400000000001",
+                    "username": "mariasilva",
+                    "self_ig_scoped_id": "1000000000000002"
+                  },
+                  "media": {
+                    "id": "17900000000000001"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "Unsupported post request.",
+                    "type": "IGApiException",
+                    "code": 100,
+                    "error_subcode": 33,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 401,
+                  "message": "Token inválido ou não encontrado."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token do canal do Instagram, gerado no painel da Datafy. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}

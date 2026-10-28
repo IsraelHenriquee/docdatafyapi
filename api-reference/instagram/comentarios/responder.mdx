@@ -1,0 +1,15 @@
+---
+title: "Responder um comentário"
+description: "Responda publicamente, na própria publicação."
+openapi: "/api-reference/instagram/specs/comentarios-responder.json POST /ig/{comment_id}/replies"
+---
+
+Publica uma resposta vinculada ao comentário, visível na publicação.
+
+**Não há limite de respostas por comentário.** A mesma conta pode responder quantas vezes quiser, tanto em comentários de terceiros quanto nos próprios.
+
+Isso difere da [resposta no direct](/api-reference/instagram/comentarios/responder-no-direct), que é limitada a uma por comentário.
+
+## Respostas de respostas
+
+Uma resposta é um comentário como outro qualquer e tem o próprio `id`. Ela pode ser lida, ocultada e deletada pelos mesmos endpoints.

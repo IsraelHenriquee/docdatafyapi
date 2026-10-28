@@ -1,0 +1,15 @@
+---
+title: "Deletar um comentário"
+description: "Remova um comentário em definitivo."
+openapi: "/api-reference/instagram/specs/comentarios-deletar.json DELETE /ig/{comment_id}"
+---
+
+Remove o comentário da publicação em definitivo.
+
+<Warning>
+  A ação não tem volta. Para moderação reversível, use [ocultar](/api-reference/instagram/comentarios/ocultar).
+</Warning>
+
+Serve tanto para comentários da própria conta quanto para comentários de terceiros nas publicações dela.
+
+A resposta é `{"success": true}`.

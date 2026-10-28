@@ -1,0 +1,131 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Listar comentários",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/ig/{media_id}/comments": {
+      "get": {
+        "summary": "Listar comentários",
+        "operationId": "igListarComentarios",
+        "parameters": [
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID da publicação. Obtido em `GET /ig/me/media`.",
+            "example": "17900000000000001"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Campos a retornar, separados por vírgula.",
+            "example": "id,text,timestamp,like_count,hidden,from"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 25
+            },
+            "description": "Itens por página."
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cursor de `paging.cursors.after`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação aceita.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "id": "17800000000000001",
+                      "text": "Oi",
+                      "timestamp": "2026-10-28T16:12:00+0000",
+                      "like_count": 0,
+                      "hidden": false,
+                      "from": {
+                        "id": "17841400000000001",
+                        "username": "mariasilva",
+                        "self_ig_scoped_id": "1000000000000002"
+                      }
+                    }
+                  ],
+                  "paging": {
+                    "cursors": {
+                      "before": "QVFIVEpr...",
+                      "after": "QVFIVDVM..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "Unsupported post request.",
+                    "type": "IGApiException",
+                    "code": 100,
+                    "error_subcode": 33,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 401,
+                  "message": "Token inválido ou não encontrado."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token do canal do Instagram, gerado no painel da Datafy. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}

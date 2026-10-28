@@ -1,0 +1,42 @@
+---
+title: "Consultar status"
+description: "Acompanhe o processamento de um contêiner antes de publicar."
+openapi: "/api-reference/instagram/specs/pub-status.json GET /ig/{creation_id}"
+---
+
+Retorna o estado de processamento do contêiner. Consulte o campo `status_code`.
+
+| Valor | Significado |
+| --- | --- |
+| `FINISHED` | Pronto para publicar |
+| `IN_PROGRESS` | Ainda processando |
+| `ERROR` | Falhou. O contêiner não pode ser publicado |
+| `EXPIRED` | Passou do prazo sem ser publicado |
+| `PUBLISHED` | Já foi publicado |
+
+## Quando consultar
+
+Para **imagem**, o contêiner costuma nascer `FINISHED` e a consulta é dispensável.
+
+Para **vídeo e reel**, a consulta é obrigatória. A criação do contêiner responde antes de a Meta baixar o arquivo, então a falha só aparece aqui.
+
+Consulte em intervalos de alguns segundos até sair de `IN_PROGRESS`.
+
+## Publicar um contêiner com erro
+
+Chamar `media_publish` com um contêiner em `ERROR` é recusado, e a mensagem explica a causa original:
+
+```json
+{
+  "error": {
+    "message": "Invalid parameter",
+    "type": "OAuthException",
+    "code": 100,
+    "error_subcode": 2207076,
+    "error_user_title": "Falha ao baixar a mídia.",
+    "error_user_msg": "Falha ao baixar a mídia.: The media could not be fetched from the provided URL."
+  }
+}
+```
+
+Os campos `error_user_title` e `error_user_msg` trazem a descrição em português e são mais úteis que o `message`.

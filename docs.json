@@ -62,6 +62,18 @@
                 ]
               },
               {
+                "group": "Instagram",
+                "icon": {
+                  "name": "instagram",
+                  "style": "brands"
+                },
+                "pages": [
+                  "guias/instagram/como-funciona",
+                  "guias/instagram/janela-de-24-horas",
+                  "guias/instagram/comentarios-e-direct"
+                ]
+              },
+              {
                 "group": "Configurar a Meta",
                 "icon": {
                   "name": "gear",
@@ -306,13 +318,103 @@
             },
             "groups": [
               {
-                "group": "Referência",
+                "group": "Começar",
+                "icon": {
+                  "name": "rocket",
+                  "style": "regular"
+                },
                 "pages": [
-                  "api-reference/instagram/introducao"
+                  "api-reference/instagram/introducao",
+                  "api-reference/instagram/visao-geral/autenticacao",
+                  "api-reference/instagram/visao-geral/requisicoes"
+                ]
+              },
+              {
+                "group": "Mensagens",
+                "icon": {
+                  "name": "paper-plane",
+                  "style": "regular"
+                },
+                "pages": [
+                  "api-reference/instagram/mensagens/introducao",
+                  "api-reference/instagram/mensagens/enviar-texto",
+                  "api-reference/instagram/mensagens/enviar-imagem",
+                  "api-reference/instagram/mensagens/enviar-video",
+                  "api-reference/instagram/mensagens/enviar-audio",
+                  "api-reference/instagram/mensagens/enviar-respostas-rapidas",
+                  "api-reference/instagram/mensagens/enviar-botoes",
+                  "api-reference/instagram/mensagens/enviar-reacao",
+                  "api-reference/instagram/mensagens/marcar-como-lida",
+                  "api-reference/instagram/mensagens/indicador-de-digitacao"
+                ]
+              },
+              {
+                "group": "Comentários",
+                "icon": {
+                  "name": "comments",
+                  "style": "regular"
+                },
+                "pages": [
+                  "api-reference/instagram/comentarios/introducao",
+                  "api-reference/instagram/comentarios/listar",
+                  "api-reference/instagram/comentarios/ler",
+                  "api-reference/instagram/comentarios/criar",
+                  "api-reference/instagram/comentarios/responder",
+                  "api-reference/instagram/comentarios/responder-no-direct",
+                  "api-reference/instagram/comentarios/ocultar",
+                  "api-reference/instagram/comentarios/deletar"
+                ]
+              },
+              {
+                "group": "Publicações",
+                "icon": {
+                  "name": "images",
+                  "style": "regular"
+                },
+                "pages": [
+                  "api-reference/instagram/publicacoes/introducao",
+                  "api-reference/instagram/publicacoes/criar-container",
+                  "api-reference/instagram/publicacoes/status",
+                  "api-reference/instagram/publicacoes/publicar",
+                  "api-reference/instagram/publicacoes/listar",
+                  "api-reference/instagram/publicacoes/cota"
+                ]
+              },
+              {
+                "group": "Conta",
+                "icon": {
+                  "name": "address-card",
+                  "style": "regular"
+                },
+                "pages": [
+                  "api-reference/instagram/conta/dados-da-conta",
+                  "api-reference/instagram/conta/perfil-do-contato"
+                ]
+              },
+              {
+                "group": "Webhooks",
+                "icon": {
+                  "name": "webhook",
+                  "style": "regular"
+                },
+                "pages": [
+                  "api-reference/instagram/webhooks/receber-eventos",
+                  "api-reference/instagram/webhooks/validar-assinatura",
+                  "api-reference/instagram/webhooks/estrutura-do-evento",
+                  {
+                    "group": "Eventos",
+                    "pages": [
+                      "api-reference/instagram/webhooks/eventos/mensagens",
+                      "api-reference/instagram/webhooks/eventos/postbacks",
+                      "api-reference/instagram/webhooks/eventos/reacoes",
+                      "api-reference/instagram/webhooks/eventos/leitura",
+                      "api-reference/instagram/webhooks/eventos/comentarios",
+                      "api-reference/instagram/webhooks/eventos/outros"
+                    ]
+                  }
                 ]
               }
-            ],
-            "hidden": true
+            ]
           }
         ]
       }

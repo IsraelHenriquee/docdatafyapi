@@ -1,0 +1,100 @@
+---
+title: "Mensagens"
+description: "Evento messages: DM recebida, resposta a story e eco do que a conta envia."
+---
+
+Identificador do evento: **`messages`**.
+
+Chega em `messaging[]`, identificado pela presença da chave `message`.
+
+```json
+{
+  "object": "instagram",
+  "entry": [
+    {
+      "id": "17841400000000001",
+      "time": 1793200000000,
+      "messaging": [
+        {
+          "sender": { "id": "1000000000000001" },
+          "recipient": { "id": "17841400000000001" },
+          "timestamp": 1793199998000,
+          "message": {
+            "mid": "aWdfZAG1faXRlbTo...",
+            "text": "Oi, vocês entregam em Curitiba?"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+O `sender.id` é o IGSID do contato, usado para responder e para consultar o [perfil](/api-reference/instagram/conta/perfil-do-contato).
+
+## Mensagens enviadas pela conta
+
+Mensagens que saem da conta voltam no mesmo evento, com `is_echo`:
+
+```json
+"message": {
+  "mid": "aWdfZAG1faXRlbTo...",
+  "text": "Entregamos sim!",
+  "is_echo": true
+}
+```
+
+Isso inclui o que foi enviado pela API e também o que uma pessoa da equipe digitou no aplicativo do Instagram. No eco, o `sender.id` é a conta e o `recipient.id` é o contato, invertidos em relação a uma mensagem recebida.
+
+<Warning>
+  Um eco **não abre conversa nem reinicia a janela de 24 horas**. Só mensagem da pessoa faz isso. Tratar eco como mensagem recebida duplica conversas.
+</Warning>
+
+## Anexos
+
+Mídia chega em `attachments`, sem texto:
+
+```json
+"message": {
+  "mid": "aWdfZAG1faXRlbTo...",
+  "attachments": [
+    { "type": "image", "payload": { "url": "https://scontent.cdninstagram.com/v/..." } }
+  ]
+}
+```
+
+<Warning>
+  O campo `url` significa coisas diferentes conforme o `type`. Em `image`, `video` e `audio` é o arquivo. Em `share` é o **endereço da publicação** compartilhada, não um arquivo para baixar.
+</Warning>
+
+As URLs de mídia são assinadas e expiram. Baixe o arquivo ao receber, se precisar guardá-lo.
+
+## Resposta a story
+
+Resposta a um story chega como mensagem comum, com `reply_to`:
+
+```json
+"message": {
+  "mid": "aWdfZAG1faXRlbTo...",
+  "text": "Que legal!",
+  "reply_to": { "story": { "id": "17900000000000001", "url": "https://scontent.cdninstagram.com/v/..." } }
+}
+```
+
+## Resposta rápida
+
+Clique em uma [resposta rápida](/api-reference/instagram/mensagens/enviar-respostas-rapidas) chega como mensagem, e não como postback:
+
+```json
+"message": {
+  "mid": "aWdfZAG1faXRlbTo...",
+  "text": "Planos",
+  "quick_reply": { "payload": "PLANOS" }
+}
+```
+
+Roteie pelo `payload`, não pelo `text`.
+
+## Mensagem sem texto
+
+Um `message.text` vazio é válido e significa mensagem sem texto, não erro. Verifique `attachments` antes de descartar o evento.

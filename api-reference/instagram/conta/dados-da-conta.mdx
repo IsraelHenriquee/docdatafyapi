@@ -1,0 +1,30 @@
+---
+title: "Dados da conta"
+description: "Consulte a conta profissional ligada ao token."
+openapi: "/api-reference/instagram/specs/conta-dados.json GET /ig/me"
+---
+
+Retorna a conta profissional a que o token pertence. É o endereço usado para descobrir o identificador da conta sem precisar guardá-lo na integração.
+
+Nenhum campo além do `id` é devolvido por padrão. Liste em `fields`, separados por vírgula, os campos que você precisa.
+
+## Campos
+
+| Campo | Conteúdo |
+| --- | --- |
+| `user_id` | Identificador da conta profissional |
+| `id` | Identificador da conta no escopo do aplicativo |
+| `username` | Nome de usuário, sem o arroba |
+| `name` | Nome de exibição |
+| `account_type` | `BUSINESS` ou `MEDIA_CREATOR` |
+| `media_count` | Quantidade de publicações |
+| `followers_count` | Seguidores |
+| `follows_count` | Contas seguidas |
+| `profile_picture_url` | Foto do perfil, com validade limitada |
+| `biography` | Texto da biografia |
+
+<Warning>
+  `user_id` e `id` são valores diferentes. O **`user_id`** é o que aparece em `entry[].id` nos webhooks e deve ser usado para casar um evento recebido com a conta.
+</Warning>
+
+A `profile_picture_url` é um endereço assinado e expira. Baixe a imagem se precisar exibi-la de forma persistente.

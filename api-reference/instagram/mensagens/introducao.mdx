@@ -1,0 +1,74 @@
+---
+title: "Visão geral"
+sidebarTitle: "Introdução"
+description: "Como funcionam os envios no Direct do Instagram."
+---
+
+Todos os envios usam o mesmo endpoint, e o que muda é o corpo da requisição:
+
+```http
+POST https://cloud.datafyapi.com.br/ig/me/messages
+```
+
+## Destinatário
+
+O destinatário é identificado pelo **IGSID**, informado em `recipient.id`:
+
+```json
+"recipient": { "id": "1000000000000001" }
+```
+
+Esse valor chega no webhook em `sender.id` quando a pessoa manda mensagem. Ele é específico da sua conta: o mesmo perfil do Instagram tem IGSIDs diferentes em contas profissionais diferentes.
+
+<Note>
+  O IGSID também identifica a mesma pessoa quando ela comenta em uma publicação. O `from.id` do comentário é o mesmo valor do `sender.id` da conversa.
+</Note>
+
+## Janela de 24 horas
+
+A empresa **não pode iniciar conversas**. Toda troca começa com uma ação da pessoa: uma mensagem, um comentário, uma resposta a story, uma menção ou um clique em anúncio.
+
+A partir da última mensagem recebida, você tem **24 horas** para responder. Fora do prazo, a Meta recusa:
+
+```json
+{
+  "error": {
+    "message": "Essa mensagem foi enviada fora do período permitido.",
+    "type": "IGApiException",
+    "code": 10,
+    "error_subcode": 2534022
+  }
+}
+```
+
+A janela conta a partir da última mensagem **da pessoa**, não da última da conversa. Responder não reabre o prazo.
+
+## Resposta do envio
+
+Um envio aceito devolve o identificador da mensagem:
+
+```json
+{
+  "recipient_id": "1000000000000001",
+  "message_id": "aWdfZAG1faXRlbTo......"
+}
+```
+
+As ações de conversa, como marcar como lida e reagir, devolvem apenas o `recipient_id`, porque não criam mensagem.
+
+<Warning>
+  A resposta `200` significa que a Meta aceitou, não que a mensagem foi entregue.
+</Warning>
+
+## Eco das mensagens enviadas
+
+Toda mensagem que sai da conta volta para o seu webhook com `is_echo: true`, inclusive as enviadas pelo aplicativo do Instagram por uma pessoa da equipe. Use esse evento para manter sua base igual à conversa real.
+
+## Erros comuns
+
+| Código | Significado |
+| --- | --- |
+| `code 10`, `subcode 2534022` | Envio fora da janela de 24 horas |
+| `code 100`, `subcode 2534014` | IGSID não encontrado |
+| `code 100`, `subcode 2018343` | Mais de 3 botões no cartão |
+| `code 100` | Falha ao baixar a mídia da URL informada |

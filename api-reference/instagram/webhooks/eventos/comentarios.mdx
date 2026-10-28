@@ -1,0 +1,60 @@
+---
+title: "Comentários"
+description: "Eventos comments e live_comments: comentário novo em publicação ou transmissão."
+---
+
+Identificadores do evento: **`comments`** e **`live_comments`**.
+
+Diferente dos eventos de mensagem, comentários chegam em **`changes[]`**, onde o campo `field` diz o tipo.
+
+```json
+{
+  "object": "instagram",
+  "entry": [
+    {
+      "id": "17841400000000001",
+      "time": 1793200000,
+      "changes": [
+        {
+          "field": "comments",
+          "value": {
+            "id": "17800000000000001",
+            "text": "Chega em quantos dias?",
+            "from": { "id": "1000000000000001", "username": "mariasilva" },
+            "media": { "id": "17900000000000001", "media_product_type": "FEED" }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+<Warning>
+  Em `changes[]` o `entry[].time` vem em **segundos**, não em milissegundos como nos eventos de mensagem. Veja [Estrutura do evento](/api-reference/instagram/webhooks/estrutura-do-evento#a-unidade-de-entrytime-muda).
+</Warning>
+
+## O autor é a mesma pessoa do Direct
+
+O `from.id` é o **mesmo IGSID** que aparece em `sender.id` nas mensagens daquela pessoa. É isso que permite ligar um comentário à conversa dela e [responder no direct](/api-reference/instagram/comentarios/responder-no-direct).
+
+## Resposta a outro comentário
+
+Quando o comentário é resposta a outro, vem `parent_id`:
+
+```json
+"value": {
+  "id": "17800000000000002",
+  "text": "Obrigado!",
+  "parent_id": "17800000000000001",
+  "from": { "id": "1000000000000001", "username": "mariasilva" }
+}
+```
+
+## Comentários da própria conta
+
+Respostas publicadas pela própria conta também geram evento. Compare o `from.id` com o `entry[].id` para distinguir, senão uma automação que responde comentário responde a si mesma em laço.
+
+## Transmissões ao vivo
+
+Comentários durante uma transmissão chegam com `field: "live_comments"` e a mesma estrutura. O prazo para [responder no direct](/api-reference/instagram/comentarios/responder-no-direct) é apenas durante a transmissão.

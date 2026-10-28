@@ -1,0 +1,27 @@
+---
+title: "Enviar reação"
+description: "Reaja a uma mensagem da conversa."
+openapi: "/api-reference/instagram/specs/reacao.json POST /ig/me/messages"
+---
+
+Aplica uma reação a uma mensagem, do mesmo jeito que a pessoa faz tocando e segurando uma mensagem no Instagram.
+
+A reação usa `sender_action`, e não o campo `message`. Informe em `payload.message_id` o `mid` da mensagem recebida, que chega no webhook.
+
+## Aplicar e remover
+
+```json
+{
+  "recipient": { "id": "1000000000000001" },
+  "sender_action": "react",
+  "payload": { "message_id": "aWdfZAG1faXRlbTo...", "reaction": "love" }
+}
+```
+
+Para remover, use `"sender_action": "unreact"` com o mesmo `message_id`, sem o campo `reaction`.
+
+A resposta traz apenas o `recipient_id`, porque a reação não cria uma mensagem nova.
+
+## Reação recebida
+
+Quando ela reage a uma mensagem sua, chega um webhook com `reaction`, apontando para o `mid` que recebeu a reação.

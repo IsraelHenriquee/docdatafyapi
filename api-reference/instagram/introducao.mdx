@@ -1,10 +1,73 @@
 ---
 title: "Visão geral"
-description: "Referência da API Instagram da Datafy."
+sidebarTitle: "Introdução"
+description: "Use a API oficial do Instagram pela Datafy trocando apenas a URL base e o token."
 ---
 
-Aqui ficará a referência da **API Instagram** da Datafy.
+A Datafy funciona como um **espelho da API do Instagram**. Você chama os mesmos endpoints da documentação oficial da Meta, só que pela URL da Datafy e com o token gerado no nosso painel. Nós repassamos cada requisição e devolvemos a resposta.
+
+## Como usar
+
+Nas suas chamadas, troque apenas a **URL base** e o **token**:
+
+| Item | API do Instagram | Datafy |
+| --- | --- | --- |
+| URL base | `https://graph.instagram.com/v23.0/` | `https://cloud.datafyapi.com.br/ig/` |
+| Token | `Bearer <META_TOKEN>` | `Bearer sk_live_xxx` |
+
+```bash
+# Antes: chamando a Meta diretamente
+https://graph.instagram.com/v23.0/me/messages
+
+# Depois: via Datafy
+https://cloud.datafyapi.com.br/ig/me/messages
+```
+
+A versão da API é fixada pela Datafy e não vai na URL. Você acompanha as atualizações da Meta sem alterar sua integração.
+
+O token `sk_live_xxx` é gerado no [painel da Datafy](https://app.datafyapi.com.br) quando você cria o canal. Ele **substitui completamente o token da Meta**, e sua credencial real nunca é exposta.
 
 <Note>
-  A documentação dos endpoints do Instagram está em preparação.
+  Esta é a API do Instagram com **Instagram Login**, que não exige Página do Facebook. A conta precisa ser profissional, Empresa ou Criador de conteúdo.
 </Note>
+
+## Identificadores da conta
+
+Chame `GET /ig/me` para conhecer a conta ligada ao token:
+
+```bash
+curl "https://cloud.datafyapi.com.br/ig/me?fields=user_id,username,account_type,media_count" \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+```json
+{
+  "user_id": "17841400000000001",
+  "username": "mariasilva",
+  "account_type": "MEDIA_CREATOR",
+  "media_count": 2,
+  "id": "17000000000000001"
+}
+```
+
+<Warning>
+  `user_id` e `id` são valores diferentes e não devem ser trocados. O **`user_id`** é o identificador da conta profissional, e é ele que aparece em `entry[].id` nos webhooks. Use o `user_id` para casar um evento recebido com a conta.
+</Warning>
+
+## Exemplo: enviar uma mensagem
+
+```bash
+curl -X POST https://cloud.datafyapi.com.br/ig/me/messages \
+  -H 'Authorization: Bearer sk_live_xxx' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "recipient": { "id": "1000000000000001" },
+    "message": { "text": "Olá!" }
+  }'
+```
+
+O `recipient.id` é o IGSID do contato, que chega no webhook em `sender.id` quando a pessoa manda mensagem. Conversas só podem ser iniciadas pela pessoa, e a resposta tem prazo. Veja [Requisições e limites](/api-reference/instagram/visao-geral/requisicoes).
+
+## Endpoints não listados
+
+Esta referência cobre os endpoints mais usados. Para os demais, consulte a [documentação oficial da Meta](https://developers.facebook.com/documentation/instagram-platform/instagram-api-with-instagram-login) e aplique a mesma troca de URL base e token.

@@ -1,0 +1,125 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Responder no direct",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/ig/me/messages": {
+      "post": {
+        "summary": "Responder no direct",
+        "operationId": "igRespostaPrivada",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "recipient",
+                  "message"
+                ],
+                "properties": {
+                  "recipient": {
+                    "type": "object",
+                    "required": [
+                      "comment_id"
+                    ],
+                    "description": "Endereça o COMENTÁRIO, não a pessoa.",
+                    "properties": {
+                      "comment_id": {
+                        "type": "string",
+                        "description": "ID do comentário que origina a conversa.",
+                        "example": "17800000000000001"
+                      }
+                    }
+                  },
+                  "message": {
+                    "type": "object",
+                    "required": [
+                      "text"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "description": "Texto da mensagem.",
+                        "example": "Oi! Respondendo seu comentário por aqui."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "recipient": {
+                  "comment_id": "17800000000000001"
+                },
+                "message": {
+                  "text": "Oi! Respondendo seu comentário por aqui."
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operação aceita.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "recipient_id": "1000000000000002",
+                  "message_id": "aWdfZAG1faXRlbTo......"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "O comentário já recebeu uma resposta privada, ou passou de 7 dias.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "O comentário ao qual você está tentando responder já tem uma resposta.",
+                    "type": "IGApiException",
+                    "code": 100,
+                    "error_subcode": 2534023
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 401,
+                  "message": "Token inválido ou não encontrado."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token do canal do Instagram, gerado no painel da Datafy. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}

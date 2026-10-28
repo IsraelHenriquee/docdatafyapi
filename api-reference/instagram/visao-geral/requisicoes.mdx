@@ -1,0 +1,154 @@
+---
+title: "Requisições e limites"
+description: "Paginação, limites de uso, erros, janela de 24 horas e operações bloqueadas."
+---
+
+## Janela de 24 horas
+
+Conversas no Instagram só podem ser **iniciadas pela pessoa**. A partir da última mensagem recebida dela, sua integração tem **24 horas** para responder.
+
+Fora desse prazo, a Meta recusa o envio:
+
+```json
+{
+  "error": {
+    "message": "Essa mensagem foi enviada fora do período permitido.",
+    "type": "IGApiException",
+    "code": 10,
+    "error_subcode": 2534022
+  }
+}
+```
+
+O `code: 10` com `error_subcode: 2534022` é a assinatura exata de envio fora da janela. Use esses valores para tratar o caso na sua integração, em vez de comparar o texto da mensagem.
+
+<Note>
+  Quando a primeira mensagem da pessoa vem de um anúncio **Click-to-Direct**, a janela padrão já nasce com até 7 dias.
+</Note>
+
+A tag `human_agent`, que estende o prazo para 7 dias, **não é aceita pela API**. Ela declara que um ser humano escreveu a resposta, e pela API não há como garantir isso. Como todos os clientes do Instagram operam sob um único aplicativo na Meta, o abuso de um afetaria todos. Respostas de atendente fora da janela são enviadas pelo painel, onde a garantia existe.
+
+```json
+{
+  "statusCode": 403,
+  "message": "A tag human_agent não é permitida pela API. Ela vale apenas para respostas escritas por um atendente no painel."
+}
+```
+
+## Paginação
+
+Endpoints que retornam listas, como publicações e comentários, devolvem um objeto `paging` com cursores:
+
+```json
+"paging": {
+  "cursors": { "before": "QVFIVGRnSS...", "after": "QVFIVGZAPNnU..." },
+  "next": "https://graph.instagram.com/v23.0/..."
+}
+```
+
+<Warning>
+  **Não chame a URL de `paging.next` diretamente.** Ela aponta para a Meta e não funciona sem o token da Meta.
+</Warning>
+
+Para buscar a próxima página, repita a mesma chamada na URL da Datafy acrescentando o parâmetro `after`:
+
+```bash
+curl "https://cloud.datafyapi.com.br/ig/me/media?limit=25&after=QVFIVGZAPNnU..." \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+Quando não houver mais páginas, a resposta vem sem `paging.next`.
+
+## Limites de requisição
+
+Os limites são contados **por token**, em janelas de 1 minuto:
+
+| Categoria | Rotas | Limite |
+| --- | --- | --- |
+| Envio de mensagens | `POST /ig/me/messages` | 4.800 req/min |
+| Consultas | Demais endpoints do Instagram | 60 req/min |
+
+Quando o limite é excedido, a resposta é **`429 Too Many Requests`**, informando quantos segundos aguardar:
+
+```json
+{
+  "statusCode": 429,
+  "message": "Rate limit excedido (60 req/min). Tente novamente em 12s."
+}
+```
+
+### Limites da Meta
+
+A Meta mantém os próprios limites, por conta profissional, e eles valem **além** dos da Datafy. Em várias operações eles são mais restritivos que os nossos:
+
+| Operação | Limite da Meta |
+| --- | --- |
+| Envio de texto, link, reação ou figurinha | 300 por segundo |
+| Envio de áudio ou vídeo | 10 por segundo |
+| Resposta privada a comentário em publicação ou reel | **750 por hora** |
+| Resposta privada em comentário de transmissão ao vivo | 100 por segundo |
+| Listar conversas | 2 por segundo |
+
+Há também um teto de volume, e não de chamadas: uma conta que ultrapassa **72.000 mensagens** enviadas e recebidas deixa de receber novas mensagens na caixa de entrada do Instagram e fica impedida de enviar até o volume cair.
+
+<Warning>
+  O limite de resposta privada é o mais restritivo da lista. São 750 por hora, equivalentes a 12,5 por minuto, contra 4.800 por minuto no limite de envio da Datafy. Uma integração que responde comentários no direct deve controlar a própria cadência.
+</Warning>
+
+Quando a Meta recusa por excesso, a resposta dela é repassada sem alteração. A Datafy **não enfileira nem repete** a chamada.
+
+<Tip>
+  Evite consultar o mesmo recurso em loop, como a lista de publicações ou os comentários. Para acompanhar mudanças, use os webhooks.
+</Tip>
+
+## Erros da Datafy
+
+Antes de repassar a requisição para a Meta, a Datafy valida o token, a assinatura, as rotas bloqueadas e o limite de uso. Nesses casos, a resposta tem os campos `statusCode` e `message`:
+
+```json
+{
+  "statusCode": 401,
+  "message": "Token inválido ou não encontrado."
+}
+```
+
+| Código | Quando acontece |
+| --- | --- |
+| `401 Unauthorized` | O header `Authorization` não foi enviado, ou o token é inválido. |
+| `402 Payment Required` | O token existe, mas a assinatura da Datafy está inativa. Ative a assinatura no painel. |
+| `403 Forbidden` | A operação é bloqueada por segurança, ou o token não é de um canal do Instagram. |
+| `409 Conflict` | O canal está pausado e não envia nem recebe mensagens. |
+| `429 Too Many Requests` | O limite de requisições foi excedido. A mensagem informa quantos segundos aguardar. |
+
+## Erros da Meta
+
+Quando a requisição chega à Meta e ela recusa, a Datafy **repassa a resposta sem alteração**, com o mesmo status HTTP:
+
+```json
+{
+  "error": {
+    "message": "User consent is required to access user profile.",
+    "type": "IGApiException",
+    "code": 230,
+    "fbtrace_id": "AbCdEfGhIjK"
+  }
+}
+```
+
+## Rotas bloqueadas
+
+Algumas operações alteram configurações que a Datafy gerencia para manter seu canal funcionando. Elas retornam **`403 Forbidden`**:
+
+- Métodos de escrita em caminhos que contenham `subscribed_apps`. Alterar isso cancelaria a inscrição do aplicativo na sua conta e você pararia de receber eventos.
+- Métodos de escrita em caminhos que contenham `refresh_access_token`, `access_token` ou `oauth`. O ciclo de vida do token é responsabilidade da Datafy, que o renova antes do vencimento.
+- `POST` em um caminho de um único segmento, como `POST /ig/me`, que altera a configuração da própria conta.
+- Envio com a tag `human_agent`.
+
+Ler a própria inscrição de webhooks continua permitido, porque é como você confere que a conta está recebendo eventos:
+
+```bash
+curl "https://cloud.datafyapi.com.br/ig/me/subscribed_apps" \
+  -H 'Authorization: Bearer sk_live_xxx'
+```
+
+Todos os outros endpoints da API do Instagram funcionam normalmente.

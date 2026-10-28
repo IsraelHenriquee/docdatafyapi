@@ -1,0 +1,156 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Enviar reação",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/ig/me/messages": {
+      "post": {
+        "summary": "Enviar reação",
+        "operationId": "igEnviarReacao",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "recipient",
+                  "sender_action",
+                  "payload"
+                ],
+                "properties": {
+                  "recipient": {
+                    "type": "object",
+                    "required": [
+                      "id"
+                    ],
+                    "description": "Quem recebe a mensagem.",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "IGSID do contato, recebido no webhook em `sender.id`.",
+                        "example": "1000000000000001"
+                      }
+                    }
+                  },
+                  "sender_action": {
+                    "type": "string",
+                    "enum": [
+                      "react",
+                      "unreact"
+                    ],
+                    "default": "react",
+                    "description": "`react` aplica a reação, `unreact` remove."
+                  },
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "message_id"
+                    ],
+                    "properties": {
+                      "message_id": {
+                        "type": "string",
+                        "description": "`mid` da mensagem que recebe a reação, recebido no webhook.",
+                        "example": "aWdfZAG1faXRlbTo......"
+                      },
+                      "reaction": {
+                        "type": "string",
+                        "enum": [
+                          "love"
+                        ],
+                        "default": "love",
+                        "description": "Obrigatório em `react`, omitido em `unreact`."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "recipient": {
+                  "id": "1000000000000001"
+                },
+                "sender_action": "react",
+                "payload": {
+                  "message_id": "aWdfZAG1faXRlbTo......",
+                  "reaction": "love"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Aceito pela Meta. Não confirma a entrega.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "recipient_id": "1000000000000001"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro retornado pela Meta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "message": "Não foi possível encontrar o usuário solicitado.",
+                    "type": "IGApiException",
+                    "code": 100,
+                    "error_subcode": 2534014,
+                    "fbtrace_id": "AbCdEfGhIjK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 401,
+                  "message": "Token inválido ou não encontrado."
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Assinatura da Datafy inativa.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 402,
+                  "message": "Assinatura inativa (status: canceled). Ative sua assinatura no painel para voltar a usar a API."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token do canal do Instagram, gerado no painel da Datafy. Formato: `sk_live_xxx`."
+      }
+    }
+  }
+}
