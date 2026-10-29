@@ -3,17 +3,17 @@ title: "Janela de 24 horas"
 description: "Saiba até quando você pode responder no WhatsApp e o que fazer quando esse prazo termina."
 ---
 
-## O prazo começa com o cliente
+## Início e renovação da janela
 
 Na API oficial do WhatsApp, uma mensagem do cliente abre um período de **24 horas para sua empresa responder com mensagens de serviço**, sem precisar de um template. Esse período é chamado de **janela de atendimento**.
 
-A conta é simples: veja quando chegou a última mensagem daquela pessoa e acrescente 24 horas. Se ela escrever novamente, o prazo começa de novo a partir dessa nova mensagem.
+O prazo é calculado a partir da última mensagem recebida do contato. Uma nova mensagem dele reinicia a contagem.
 
 <Note>
-  **Quem renova a janela é o cliente.** Uma resposta da sua empresa, seja de um atendente ou de uma automação, não aumenta o prazo. Cada cliente tem sua própria janela.
+  A janela é renovada apenas por mensagens do contato. Respostas da empresa, de atendente ou de automação, não alteram o prazo. Cada contato tem a própria janela.
 </Note>
 
-## Um atendimento na prática
+## Exemplo de sequência
 
 Imagine que uma pessoa entre em contato para perguntar sobre um pedido:
 
@@ -25,13 +25,13 @@ Imagine que uma pessoa entre em contato para perguntar sobre um pedido:
 | Terça, 11h | Sua empresa confirma o endereço. | Continua até terça, 16h. |
 | Terça, 16h01 | Nenhuma nova mensagem chegou do cliente. | A janela está fechada; é necessário um template. |
 
-## Enquanto a janela estiver aberta
+## Envios permitidos com a janela aberta
 
 Você pode conduzir o atendimento com texto e formatos suportados pela API, como imagens, áudios, vídeos e documentos. Também pode usar recursos interativos, como listas e botões, conforme as regras de cada formato.
 
 Essas mensagens não precisam de aprovação individual da Meta. A regra da janela vale tanto para respostas de atendentes quanto para mensagens enviadas por bots e automações.
 
-## Quando o prazo termina
+## Envio após o encerramento
 
 Se passarem 24 horas desde a última mensagem do cliente, sua empresa deixa de poder enviar mensagens de serviço para ele. Se você tentar enviar uma dessas mensagens fora da janela, a requisição pode ser aceita com **HTTP 200 e um ID de mensagem**, mas a falha no envio será informada depois pelo **webhook de status**, com o erro correspondente.
 
@@ -70,7 +70,7 @@ O resultado do envio deve ser acompanhado pelos webhooks de status:
 
 Use o ID da mensagem para relacionar esses eventos ao envio feito pela sua aplicação. Os detalhes dos payloads serão apresentados na referência da **API WhatsApp**.
 
-## Dúvidas comuns
+## Casos específicos
 
 <AccordionGroup>
   <Accordion title="E se o cliente nunca tiver falado com a empresa?">
@@ -90,7 +90,7 @@ Use o ID da mensagem para relacionar esses eventos ao envio feito pela sua aplic
   </Accordion>
 </AccordionGroup>
 
-## Como organizar sua integração
+## Recomendações de implementação
 
 Guarde o horário da última mensagem recebida de cada cliente e confira esse prazo antes de responder. Isso ajuda sua aplicação a escolher entre uma mensagem de serviço e um template, inclusive quando um envio ficou aguardando em uma fila.
 
