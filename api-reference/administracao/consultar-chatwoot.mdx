@@ -1,0 +1,16 @@
+---
+title: "Consultar Chatwoot"
+sidebarTitle: "Consultar"
+openapi: "/api-reference/administracao/specs/canais.json GET /channels/whatsapp/{id}/chatwoot"
+---
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `url` | URL do Chatwoot |
+| `account_id` | ID da conta no Chatwoot |
+| `inbox_id` | ID da caixa de entrada no Chatwoot |
+| `inbox_name` | Nome da caixa de entrada |
+
+Quando o canal não tem Chatwoot configurado, a resposta é `null`. O token de acesso não é devolvido.

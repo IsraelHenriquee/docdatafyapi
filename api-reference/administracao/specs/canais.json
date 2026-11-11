@@ -1495,6 +1495,229 @@
           }
         }
       }
+    },
+    "/channels/whatsapp/{id}/chatwoot": {
+      "get": {
+        "summary": "Consultar Chatwoot",
+        "operationId": "consultarChatwoot",
+        "description": "Retorna a configuração do Chatwoot nativo do canal, ou null se não houver.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuração do Chatwoot, ou null.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "configurado": {
+                    "summary": "Chatwoot configurado",
+                    "value": {
+                      "url": "https://chat.seudominio.com",
+                      "account_id": 1,
+                      "inbox_id": 2,
+                      "inbox_name": "Atendimento"
+                    }
+                  },
+                  "nao_configurado": {
+                    "summary": "Sem Chatwoot",
+                    "value": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      },
+      "put": {
+        "summary": "Configurar Chatwoot",
+        "operationId": "configurarChatwoot",
+        "description": "Conecta o canal a um Chatwoot self-hosted no modo nativo: cria (ou adota) a caixa de entrada no Chatwoot apontando para o proxy da Datafy e passa a repassar as mensagens recebidas para lá. Idempotente: chamar de novo atualiza a URL e o nome.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "url",
+                  "inbox_name"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "example": "https://chat.seudominio.com",
+                    "description": "URL do seu Chatwoot self-hosted."
+                  },
+                  "api_token": {
+                    "type": "string",
+                    "example": "xxxxxxxxxxxxxxxxxxxx",
+                    "description": "Token de acesso de um usuário do Chatwoot com permissão de administrador. Obrigatório na primeira configuração; ao editar só a URL ou o nome, pode ser omitido para manter o token guardado."
+                  },
+                  "inbox_name": {
+                    "type": "string",
+                    "example": "Atendimento",
+                    "description": "Nome da caixa de entrada criada no Chatwoot."
+                  }
+                }
+              },
+              "example": {
+                "url": "https://chat.seudominio.com",
+                "api_token": "xxxxxxxxxxxxxxxxxxxx",
+                "inbox_name": "Atendimento"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chatwoot configurado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "url": "https://chat.seudominio.com",
+                  "account_id": 1,
+                  "inbox_id": 2,
+                  "inbox_name": "Atendimento"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos ou Chatwoot inacessível.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "sem_url": {
+                    "summary": "URL ausente",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Informe a URL do seu Chatwoot (url)"
+                    }
+                  },
+                  "sem_token": {
+                    "summary": "Token ausente na primeira configuração",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Informe o token de acesso do Chatwoot (api_token)"
+                    }
+                  },
+                  "inacessivel": {
+                    "summary": "URL ou token errado",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Não conseguimos acessar seu Chatwoot com esses dados. Confira a URL e o token de acesso."
+                    }
+                  },
+                  "base_url": {
+                    "summary": "WHATSAPP_CLOUD_BASE_URL não configurada no Chatwoot",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Seu Chatwoot não conseguiu validar a conexão. Confirme se a variável WHATSAPP_CLOUD_BASE_URL foi adicionada e se você reiniciou os serviços."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "O canal ainda não está conectado ao WhatsApp.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 409,
+                  "message": "Conecte o canal ao WhatsApp antes de ligar o Chatwoot."
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remover Chatwoot",
+        "operationId": "removerChatwoot",
+        "description": "Desliga o Chatwoot do canal: remove a configuração e o repasse de mensagens. Não apaga nada no seu Chatwoot (a caixa de entrada e o histórico continuam lá).",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chatwoot removido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "Confirma a remoção."
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Canal não encontrado, ou sem Chatwoot configurado.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "canal": {
+                    "summary": "Canal não encontrado",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Canal não encontrado"
+                    }
+                  },
+                  "sem_chatwoot": {
+                    "summary": "Sem Chatwoot configurado",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Este canal não tem Chatwoot configurado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      }
     }
   },
   "components": {

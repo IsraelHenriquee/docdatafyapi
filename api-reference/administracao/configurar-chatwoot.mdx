@@ -1,0 +1,33 @@
+---
+title: "Configurar Chatwoot"
+sidebarTitle: "Configurar"
+openapi: "/api-reference/administracao/specs/canais.json PUT /channels/whatsapp/{id}/chatwoot"
+---
+
+Conecta o canal a um **Chatwoot self-hosted** no modo nativo. A Datafy cria (ou adota) uma caixa de entrada no seu Chatwoot apontando para o proxy da Datafy e passa a repassar para lá as mensagens recebidas no número. É o mesmo que a tela de Chatwoot do painel faz, agora pela API.
+
+<Note>
+  O canal precisa já estar **conectado ao WhatsApp** antes de ligar o Chatwoot. Se ainda não estiver, a resposta é `409`.
+</Note>
+
+## Pré-requisito no seu Chatwoot
+
+O token de acesso (`api_token`) precisa ser de um usuário **administrador**. E o seu Chatwoot precisa ter a variável de ambiente **`WHATSAPP_CLOUD_BASE_URL`** apontando para o proxy da Datafy, com os serviços reiniciados:
+
+```bash
+WHATSAPP_CLOUD_BASE_URL=https://cloud.datafyapi.com.br/v1
+``` Sem isso, o Chatwoot tenta validar a conexão direto na Meta com o token da Datafy e a Meta recusa — a resposta vem como `400` pedindo para configurar essa variável.
+
+## Editar
+
+Chamar de novo atualiza a configuração. Para trocar apenas a URL ou o nome da caixa de entrada, você pode **omitir o `api_token`** — o token guardado é mantido.
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `url` | URL do Chatwoot |
+| `account_id` | ID da conta no Chatwoot |
+| `inbox_id` | ID da caixa de entrada no Chatwoot |
+| `inbox_name` | Nome da caixa de entrada |
+| `alerta` | Presente só quando o Chatwoot marcou o canal como "conexão expirada". Nesse estado ele descarta as mensagens recebidas; abra a caixa de entrada no Chatwoot e reconecte. |

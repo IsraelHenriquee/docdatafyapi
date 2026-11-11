@@ -193,6 +193,14 @@
                       "api-reference/administracao/remover-webhook-global",
                       "api-reference/administracao/rotacionar-secret-global"
                     ]
+                  },
+                  {
+                    "group": "Chatwoot",
+                    "pages": [
+                      "api-reference/administracao/configurar-chatwoot",
+                      "api-reference/administracao/consultar-chatwoot",
+                      "api-reference/administracao/remover-chatwoot"
+                    ]
                   }
                 ]
               },
