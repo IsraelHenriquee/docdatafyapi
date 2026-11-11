@@ -1,0 +1,18 @@
+---
+title: "Desconectar canal"
+sidebarTitle: "Desconectar"
+openapi: "/api-reference/instagram/administracao/specs/canais.json POST /channels/instagram/{id}/disconnect"
+---
+
+Encerra o vínculo com a conta do Instagram: remove a identidade da conta (`ig_user_id`, `username`) e a assinatura de eventos na Meta, e o canal passa ao estado não conectado (`connected: false`), sem enviar nem receber.
+
+O canal em si não é apagado. O token (`sk_live_`), os webhooks cadastrados e o nome permanecem, e a **assinatura do canal não é alterada**: um canal assinado continua assinado e cobrado enquanto desconectado. É a operação indicada para interromper um canal de forma temporária sem perder a configuração.
+
+Reconectar o mesmo canal, ou vincular outra conta do Instagram a ele, exige um novo fluxo de autorização (Business Login), iniciado por um link de conexão. Não há reconexão apenas por API.
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do canal |
+| `connected` | Situação da conexão do canal. Sempre `false` após desconectar |

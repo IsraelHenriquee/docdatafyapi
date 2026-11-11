@@ -1,0 +1,55 @@
+---
+title: "Introdução"
+description: "Crie e gerencie os canais de Instagram da sua conta pela API."
+---
+
+A API de administração permite criar e gerenciar os canais de Instagram da conta por requisições, sem passar pelo painel. É voltada a quem integra a Datafy a um sistema próprio e precisa provisionar canais de forma automática.
+
+<Note>
+  A administração de canais de Instagram e de WhatsApp usa o mesmo token de conta e a mesma assinatura. A diferença está no caminho: canais de Instagram ficam em `/channels/instagram`. Para WhatsApp, veja [Administração do WhatsApp](/api-reference/administracao/introducao).
+</Note>
+
+## Token de conta
+
+As operações de administração usam o **token de conta**, que é diferente do token de cada canal:
+
+| Token | Formato | Escopo | Onde é usado |
+| --- | --- | --- | --- |
+| Token de conta | `sk_acct_...` | Toda a conta | Endpoints de administração (`/channels`) |
+| Token de canal | `sk_live_...` | Um canal | Envio de mensagens e demais endpoints do Instagram |
+
+Todas as requisições de administração exigem o token de conta no cabeçalho `Authorization`:
+
+```http
+Authorization: Bearer sk_acct_xxx
+```
+
+Sem o cabeçalho, ou com um token de canal no lugar do token de conta, a resposta é `401`.
+
+O token de conta é gerado no painel da Datafy, em [Minha conta](https://app.datafyapi.com.br/conta), na aba **Parceiros**. A conta mantém apenas um token ativo. Para os detalhes de geração e regeneração, veja a [introdução da administração do WhatsApp](/api-reference/administracao/introducao#gerar-o-token).
+
+## Assinatura
+
+Os endpoints de administração funcionam apenas com a assinatura da conta ativa. A conta é assinante quando tem ao menos um canal ativo, seja de WhatsApp ou de Instagram.
+
+| `subscription` | Situação | Acesso à API |
+| --- | --- | --- |
+| `active` | Assinatura ativa | Permitido |
+| `past_due` | Pagamento em atraso | Permitido |
+| `trial` | Período de teste | Não permitido |
+| `pending` | Teste encerrado sem assinatura | Não permitido |
+| `canceled` | Assinatura cancelada | Não permitido |
+
+A assinatura é uma só e cobre os dois tipos de canal: a quantidade cobrada acompanha o total de canais ativos de WhatsApp e de Instagram somados. Quando a assinatura não permite o acesso, a resposta é `403`.
+
+## Trial de canal
+
+Um canal recém-criado pode ser usado por **2 dias** sem assinatura, para testes. Depois desse prazo é preciso [assinar o canal](/api-reference/instagram/administracao/assinar-canal) para ele voltar a funcionar.
+
+## Conexão
+
+Criar o canal é separado de conectá-lo a uma conta do Instagram. A conexão é feita por um fluxo de autorização (Business Login) aberto pelo cliente final, e tem documentação própria (em breve). Uma vez conectado, o canal pode ser **desconectado** pela API; reconectar exige um novo fluxo de autorização.
+
+## Limite de requisições
+
+Os endpoints de administração aceitam **120 requisições por minuto** por token de conta. Acima disso, a resposta é `429`.

@@ -1,0 +1,26 @@
+---
+title: "Consultar canal"
+openapi: "/api-reference/instagram/administracao/specs/canais.json GET /channels/instagram/{id}"
+---
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do canal |
+| `name` | Nome dado ao canal |
+| `description` | Descrição dada ao canal |
+| `token` | Token do canal (`sk_live_`), usado nas requisições da API do Instagram deste canal |
+| `subscribed` | Situação da assinatura do canal |
+| `on_trial` | Indica se o canal está no período de teste |
+| `trial_ends_at` | Data e hora do fim do período de teste |
+| `connected` | Indica se há uma conta do Instagram conectada ao canal |
+| `ig_user_id` | ID da conta do Instagram na Meta |
+| `username` | Nome de usuário (@) da conta do Instagram |
+| `profile_name` | Nome do perfil do Instagram |
+| `profile_picture_url` | URL da foto de perfil do Instagram |
+| `webhook_secret` | Segredo usado na [assinatura](/api-reference/instagram/webhooks/validar-assinatura) de todos os webhooks deste canal |
+| `webhooks[].id` | ID do webhook |
+| `webhooks[].url` | URL que recebe os eventos |
+| `webhooks[].events` | [Eventos](/api-reference/instagram/webhooks/receber-eventos) assinados pelo webhook |
+| `webhooks[].enabled` | Indica se o webhook está ativo |

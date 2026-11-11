@@ -1,0 +1,21 @@
+---
+title: "Listar canais"
+openapi: "/api-reference/instagram/administracao/specs/canais.json GET /channels/instagram"
+---
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `subscription` | Status da assinatura da conta na Datafy. Os valores estão em [Assinatura](/api-reference/instagram/administracao/introducao#assinatura). |
+| `channels[].id` | ID do canal |
+| `channels[].name` | Nome dado ao canal |
+| `channels[].description` | Descrição dada ao canal |
+| `channels[].subscribed` | Indica se a assinatura financeira do canal está ativa |
+| `channels[].on_trial` | Indica se o canal está no período de teste |
+| `channels[].trial_ends_at` | Data e hora do fim do período de teste |
+| `channels[].connected` | Indica se há uma conta do Instagram conectada ao canal |
+| `channels[].ig_user_id` | ID da conta do Instagram na Meta |
+| `channels[].username` | Nome de usuário (@) da conta do Instagram |
+| `channels[].profile_name` | Nome do perfil do Instagram |
+| `channels[].profile_picture_url` | URL da foto de perfil do Instagram |

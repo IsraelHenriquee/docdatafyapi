@@ -1,0 +1,31 @@
+---
+title: "Criar webhook"
+openapi: "/api-reference/instagram/administracao/specs/canais.json POST /channels/instagram/{id}/webhooks"
+---
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do webhook |
+| `url` | URL que recebe os eventos |
+| `events` | [Eventos](/api-reference/instagram/webhooks/receber-eventos) que o webhook recebe |
+| `enabled` | Indica se o webhook está ativo |
+
+## Eventos disponíveis
+
+Valores aceitos em `events`. Se o campo não for enviado, o webhook recebe `messages`.
+
+| Evento | Descrição |
+| --- | --- |
+| [`messages`](/api-reference/instagram/webhooks/eventos/mensagens) | Mensagem recebida no direct, incluindo as mensagens que a própria conta envia (`is_echo`) |
+| [`messaging_postbacks`](/api-reference/instagram/webhooks/eventos/postbacks) | Clique em botão de resposta rápida ou ice breaker |
+| [`messaging_referral`](/api-reference/instagram/webhooks/eventos/outros) | Conversa aberta por link `ig.me` com parâmetro `ref` |
+| [`messaging_seen`](/api-reference/instagram/webhooks/eventos/leitura) | Confirmação de leitura das mensagens enviadas |
+| [`message_reactions`](/api-reference/instagram/webhooks/eventos/reacoes) | Reação adicionada ou removida em uma mensagem |
+| [`message_edit`](/api-reference/instagram/webhooks/eventos/outros) | Mensagem editada pelo remetente |
+| [`messaging_optins`](/api-reference/instagram/webhooks/eventos/outros) | Opt-in de notification messages, que permite enviar fora da janela de 24 horas |
+| [`messaging_handover`](/api-reference/instagram/webhooks/eventos/outros) | Passagem de controle da conversa entre aplicativos |
+| [`standby`](/api-reference/instagram/webhooks/eventos/outros) | Mensagens que chegam enquanto outro aplicativo tem o controle da conversa |
+| [`comments`](/api-reference/instagram/webhooks/eventos/comentarios) | Comentários em posts e reels da conta |
+| [`live_comments`](/api-reference/instagram/webhooks/eventos/comentarios) | Comentários durante uma transmissão ao vivo |

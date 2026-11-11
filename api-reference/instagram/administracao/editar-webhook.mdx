@@ -1,0 +1,15 @@
+---
+title: "Editar webhook"
+openapi: "/api-reference/instagram/administracao/specs/canais.json PATCH /channels/instagram/{id}/webhooks/{webhookId}"
+---
+
+Os valores aceitos em `events` estão em [Criar webhook](/api-reference/instagram/administracao/criar-webhook#eventos-disponíveis).
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do webhook |
+| `url` | URL que recebe os eventos |
+| `events` | [Eventos](/api-reference/instagram/webhooks/receber-eventos) que o webhook recebe |
+| `enabled` | Indica se o webhook está ativo |

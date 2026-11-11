@@ -1,0 +1,13 @@
+---
+title: "Rotacionar token"
+sidebarTitle: "Rotacionar token"
+openapi: "/api-reference/instagram/administracao/specs/canais.json POST /channels/instagram/{id}/token"
+---
+
+O token anterior deixa de funcionar imediatamente. As integrações que o usam passam a receber `401` até serem atualizadas com o token novo.
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `token` | Novo token do canal (`sk_live_`) |

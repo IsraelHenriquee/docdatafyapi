@@ -1,0 +1,16 @@
+---
+title: "Consultar webhook global"
+sidebarTitle: "Consultar"
+openapi: "/api-reference/instagram/administracao/specs/canais.json GET /channels/instagram/global-webhook"
+---
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `webhook.url` | URL que recebe os eventos de todos os canais |
+| `webhook.events` | [Eventos](/api-reference/instagram/administracao/criar-webhook#eventos-disponíveis) que o webhook recebe |
+| `webhook.enabled` | Indica se o webhook está ativo |
+| `webhook.secret` | Secret usado na [assinatura](/api-reference/instagram/webhooks/validar-assinatura) das entregas deste webhook |
+
+Quando a conta não tem webhook global, a resposta é `{ "webhook": null }`.

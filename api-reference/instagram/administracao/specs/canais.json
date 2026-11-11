@@ -1,0 +1,1634 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Datafy API — Administração de canais do Instagram",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.datafyapi.com.br",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "tokenDeConta": []
+    }
+  ],
+  "paths": {
+    "/channels/instagram": {
+      "get": {
+        "summary": "Listar canais",
+        "operationId": "listarCanaisInstagram",
+        "description": "Lista os canais de Instagram da conta, com o status da assinatura.",
+        "responses": {
+          "200": {
+            "description": "Canais da conta.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListaDeCanais"
+                },
+                "example": {
+                  "subscription": "active",
+                  "channels": [
+                    {
+                      "id": "3f1c9a2e-7b4d-4c1a-9f0e-2d8b6a5c4e10",
+                      "name": "Atendimento",
+                      "description": "Canal do suporte",
+                      "subscribed": true,
+                      "on_trial": false,
+                      "trial_ends_at": null,
+                      "connected": true,
+                      "ig_user_id": "17841400000000000",
+                      "username": "minha.empresa",
+                      "profile_name": "Minha Empresa",
+                      "profile_picture_url": "https://scontent.cdninstagram.com/v/ABC.jpg"
+                    },
+                    {
+                      "id": "8a2d4f6b-1c3e-4a5b-8d7f-9e0a1b2c3d4e",
+                      "name": "Vendas",
+                      "description": null,
+                      "subscribed": false,
+                      "on_trial": true,
+                      "trial_ends_at": "2026-11-12T12:00:00Z",
+                      "connected": false,
+                      "ig_user_id": null,
+                      "username": null,
+                      "profile_name": null,
+                      "profile_picture_url": null
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar canal",
+        "operationId": "criarCanalInstagram",
+        "description": "Cria um canal de comunicação, que depois é conectado a uma conta do Instagram.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Atendimento",
+                    "description": "Nome do canal."
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Canal do suporte",
+                    "description": "Descrição do canal. Opcional."
+                  }
+                }
+              },
+              "example": {
+                "name": "Atendimento",
+                "description": "Canal do suporte"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Canal criado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "name": "Atendimento",
+                  "description": "Canal do suporte",
+                  "token": "sk_live_xxx",
+                  "webhook_secret": "whsec_xxx",
+                  "subscribed": false
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CanalCriado"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "O campo name não foi informado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 400,
+                  "message": "O nome do canal (name) é obrigatório"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      }
+    },
+    "/channels/instagram/{id}": {
+      "get": {
+        "summary": "Consultar canal",
+        "operationId": "consultarCanalInstagram",
+        "description": "Retorna um canal com as credenciais e os webhooks cadastrados.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do canal.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "3f1c9a2e-7b4d-4c1a-9f0e-2d8b6a5c4e10",
+                  "name": "Atendimento",
+                  "description": "Canal do suporte",
+                  "token": "sk_live_xxx",
+                  "subscribed": true,
+                  "on_trial": false,
+                  "trial_ends_at": null,
+                  "connected": true,
+                  "ig_user_id": "17841400000000000",
+                  "username": "minha.empresa",
+                  "profile_name": "Minha Empresa",
+                  "profile_picture_url": "https://scontent.cdninstagram.com/v/ABC.jpg",
+                  "webhook_secret": "whsec_xxx",
+                  "webhooks": [
+                    {
+                      "id": "9d8c7b6a-5f4e-4d3c-2b1a-0f9e8d7c6b5a",
+                      "url": "https://exemplo.com/webhook",
+                      "events": [
+                        "messages"
+                      ],
+                      "enabled": true
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CanalDetalhe"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Editar canal",
+        "operationId": "editarCanalInstagram",
+        "description": "Altera o nome e a descrição do canal. Envie apenas os campos que mudam.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Atendimento",
+                    "description": "Novo nome do canal. Não pode ser vazio."
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Canal do suporte",
+                    "description": "Nova descrição do canal."
+                  }
+                }
+              },
+              "example": {
+                "name": "Atendimento",
+                "description": "Canal do suporte"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Canal editado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID do canal."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nome do canal."
+                    },
+                    "description": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Descrição do canal."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "name": "Atendimento",
+                  "description": "Canal do suporte"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nenhum campo enviado, ou name vazio.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "sem_campos": {
+                    "summary": "Nenhum campo enviado",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Envie \"name\" e/ou \"description\" para editar"
+                    }
+                  },
+                  "nome_vazio": {
+                    "summary": "name vazio",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "O nome do canal (name) não pode ser vazio"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletar canal",
+        "operationId": "deletarCanalInstagram",
+        "description": "Remove o canal da conta. A assinatura do canal precisa estar cancelada.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Canal deletado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "Confirma a remoção."
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "O canal ainda tem assinatura ativa.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 409,
+                  "message": "Cancele a assinatura do canal antes de deletá-lo."
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/instagram/{id}/token": {
+      "post": {
+        "summary": "Rotacionar token",
+        "operationId": "rotacionarTokenInstagram",
+        "description": "Gera um novo token para o canal. O token anterior deixa de funcionar imediatamente.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credencial gerada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "Novo token do canal (`sk_live_`)."
+                    }
+                  }
+                },
+                "example": {
+                  "token": "sk_live_xxx"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/instagram/{id}/webhook-secret": {
+      "post": {
+        "summary": "Rotacionar webhook secret",
+        "operationId": "rotacionarWebhookSecretInstagram",
+        "description": "Gera um novo secret para a assinatura dos webhooks do canal. As próximas entregas já são assinadas com ele.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credencial gerada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "webhook_secret": {
+                      "type": "string",
+                      "description": "Novo secret dos webhooks do canal."
+                    }
+                  }
+                },
+                "example": {
+                  "webhook_secret": "whsec_xxx"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/instagram/{id}/subscribe": {
+      "post": {
+        "summary": "Assinar canal",
+        "operationId": "assinarCanalInstagram",
+        "description": "Ativa a assinatura do canal. A cobrança proporcional aos dias restantes do ciclo é feita na hora.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Situação da assinatura do canal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SituacaoAssinatura"
+                },
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "subscribed": true
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Pagamento recusado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 402,
+                  "message": "Pagamento recusado. Verifique o cartão e tente novamente."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A conta ainda não tem uma assinatura.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 409,
+                  "message": "Você ainda não tem uma assinatura. Crie a primeira assinatura pelo painel."
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/instagram/{id}/cancel": {
+      "post": {
+        "summary": "Cancelar canal",
+        "operationId": "cancelarCanalInstagram",
+        "description": "Cancela a assinatura do canal. O crédito proporcional entra no próximo ciclo.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Situação da assinatura do canal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SituacaoAssinatura"
+                },
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "subscribed": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "É o único canal ativo da conta.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 409,
+                  "message": "Este é seu único canal ativo. Para encerrar a assinatura, cancele pelo painel."
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/instagram/{id}/disconnect": {
+      "post": {
+        "summary": "Desconectar canal",
+        "operationId": "desconectarCanalInstagram",
+        "description": "Remove a conexão do canal com a conta do Instagram.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Canal desconectado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID do canal."
+                    },
+                    "connected": {
+                      "type": "boolean",
+                      "description": "Situação da conexão do canal. Sempre `false` após desconectar."
+                    }
+                  }
+                },
+                "example": {
+                  "id": "96c3df7e-300c-47de-bfaf-7d2a2899bd19",
+                  "connected": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "O canal já estava desconectado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 409,
+                  "message": "Este canal já está desconectado."
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/instagram/{id}/connect-link": {
+      "post": {
+        "summary": "Gerar link de conexão",
+        "operationId": "gerarLinkDeConexaoInstagram",
+        "description": "Gera o link que o cliente abre para conectar a conta do Instagram ao canal.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Link de conexão gerado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "Endereço da página de conexão, para abrir no navegador do cliente."
+                    },
+                    "token": {
+                      "type": "string",
+                      "description": "Token do link, já incluído na `url`."
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "description": "Validade do link, em segundos."
+                    }
+                  }
+                },
+                "example": {
+                  "url": "https://app.datafyapi.com.br/ci/cig_1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f",
+                  "token": "cig_1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f",
+                  "expires_in": 86400
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          },
+          "409": {
+            "description": "O canal não está assinado nem em período de teste.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 409,
+                  "message": "O canal não está assinado (teste encerrado ou assinatura cancelada). Assine o canal para poder conectar."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels/instagram/{id}/webhooks": {
+      "get": {
+        "summary": "Listar webhooks",
+        "operationId": "listarWebhooksInstagram",
+        "description": "Lista os webhooks cadastrados no canal.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhooks do canal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebhookResposta"
+                  }
+                },
+                "example": [
+                  {
+                    "id": "9d8c7b6a-5f4e-4d3c-2b1a-0f9e8d7c6b5a",
+                    "url": "https://exemplo.com/webhook",
+                    "events": [
+                      "messages"
+                    ],
+                    "enabled": true
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar webhook",
+        "operationId": "criarWebhookInstagram",
+        "description": "Cadastra uma URL para receber os eventos do canal.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "url"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "example": "https://exemplo.com/webhook",
+                    "description": "URL que recebe os eventos. Precisa usar HTTPS."
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/EventoInstagram"
+                    },
+                    "example": [
+                      "messages"
+                    ],
+                    "description": "Eventos que o webhook recebe. Se omitido, recebe `messages`. Não pode ser uma lista vazia."
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "example": true,
+                    "default": true,
+                    "description": "Ativa ou desativa o webhook."
+                  }
+                }
+              },
+              "example": {
+                "url": "https://exemplo.com/webhook",
+                "events": [
+                  "messages"
+                ],
+                "enabled": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook criado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResposta"
+                },
+                "example": {
+                  "id": "9d8c7b6a-5f4e-4d3c-2b1a-0f9e8d7c6b5a",
+                  "url": "https://exemplo.com/webhook",
+                  "events": [
+                    "messages"
+                  ],
+                  "enabled": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "url_invalida": {
+                    "summary": "URL sem HTTPS",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "URL inválida — precisa ser https://…"
+                    }
+                  },
+                  "events_vazio": {
+                    "summary": "events vazio",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "O webhook precisa de ao menos um evento (sem evento ele nunca dispara)"
+                    }
+                  },
+                  "evento_inexistente": {
+                    "summary": "Evento inexistente",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Evento(s) inválido(s): mesages"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "$ref": "#/components/responses/CanalNaoEncontrado"
+          }
+        }
+      }
+    },
+    "/channels/instagram/{id}/webhooks/{webhookId}": {
+      "patch": {
+        "summary": "Editar webhook",
+        "operationId": "editarWebhookInstagram",
+        "description": "Altera a URL, os eventos ou a situação do webhook. Envie apenas os campos que mudam; use `enabled` para ativar ou desativar.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          },
+          {
+            "$ref": "#/components/parameters/WebhookId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "example": "https://exemplo.com/webhook",
+                    "description": "URL que recebe os eventos. Precisa usar HTTPS."
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/EventoInstagram"
+                    },
+                    "example": [
+                      "messages"
+                    ],
+                    "description": "Eventos que o webhook recebe. Não pode ser uma lista vazia."
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "example": true,
+                    "default": true,
+                    "description": "Ativa ou desativa o webhook."
+                  }
+                }
+              },
+              "example": {
+                "enabled": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook editado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResposta"
+                },
+                "example": {
+                  "id": "9d8c7b6a-5f4e-4d3c-2b1a-0f9e8d7c6b5a",
+                  "url": "https://exemplo.com/webhook",
+                  "events": [
+                    "messages"
+                  ],
+                  "enabled": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "sem_campos": {
+                    "summary": "Nenhum campo enviado",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "Envie url, events e/ou enabled para editar"
+                    }
+                  },
+                  "url_invalida": {
+                    "summary": "URL sem HTTPS",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "URL inválida — precisa ser https://…"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "description": "Canal ou webhook não encontrado.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "canal": {
+                    "summary": "Canal não encontrado",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Canal não encontrado"
+                    }
+                  },
+                  "webhook": {
+                    "summary": "Webhook não encontrado",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Webhook não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remover webhook",
+        "operationId": "removerWebhookInstagram",
+        "description": "Remove um webhook do canal.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CanalId"
+          },
+          {
+            "$ref": "#/components/parameters/WebhookId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook removido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "Confirma a remoção."
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          },
+          "404": {
+            "description": "Canal ou webhook não encontrado.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "canal": {
+                    "summary": "Canal não encontrado",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Canal não encontrado"
+                    }
+                  },
+                  "webhook": {
+                    "summary": "Webhook não encontrado",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Webhook não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels/instagram/global-webhook": {
+      "get": {
+        "summary": "Consultar webhook global",
+        "operationId": "consultarWebhookGlobalInstagram",
+        "description": "Retorna o webhook global da conta, que recebe os eventos de todos os canais de Instagram.",
+        "responses": {
+          "200": {
+            "description": "Webhook global da conta.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespostaWebhookGlobal"
+                },
+                "examples": {
+                  "configurado": {
+                    "summary": "Webhook configurado",
+                    "value": {
+                      "webhook": {
+                        "url": "https://exemplo.com/webhook-global",
+                        "events": [
+                          "messages"
+                        ],
+                        "enabled": true,
+                        "secret": "whsec_xxx"
+                      }
+                    }
+                  },
+                  "nao_configurado": {
+                    "summary": "Sem webhook global",
+                    "value": {
+                      "webhook": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      },
+      "put": {
+        "summary": "Configurar webhook global",
+        "operationId": "configurarWebhookGlobalInstagram",
+        "description": "Cria ou substitui o webhook global da conta. O corpo define o webhook inteiro: os campos omitidos voltam ao valor padrão.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "url"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "example": "https://exemplo.com/webhook-global",
+                    "description": "URL que recebe os eventos de todos os canais. Precisa usar HTTPS."
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/EventoInstagram"
+                    },
+                    "example": [
+                      "messages"
+                    ],
+                    "description": "Eventos que o webhook recebe. Se omitido, recebe `messages`. Não pode ser uma lista vazia."
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Ativa ou desativa o webhook. Se omitido, fica ativo."
+                  }
+                }
+              },
+              "example": {
+                "url": "https://exemplo.com/webhook-global",
+                "events": [
+                  "messages"
+                ],
+                "enabled": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook global configurado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespostaWebhookGlobal"
+                },
+                "example": {
+                  "webhook": {
+                    "url": "https://exemplo.com/webhook-global",
+                    "events": [
+                      "messages"
+                    ],
+                    "enabled": true,
+                    "secret": "whsec_xxx"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "url_invalida": {
+                    "summary": "URL sem HTTPS",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "URL inválida — precisa ser https://…"
+                    }
+                  },
+                  "events_vazio": {
+                    "summary": "events vazio",
+                    "value": {
+                      "statusCode": 400,
+                      "message": "O webhook precisa de ao menos um evento (sem evento ele nunca dispara)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remover webhook global",
+        "operationId": "removerWebhookGlobalInstagram",
+        "description": "Remove o webhook global da conta.",
+        "responses": {
+          "200": {
+            "description": "Webhook global removido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "Confirma a remoção."
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não havia webhook global configurado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 404,
+                  "message": "Nenhum webhook global configurado"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      }
+    },
+    "/channels/instagram/global-webhook/rotate-secret": {
+      "post": {
+        "summary": "Rotacionar secret global",
+        "operationId": "rotacionarSecretGlobalInstagram",
+        "description": "Gera um novo secret para o webhook global. As próximas entregas já são assinadas com ele.",
+        "responses": {
+          "200": {
+            "description": "Secret gerado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "webhook_secret": {
+                      "type": "string",
+                      "description": "Novo secret do webhook global."
+                    }
+                  }
+                },
+                "example": {
+                  "webhook_secret": "whsec_xxx"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não há webhook global configurado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 404,
+                  "message": "Nenhum webhook global configurado"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NaoAutorizado"
+          },
+          "403": {
+            "$ref": "#/components/responses/AssinaturaInativa"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "tokenDeConta": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token de conta gerado no painel da Datafy, na aba Parceiros. Formato: `sk_acct_xxx`. Diferente do token de canal (`sk_live_`)."
+      }
+    },
+    "responses": {
+      "NaoAutorizado": {
+        "description": "Token de conta ausente ou inválido.",
+        "content": {
+          "application/json": {
+            "example": {
+              "statusCode": 401,
+              "message": "Token de conta ausente ou inválido"
+            }
+          }
+        }
+      },
+      "AssinaturaInativa": {
+        "description": "A assinatura da conta não está ativa.",
+        "content": {
+          "application/json": {
+            "example": {
+              "statusCode": 403,
+              "message": "Sua assinatura precisa estar ativa para usar a API. Acesse o painel para ativá-la."
+            }
+          }
+        }
+      },
+      "CanalNaoEncontrado": {
+        "description": "Canal inexistente ou de outra conta.",
+        "content": {
+          "application/json": {
+            "example": {
+              "statusCode": 404,
+              "message": "Canal não encontrado"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ListaDeCanais": {
+        "type": "object",
+        "properties": {
+          "subscription": {
+            "type": "string",
+            "enum": [
+              "active",
+              "past_due",
+              "trial",
+              "pending",
+              "canceled"
+            ],
+            "description": "Status da assinatura da conta na Datafy."
+          },
+          "channels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Canal"
+            }
+          }
+        }
+      },
+      "Canal": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do canal."
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome dado ao canal."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Descrição dada ao canal."
+          },
+          "subscribed": {
+            "type": "boolean",
+            "description": "Indica se a assinatura financeira do canal está ativa."
+          },
+          "on_trial": {
+            "type": "boolean",
+            "description": "Indica se o canal está no período de teste."
+          },
+          "trial_ends_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Data e hora do fim do período de teste."
+          },
+          "connected": {
+            "type": "boolean",
+            "description": "Indica se há uma conta do Instagram conectada ao canal."
+          },
+          "ig_user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ID da conta do Instagram na Meta."
+          },
+          "username": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Nome de usuário (@) da conta do Instagram."
+          },
+          "profile_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Nome do perfil do Instagram."
+          },
+          "profile_picture_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "URL da foto de perfil do Instagram."
+          }
+        }
+      },
+      "CanalCriado": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do canal."
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome dado ao canal."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Descrição dada ao canal."
+          },
+          "token": {
+            "type": "string",
+            "description": "Token do canal (`sk_live_`), usado nas requisições da API do Instagram deste canal."
+          },
+          "webhook_secret": {
+            "type": "string",
+            "description": "Segredo usado na assinatura de todos os webhooks deste canal."
+          },
+          "subscribed": {
+            "type": "boolean",
+            "description": "Situação da assinatura do canal. Sempre `false` na criação."
+          }
+        }
+      },
+      "Webhook": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do webhook."
+          },
+          "url": {
+            "type": "string",
+            "description": "URL que recebe os eventos."
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Eventos assinados pelo webhook."
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Indica se o webhook está ativo."
+          }
+        }
+      },
+      "CanalDetalhe": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do canal."
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome dado ao canal."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Descrição dada ao canal."
+          },
+          "token": {
+            "type": "string",
+            "description": "Token do canal (`sk_live_`), usado nas requisições da API do Instagram deste canal."
+          },
+          "subscribed": {
+            "type": "boolean",
+            "description": "Situação da assinatura do canal."
+          },
+          "on_trial": {
+            "type": "boolean",
+            "description": "Indica se o canal está no período de teste."
+          },
+          "trial_ends_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Data e hora do fim do período de teste."
+          },
+          "connected": {
+            "type": "boolean",
+            "description": "Indica se há uma conta do Instagram conectada ao canal."
+          },
+          "ig_user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ID da conta do Instagram na Meta."
+          },
+          "username": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Nome de usuário (@) da conta do Instagram."
+          },
+          "profile_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Nome do perfil do Instagram."
+          },
+          "profile_picture_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "URL da foto de perfil do Instagram."
+          },
+          "webhook_secret": {
+            "type": "string",
+            "description": "Segredo usado na assinatura de todos os webhooks deste canal."
+          },
+          "webhooks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Webhook"
+            },
+            "description": "Webhooks cadastrados no canal."
+          }
+        }
+      },
+      "SituacaoAssinatura": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do canal."
+          },
+          "subscribed": {
+            "type": "boolean",
+            "description": "Situação da assinatura do canal."
+          }
+        }
+      },
+      "EventoInstagram": {
+        "type": "string",
+        "enum": [
+          "messages",
+          "messaging_postbacks",
+          "messaging_referral",
+          "messaging_seen",
+          "message_reactions",
+          "message_edit",
+          "messaging_optins",
+          "messaging_handover",
+          "standby",
+          "comments",
+          "live_comments"
+        ]
+      },
+      "WebhookResposta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do webhook."
+          },
+          "url": {
+            "type": "string",
+            "description": "URL que recebe os eventos."
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Eventos que o webhook recebe."
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Indica se o webhook está ativo."
+          }
+        }
+      },
+      "WebhookGlobal": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL que recebe os eventos de todos os canais."
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Eventos que o webhook recebe."
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Indica se o webhook está ativo."
+          },
+          "secret": {
+            "type": "string",
+            "description": "Secret usado na assinatura das entregas deste webhook."
+          }
+        }
+      },
+      "RespostaWebhookGlobal": {
+        "type": "object",
+        "properties": {
+          "webhook": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/WebhookGlobal"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Webhook global da conta, ou `null` quando não configurado."
+          }
+        }
+      }
+    },
+    "parameters": {
+      "CanalId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "ID do canal, retornado em Listar canais e em Criar canal."
+      },
+      "WebhookId": {
+        "name": "webhookId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "ID do webhook, retornado em Listar webhooks e em Criar webhook."
+      }
+    }
+  }
+}

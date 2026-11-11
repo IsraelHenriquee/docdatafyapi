@@ -330,6 +330,55 @@
                 ]
               },
               {
+                "group": "Administração",
+                "icon": {
+                  "name": "user-gear",
+                  "style": "regular"
+                },
+                "pages": [
+                  "api-reference/instagram/administracao/introducao",
+                  {
+                    "group": "Canais",
+                    "pages": [
+                      "api-reference/instagram/administracao/listar-canais",
+                      "api-reference/instagram/administracao/criar-canal",
+                      "api-reference/instagram/administracao/consultar-canal",
+                      "api-reference/instagram/administracao/editar-canal",
+                      "api-reference/instagram/administracao/rotacionar-token",
+                      "api-reference/instagram/administracao/assinar-canal",
+                      "api-reference/instagram/administracao/cancelar-canal",
+                      "api-reference/instagram/administracao/deletar-canal"
+                    ]
+                  },
+                  {
+                    "group": "Conexão",
+                    "pages": [
+                      "api-reference/instagram/administracao/gerar-link-de-conexao",
+                      "api-reference/instagram/administracao/desconectar-canal"
+                    ]
+                  },
+                  {
+                    "group": "Webhooks do canal",
+                    "pages": [
+                      "api-reference/instagram/administracao/listar-webhooks",
+                      "api-reference/instagram/administracao/criar-webhook",
+                      "api-reference/instagram/administracao/editar-webhook",
+                      "api-reference/instagram/administracao/remover-webhook",
+                      "api-reference/instagram/administracao/rotacionar-webhook-secret"
+                    ]
+                  },
+                  {
+                    "group": "Webhook global",
+                    "pages": [
+                      "api-reference/instagram/administracao/consultar-webhook-global",
+                      "api-reference/instagram/administracao/configurar-webhook-global",
+                      "api-reference/instagram/administracao/remover-webhook-global",
+                      "api-reference/instagram/administracao/rotacionar-secret-global"
+                    ]
+                  }
+                ]
+              },
+              {
                 "group": "Mensagens",
                 "icon": {
                   "name": "paper-plane",

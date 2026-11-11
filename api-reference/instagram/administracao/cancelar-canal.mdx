@@ -1,0 +1,18 @@
+---
+title: "Cancelar assinatura do canal"
+sidebarTitle: "Cancelar canal"
+openapi: "/api-reference/instagram/administracao/specs/canais.json POST /channels/instagram/{id}/cancel"
+---
+
+Diminui em um a quantidade de canais ativos da assinatura. O crédito proporcional aos dias restantes do ciclo entra na próxima fatura.
+
+<Warning>
+  Se este for o único canal ativo da conta (contando WhatsApp e Instagram), a API não cancela e devolve `409`. Encerrar a assinatura inteira é feito no [painel da Datafy](https://app.datafyapi.com.br).
+</Warning>
+
+## Resposta
+
+| Campo | Descrição |
+| --- | --- |
+| `id` | ID do canal |
+| `subscribed` | Situação da assinatura do canal |
