@@ -100,5 +100,17 @@ curl 'https://cloud.datafyapi.com.br/v1/{phone_number_id}?fields=health_status' 
 O campo `can_send_message` assume `AVAILABLE`, `LIMITED` ou `BLOCKED`, e é informado tanto no resultado geral quanto em cada entidade: o número, a conta do WhatsApp Business, o portfólio comercial e o aplicativo. Quando há restrição, `errors` e `additional_info` descrevem a causa e a solução.
 
 <Note>
-  A entidade `APP` refere-se ao aplicativo da Datafy, responsável pela conexão com a Meta.
+  A entidade `APP` refere-se ao aplicativo da Datafy, responsável pela conexão com a Meta. Quando `APP` e `WABA` estão `AVAILABLE`, o acesso da Datafy está correto e a restrição vem de uma das outras entidades.
 </Note>
+
+### Causas comuns de restrição
+
+A tabela abaixo relaciona a entidade que trava o envio à origem do problema. Erros como `#10 "Application does not have permission for this action"` e `#131005 "Access denied"` no envio são o sintoma; a entidade restrita no `health_status` é a causa.
+
+| Entidade em `LIMITED` / `BLOCKED` | Código | Causa | Solução |
+| --- | --- | --- | --- |
+| `BUSINESS` | `141010` | O portfólio comercial não passou pela verificação de negócio | Concluir a verificação no Meta Business Settings, em Central de Segurança |
+| `PHONE_NUMBER` | sem código | Nome de exibição ainda não aprovado | Aguardar a aprovação do nome; o limite aumenta em seguida |
+| `WABA` | sem código | Conta do WhatsApp Business reprovada em revisão | Revisar a conta no WhatsApp Manager |
+
+A verificação de negócio e a aprovação do nome de exibição são responsabilidade do cliente e ocorrem nas contas da Meta dele. Enquanto `BUSINESS` estiver restrita, o número envia apenas dentro do limite reduzido de negócios não verificados, mesmo com o número `CONNECTED` e a forma de pagamento cadastrada.
